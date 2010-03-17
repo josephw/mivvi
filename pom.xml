@@ -1,0 +1,11 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.kafsemo.mivvi</groupId>
+  <artifactId>Main</artifactId>
+  <packaging>pom</packaging>
+  <version>0.3.0-SNAPSHOT</version>
+
+  <modules>
+    <module>recognise</module>
+  </modules>
+</project>

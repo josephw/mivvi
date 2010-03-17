@@ -1,0 +1,8 @@
+http://www.example.com/#
+Example Show
+
+1x01 http://www.example.com/1/1# Named Episode
+ Alternate Title
+1x02 http://www.example.com/1/2# Theater
+2x01 http://www.example.com/2/1#
+2x02 http://www.example.com/2/2#

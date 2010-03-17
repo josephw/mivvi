@@ -1,0 +1,6 @@
+http://www.example.com/#
+Single Season Series
+
+1x01 http://www.example.com/1#
+1x02 http://www.example.com/2#
+1x03 http://www.example.com/3#
