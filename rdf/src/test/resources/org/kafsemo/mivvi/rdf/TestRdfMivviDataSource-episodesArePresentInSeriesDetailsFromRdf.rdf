@@ -1,0 +1,33 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:mvi="http://mivvi.net/rdf#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <mvi:Series rdf:about="http://www.example.com/#" dc:title="O'Grady">
+  <mvi:seasons>
+   <rdf:Bag>
+    <rdf:li>
+     <mvi:Season mvi:seasonNumber="1">
+      <mvi:episodes>
+       <rdf:Seq>
+        <rdf:li>
+         <mvi:Episode rdf:about="http://www.example.com/1x1#" dc:title="First Episode" mvi:episodeNumber="1" />
+        </rdf:li>
+        <rdf:li>
+         <mvi:Episode rdf:about="http://www.example.com/1x2#" dc:title="Second Episode" mvi:episodeNumber="2" />
+        </rdf:li>
+       </rdf:Seq>
+      </mvi:episodes>
+     </mvi:Season>
+    </rdf:li>
+    <rdf:li>
+     <mvi:Season mvi:seasonNumber="2">
+      <mvi:episodes>
+       <rdf:Seq>
+        <rdf:li>
+         <mvi:Episode rdf:about="http://www.example.com/2x1#" dc:title="Third Episode" mvi:episodeNumber="3" />
+        </rdf:li>
+       </rdf:Seq>
+      </mvi:episodes>
+     </mvi:Season>
+    </rdf:li>
+   </rdf:Bag>
+  </mvi:seasons>
+ </mvi:Series>
+</rdf:RDF>

@@ -33,11 +33,11 @@ import java.util.regex.Pattern;
 
 import org.kafsemo.mivvi.recognise.EpisodeTitleDetails;
 import org.kafsemo.mivvi.recognise.Item;
-import org.kafsemo.mivvi.recognise.SeriesData;
+import org.kafsemo.mivvi.recognise.SeriesDataSource;
 import org.kafsemo.mivvi.recognise.SeriesDetails;
 
 
-public class SimpleSeriesData implements SeriesData<URI>
+public class SimpleSeriesData implements SeriesDataSource<URI>
 {
     private final Collection<Item<URI>> titles = new ArrayList<Item<URI>>();
     private final Collection<Item<URI>> descriptions = new ArrayList<Item<URI>>();

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='us-ascii'?>
+
+<!-- Statements about files in the current directory, to test existence checks and URI
+	mapping. -->
+
+<rdf:RDF xmlns:mvi='http://mivvi.net/rdf#'
+	xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+	xmlns:dc='http://purl.org/dc/elements/1.1/'>
+
+ <rdf:Description rdf:about='dummy-file'>
+  <mvi:episode rdf:resource='http://www.example.com/orig-episode-uri'/>
+ </rdf:Description>
+
+ <rdf:Description rdf:about='dummy-file'>
+  <mvi:episode rdf:resource='http://www.example.com/other-episode-uri'/>
+ </rdf:Description>
+
+ <rdf:Description rdf:about='nonexistent-file'>
+  <mvi:episode rdf:resource='http://www.example.com/another-episode-uri'/>
+ </rdf:Description>
+
+</rdf:RDF>

@@ -16,14 +16,12 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.kafsemo.mivvi.recognise;
+package org.kafsemo.mivvi.rdf;
 
-import java.util.Collection;
-
-public interface SeriesData<T>
+/**
+ * @author joe
+ */
+public class Mivvi
 {
-    Collection<Item<T>> getSeriesTitles() throws SeriesDataException;
-    Collection<Item<T>> getSeriesDescriptions() throws SeriesDataException;
-
-    SeriesDetails<T> getSeriesDetails(T series) throws SeriesDataException;
+    public static final String URI = "http://mivvi.net/rdf#";
 }

@@ -40,13 +40,13 @@ import java.util.regex.Pattern;
  */
 public class FilenameProcessor<T>
 {
-    private final SeriesData<T> data;
+    private final SeriesDataSource<T> data;
     private final FileNamingData namingData;
 
     private Iterable<Item<T>> seriesTitles;
     private Iterable<Item<T>> seriesDescriptions;
 
-    public FilenameProcessor(SeriesData<T> d, FileNamingData n)
+    public FilenameProcessor(SeriesDataSource<T> d, FileNamingData n)
     {
         this.data = d;
         this.namingData = n;

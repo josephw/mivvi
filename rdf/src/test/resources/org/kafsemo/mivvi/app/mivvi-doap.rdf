@@ -1,0 +1,31 @@
+<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+<Project
+	xmlns='http://usefulinc.com/ns/doap#'
+	rdf:about='http://mivvi.net/code/#desktop-client'>
+
+ <name>Mivvi Desktop Client</name>
+ <homepage rdf:resource='http://mivvi.net/#'/>
+ <shortdesc xml:lang="en-GB">
+  A desktop client, for the Mivvi project, to manage and find
+   television programmes.
+ </shortdesc>
+
+ <!-- Mivvi uses this data to report more recent available versions -->
+
+ <release>
+  <Version>
+   <created>2006-01-09</created>
+   <revision>0.2</revision>
+  </Version>
+ </release>
+ <release>
+  <Version>
+   <created>2006-01-11</created>
+   <revision>0.2.1</revision>
+  </Version>
+ </release>
+ 
+ <download-page rdf:resource='http://mivvi.net/code/'/>
+
+</Project>
+</rdf:RDF>

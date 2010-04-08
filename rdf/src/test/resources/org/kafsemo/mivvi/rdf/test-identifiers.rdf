@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='us-ascii'?>
+
+<rdf:RDF xmlns:mvi='http://mivvi.net/rdf#'
+	xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+	xmlns:dc='http://purl.org/dc/elements/1.1/'
+	xmlns:owl='http://www.w3.org/2002/07/owl#'>
+
+ <!-- This URI should be replaced by the new one -->
+ <mvi:Series rdf:about='http://www.example.com/old-series-uri'>
+  <owl:sameAs>
+   <mvi:Series rdf:about='http://www.example.com/new-series-uri'/>
+  </owl:sameAs>
+ </mvi:Series>
+
+ <!-- So should this one -->
+ <mvi:Series rdf:about='http://www.example.com/another-old-series-uri'>
+  <owl:sameAs>
+   <mvi:Series rdf:about='http://www.example.com/new-series-uri'/>
+  </owl:sameAs>
+ </mvi:Series>
+
+ <!-- This resource has an untyped old URI, should still be translated -->
+ <rdf:Description rdf:about='http://www.example.com/old-series-2-uri'>
+  <owl:sameAs>
+   <mvi:Series rdf:about='http://www.example.com/new-series-2-uri'/>
+  </owl:sameAs>
+ </rdf:Description>
+
+ <!-- This resource has an untyped new URI, so no translation should occur -->
+ <mvi:Series rdf:about='http://www.example.com/old-series-3-uri'>
+  <owl:sameAs rdf:resource='http://www.example.com/new-series-3-uri'/>
+ </mvi:Series>
+
+ <!-- This URI should be replaced by the new one -->
+ <mvi:Season rdf:about='http://www.example.com/old-season-uri'>
+  <owl:sameAs>
+   <mvi:Season rdf:about='http://www.example.com/new-season-uri'/>
+  </owl:sameAs>
+ </mvi:Season>
+
+ <!-- This URI should be replaced by the new one -->
+ <mvi:Episode rdf:about='http://www.example.com/old-episode-uri'>
+  <owl:sameAs>
+   <mvi:Episode rdf:about='http://www.example.com/new-episode-uri'/>
+  </owl:sameAs>
+ </mvi:Episode>
+
+ <!-- These resource types do not match, so no mapping should occur -->
+ <mvi:Episode rdf:about='http://www.example.com/old-episode-2-uri'>
+  <owl:sameAs>
+   <mvi:Season rdf:about='http://www.example.com/new-season-2-uri'/>
+  </owl:sameAs>
+ </mvi:Episode>
+
+ <!-- These resources are of non-Mivvi types, so no mapping should occur -->
+ <ex:Adhoc rdf:about='http://www.example.com/old-adhoc-uri'
+ 	xmlns:ex='http://www.example.com/rdf/ns#'>
+  <owl:sameAs>
+   <ex:Adhoc rdf:about='http://www.example.com/new-adhoc-uri'/>
+  </owl:sameAs>
+ </ex:Adhoc>
+
+ <!-- These resources are blank nodes: there's no mapping, and nothing should brreak -->
+ <mvi:Season>
+  <owl:sameAs>
+   <mvi:Season/>
+  </owl:sameAs>
+ </mvi:Season>
+</rdf:RDF>
