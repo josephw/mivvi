@@ -1,0 +1,29 @@
+<web-app version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee">
+
+ <context-param>
+  <param-name>mivviDataPath</param-name>
+  <param-value>/home/joe/mivvi/data</param-value>
+  <description>The base directory for Mivvi data.</description>
+ </context-param>
+
+ <servlet>
+  <servlet-name>Recognise</servlet-name>
+  <servlet-class>org.kafsemo.mivvi.rest.RecogniseServlet</servlet-class>
+ </servlet>
+
+ <servlet>
+  <servlet-name>About</servlet-name>
+  <servlet-class>org.kafsemo.mivvi.rest.AboutServlet</servlet-class>
+ </servlet>
+ 
+ <servlet-mapping>
+  <servlet-name>Recognise</servlet-name>
+  <url-pattern>/recognise/*</url-pattern>
+ </servlet-mapping>
+ 
+ <servlet-mapping>
+  <servlet-name>About</servlet-name>
+  <url-pattern>/about</url-pattern>
+ </servlet-mapping>
+</web-app>

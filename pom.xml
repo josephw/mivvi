@@ -8,5 +8,6 @@
   <modules>
     <module>recognise</module>
     <module>rdf</module>
+    <module>rest</module>
   </modules>
 </project>
