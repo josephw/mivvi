@@ -1,13 +1,85 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.kafsemo.mivvi</groupId>
-  <artifactId>Main</artifactId>
-  <packaging>pom</packaging>
-  <version>0.3.0-SNAPSHOT</version>
+ <modelVersion>4.0.0</modelVersion>
+ <groupId>org.kafsemo.mivvi</groupId>
+ <artifactId>mivvi-parent</artifactId>
+ <name>Mivvi parent POM</name>
+ <packaging>pom</packaging>
+ <version>0.3.0-SNAPSHOT</version>
 
-  <modules>
-    <module>recognise</module>
-    <module>rdf</module>
-    <module>rest</module>
-  </modules>
+ <modules>
+  <module>recognise</module>
+  <module>rdf</module>
+  <module>rest</module>
+ </modules>
+
+ <properties>
+  <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+  <sesameVersion>2.3.0</sesameVersion>
+ </properties>
+
+ <repositories>
+  <!-- Sesame releases come from the Aduna repository -->
+  <repository>
+   <id>aduna-releases</id>
+   <name>Aduna Repository</name>
+   <url>http://repo.aduna-software.org/maven2/releases</url>
+   <snapshots>
+    <enabled>false</enabled>
+   </snapshots>
+  </repository>
+ </repositories>
+
+ <dependencies>
+  <dependency>
+   <groupId>junit</groupId>
+   <artifactId>junit</artifactId>
+   <version>4.8.1</version>
+   <scope>test</scope>
+  </dependency>
+ </dependencies>
+
+ <dependencyManagement>
+  <dependencies>
+   <dependency>
+    <groupId>org.openrdf.sesame</groupId>
+    <artifactId>sesame-sail-memory</artifactId>
+    <version>${sesameVersion}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.openrdf.sesame</groupId>
+    <artifactId>sesame-repository-sail</artifactId>
+    <version>${sesameVersion}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.openrdf.sesame</groupId>
+    <artifactId>sesame-rio-rdfxml</artifactId>
+    <version>${sesameVersion}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <version>1.5.0</version>
+    <scope>runtime</scope>
+   </dependency>
+   <dependency>
+    <groupId>info.aduna.commons</groupId>
+    <artifactId>aduna-commons-text</artifactId>
+    <version>2.5.0</version>
+   </dependency>
+  </dependencies>
+ </dependencyManagement>
+
+ <build>
+  <plugins>
+   <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+     <source>1.5</source>
+     <target>1.5</target>
+    </configuration>
+   </plugin>
+  </plugins>
+ </build>
+
 </project>
