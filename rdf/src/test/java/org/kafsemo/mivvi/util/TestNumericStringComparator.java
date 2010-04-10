@@ -142,15 +142,26 @@ public class TestNumericStringComparator extends TestCase
         assertEquals(0, cmp.compare(Long.toString(a), Long.toString(a)));
         assertEquals(-1, cmp.compare("0" + a, "1" + a));
         assertEquals(1, cmp.compare("1" + a, "0" + a));
-
-        // Lexical comparison, returns '9' - '1'
-        assertEquals(-8, cmp.compare("10" + a, "9" + a));
-        assertEquals(8, cmp.compare("9" + a, "10" + a));
     }
     
     public void testNumericStringsFirstComparedByString()
     {
         assertEquals(1, cmp.compare("TestB-1", "TestA-1"));
         assertEquals(-1, cmp.compare("AnotherTest-1", "BasicTest-1"));
+    }
+
+    /**
+     * Comparison of oversized numbers should still be
+     * numerically consistent.
+     */
+    public void testOversizedNumbersAreConsistent()
+    {
+        String a = "3",
+            b = "20",
+            c = "2147483648"; // Integer.MAX_VALUE + 1
+        
+        assertEquals("a < b", -1, cmp.compare(a, b));
+        assertEquals("b < c", -1, cmp.compare(b, c));
+        assertEquals("a < c", -1, cmp.compare(a, c));
     }
 }

@@ -18,6 +18,7 @@
 
 package org.kafsemo.mivvi.util;
 
+import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,17 +42,17 @@ public class NumericStringComparator implements Comparator<String>
         Matcher ma = p.matcher(a),
             mb = p.matcher(b);
 
-        try {
-            while (ma.find() && mb.find()) {
-                String beforeA = a.substring(0, ma.start()),
-                    beforeB = b.substring(0, mb.start());
-                
-                int beforeRes = beforeA.compareTo(beforeB);
-                
-                if (beforeRes != 0) {
-                    return beforeRes;
-                }
-                
+        while (ma.find() && mb.find()) {
+            String beforeA = a.substring(0, ma.start()),
+                beforeB = b.substring(0, mb.start());
+            
+            int beforeRes = beforeA.compareTo(beforeB);
+            
+            if (beforeRes != 0) {
+                return beforeRes;
+            }
+            
+            try {
                 int ia = Integer.parseInt(ma.group()),
                     ib = Integer.parseInt(mb.group());
                 
@@ -60,14 +61,21 @@ public class NumericStringComparator implements Comparator<String>
                 } else if (ia > ib) {
                     return 1;
                 }
+            } catch (NumberFormatException nfe) {
+                // Overflow; use BigIntegers
+                BigInteger ia = new BigInteger(ma.group()),
+                    ib = new BigInteger(mb.group());
                 
-                a = a.substring(ma.end());
-                ma.reset(a);
-                b = b.substring(mb.end());
-                mb.reset(b);
+                int cmp = ia.compareTo(ib);
+                if (cmp != 0) {
+                    return cmp;
+                }
             }
-        } catch (NumberFormatException nfe) {
-            // Silent fallthrough
+            
+            a = a.substring(ma.end());
+            ma.reset(a);
+            b = b.substring(mb.end());
+            mb.reset(b);
         }
 
         return a.compareTo(b);
