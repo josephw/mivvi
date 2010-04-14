@@ -1,0 +1,50 @@
+# Channel definitions are currently cumulative
+
+=UK Terrestrial
+BBC1
+BBC2
+ITV1
+Channel 4
+Five
+
+=UK Freeview
+BBC3
+BBC4
+CBeebies
+CBBC
+ITV2
+ITV3
+UKTV Bright Ideas
+UKTV History
+Sky Travel
+More4
+E4
+
+=UK cable or satellite
+Biography Channel
+Bravo
+CNBC
+Cartoon Network
+Challenge
+Disney Channel
+Fox Kids Network
+FX
+MTV
+MTV Base
+MTV Hits
+MTV2
+MUTV
+Nick Jr
+Nickelodeon
+Sci-Fi
+Sky One
+TCM
+Trouble
+Zee TV
+Toonami
+Paramount Comedy
+Paramount Comedy 2
+E! Entertainment
+VH1
+VH2
+Boomerang

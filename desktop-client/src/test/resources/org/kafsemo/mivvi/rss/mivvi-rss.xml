@@ -1,0 +1,12 @@
+<rss>
+ <channel xmlns:mv='http://mivvi.net/rdf#'>
+  <item>
+   <mv:episode>http://www.example.com/episodes/1#</mv:episode>
+  </item>
+  <item>
+   <mv:series>http://www.example.com/#</mv:series>
+   <mv:episode>http://www.example.com/episodes/1#</mv:episode>
+  </item>
+  <item />
+ </channel>
+</rss>

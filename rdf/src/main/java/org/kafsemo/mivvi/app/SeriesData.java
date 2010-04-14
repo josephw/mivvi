@@ -622,4 +622,38 @@ public class SeriesData
     {
         return mviRepCn.hasStatement(res, RdfUtil.Rdf.type, type, false);
     }
+    
+    public synchronized List<URI> getResourceIcons(Resource res) throws RepositoryException
+    {
+        List<URI> icons = new ArrayList<URI>();
+        
+        /* A specific icon */
+        icons.addAll(getSpecificIcons(res));
+        
+        /* A generic class-based icon */
+        RepositoryResult<Statement> si = mviRepCn.getStatements(res, RdfUtil.Rdf.type, null, true);
+        while (si.hasNext()) {
+            Value v = si.next().getObject();
+            if (v instanceof Resource) {
+                icons.addAll(getSpecificIcons((Resource)v));
+            }
+        }
+        
+        return icons;
+    }
+    
+    public synchronized List<URI> getSpecificIcons(Resource res) throws RepositoryException
+    {
+        List<URI> icons = new ArrayList<URI>();
+        
+        RepositoryResult<Statement> si = mviRepCn.getStatements(res, RdfMiscVocabulary.smIcon, null, true);
+        while (si.hasNext()) {
+            Value o = si.next().getObject();
+            if (o instanceof URI) {
+                icons.add((URI) o);
+            }
+        }
+        
+        return icons;
+    }
 }

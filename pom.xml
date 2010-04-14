@@ -11,6 +11,7 @@
   <module>rdf</module>
   <module>rest</module>
   <module>desktop-wrapper</module>
+  <module>desktop-client</module>
  </modules>
 
  <properties>
@@ -18,12 +19,20 @@
   <sesameVersion>2.3.0</sesameVersion>
  </properties>
 
+ <licenses>
+  <license>
+   <name>GNU Lesser General Public License, version 3</name>
+   <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+   <distribution>repo</distribution>
+  </license>
+ </licenses>
+
  <repositories>
   <!-- Sesame releases come from the Aduna repository -->
   <repository>
    <id>aduna-releases</id>
    <name>Aduna Repository</name>
-   <url>http://repo.aduna-software.org/maven2/releases</url>
+   <url>https://repo.aduna-software.org/maven2/releases</url>
    <snapshots>
     <enabled>false</enabled>
    </snapshots>
