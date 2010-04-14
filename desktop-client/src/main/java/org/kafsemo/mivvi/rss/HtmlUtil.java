@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -173,7 +174,7 @@ public class HtmlUtil
         return d;
     }
 
-    public static List<Form> parseForms(final URL base, InputStream stream) throws IOException
+    public static List<Form> parseForms(final URI base, InputStream stream) throws IOException
     {
         final List<Form> forms = new ArrayList<Form>();
 
@@ -198,11 +199,7 @@ public class HtmlUtil
 
                     String action = (String)a.getAttribute(HTML.Attribute.ACTION);
                     if (action != null) {
-                        try {
-                            f.action = new URL(base, action);
-                        } catch (MalformedURLException mue) {
-                            // Do nothing
-                        }
+                        f.action = base.resolve(action);
                     } else {
                         f.action = base;
                     }
@@ -251,7 +248,7 @@ public class HtmlUtil
             return (method != null) ? method.toUpperCase() : null;
         }
 
-        public URL action;
+        public URI action;
         
         public List<String> inputs = new ArrayList<String>();
         public List<String> passwords = new ArrayList<String>();

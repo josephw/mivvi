@@ -19,7 +19,7 @@
 package org.kafsemo.mivvi.rss;
 
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,8 +27,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
 
-import org.kafsemo.mivvi.rss.HtmlUtil;
-import org.kafsemo.mivvi.rss.RssUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -67,14 +65,14 @@ public class TestHtmlUtil extends TestCase
     
     public void testParseForm() throws Exception
     {
-        List<HtmlUtil.Form> c = HtmlUtil.parseForms(new URL("http://www.example.com/login-page"), get("sample-login.html"));
+        List<HtmlUtil.Form> c = HtmlUtil.parseForms(new URI("http://www.example.com/login-page"), get("sample-login.html"));
 
         assertEquals(1, c.size());
         
         HtmlUtil.Form f = c.get(0);
         
         assertEquals("POST", f.getMethod());
-        assertEquals(new URL("http://www.example.com/login"), f.action);
+        assertEquals(new URI("http://www.example.com/login"), f.action);
 
         assertEquals(1, f.inputs.size());
         assertEquals("username", f.inputs.get(0));

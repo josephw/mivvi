@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -305,7 +306,7 @@ public class RssDownloading extends BackgroundRefreshable
                 CookieDetails cd = cachedCookies.get(f.loginPage);
                 if (cd == null || !cd.fresh(f.username, f.password)) {
                     cd = new CookieDetails(f.username, f.password,
-                            HttpUtil.loginAndGetCookies(new URL(f.loginPage),
+                            HttpUtil.loginAndGetCookies(new URI(f.loginPage),
                             f.username, f.password));
                     cachedCookies.put(f.loginPage, cd);
                 }

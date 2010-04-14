@@ -20,7 +20,7 @@ package org.kafsemo.mivvi.rss;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -39,9 +39,9 @@ public class HttpUtil
      * @return
      * @throws IOException
      */
-    public static List<String> loginAndGetCookies(URL loginPage, String username, String password) throws IOException
+    public static List<String> loginAndGetCookies(URI loginPage, String username, String password) throws IOException
     {
-        URLConnection uc = loginPage.openConnection();
+        URLConnection uc = loginPage.toURL().openConnection();
 
         List<HtmlUtil.Form> forms = HtmlUtil.parseForms(loginPage, uc.getInputStream());
         if (forms.size() != 1)
@@ -56,7 +56,7 @@ public class HttpUtil
         
         HttpURLConnection.setFollowRedirects(false);
 
-        uc = f.action.openConnection();
+        uc = f.action.toURL().openConnection();
         if (uc instanceof HttpURLConnection) {
             HttpURLConnection h = (HttpURLConnection)uc;
             h.setRequestMethod(f.getMethod());
