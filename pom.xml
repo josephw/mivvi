@@ -10,6 +10,7 @@
   <module>recognise</module>
   <module>rdf</module>
   <module>rest</module>
+  <module>desktop-wrapper</module>
  </modules>
 
  <properties>
