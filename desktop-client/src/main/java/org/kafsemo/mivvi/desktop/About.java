@@ -19,6 +19,7 @@
 package org.kafsemo.mivvi.desktop;
 
 import java.awt.Component;
+import java.awt.Desktop;
 
 import javax.swing.Box;
 import javax.swing.JOptionPane;
@@ -28,29 +29,27 @@ import org.kafsemo.mivvi.gui.LinkLabel;
 
 public class About
 {
-    public static void showAbout(Component parent)
+    public static void showAbout(Component parent, Desktop desktop)
     {
         Object[] message = {
                 "Metadata for Video Initiative",
-                LinkLabel.create("http://mivvi.net/"),
+                LinkLabel.create(desktop, "http://mivvi.net/"),
                 "Mivvi " + Versioning.getInstance().getVersion()
         };
 
         JOptionPane.showMessageDialog(parent, message, "Mivvi", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public static void showCopyright(Component parent)
+    public static void showCopyright(Component parent, Desktop desktop)
     {
         JOptionPane.showMessageDialog(parent,
                 new Object[] {
-                LinkLabel.create("http://mivvi.net/", "Mivvi"),
-                    "Copyright 2004-2006 Joseph Walton. All rights reserved.",
+                LinkLabel.create(desktop, "http://mivvi.net/", "Mivvi"),
+                    "Copyright 2004-2010 Joseph Walton. All rights reserved.",
                     Box.createVerticalStrut(10),
                     "Includes code licensed under the GNU Lesser General Public License:",
-                    LinkLabel.create("http://www.openrdf.org/", "Sesame"),
-                    "Copyright 2001-2007 Aduna",
-                    LinkLabel.create("http://jdic.dev.java.net/", "JDesktop Integration Components"),
-                    "Copyright 2004 Sun Microsystems, Inc.",
+                    LinkLabel.create(desktop, "http://www.openrdf.org/", "Sesame"),
+                    "Copyright 2001-2009 Aduna",
         }, "Mivvi Copyright Notice", JOptionPane.PLAIN_MESSAGE);
     }
 }

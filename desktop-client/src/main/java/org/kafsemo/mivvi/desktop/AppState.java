@@ -18,6 +18,7 @@
 
 package org.kafsemo.mivvi.desktop;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -85,6 +86,8 @@ public class AppState
 
     final Repository sesameRep;
     
+    private final Desktop desktop;
+    
     public AppState() throws IOException, URISyntaxException,
             RepositoryException, ParserConfigurationException
     {
@@ -103,6 +106,12 @@ public class AppState
 
         this.rssDownloadThread = new RssDownloading(this);
 
+        if (Desktop.isDesktopSupported()) {
+            this.desktop = Desktop.getDesktop();
+        } else {
+            this.desktop = null;
+        }
+        
         gui = new GuiState(this);
     }
     
@@ -264,5 +273,10 @@ public class AppState
     public IdentifierMappings getIdentifierMappings()
     {
         return identifierMappings;
+    }
+
+    public Desktop getDesktop()
+    {
+        return this.desktop;
     }
 }

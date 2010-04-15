@@ -20,33 +20,35 @@ package org.kafsemo.mivvi.gui;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JLabel;
-
-import org.kafsemo.mivvi.gui.dw.DesktopWrapper;
+import javax.swing.JOptionPane;
 
 /**
  * A label that acts, and appears, like an HTML link.
  */
 public class LinkLabel extends JLabel
 {
-    private final URL href; //, text;
+    private final Desktop desktop;
+    private final URI href;
 
-    public LinkLabel(URL href)
+    public LinkLabel(Desktop d, URI href)
     {
-        this(href, href.toString());
+        this(d, href, href.toString());
     }
 
-    public LinkLabel(URL href, String text)
+    public LinkLabel(Desktop d, URI href, String text)
     {
         super(text);
 
+        this.desktop = d;
         this.href = href;
-//        this.text = text;
         
         addMouseListener(new ClickListener());
         
@@ -54,29 +56,41 @@ public class LinkLabel extends JLabel
         setForeground(Color.BLUE);
     }
     
-    public static JLabel create(String url, String text)
+    public static JLabel create(Desktop d, String url, String text)
     {
-        try {
-            return new LinkLabel(new URL(url), text);
-        } catch (MalformedURLException mfue) {
-            return new JLabel(text + " <" + url + ">");
+        if (d != null) {
+            try {
+                return new LinkLabel(d, new URI(url), text);
+            } catch (URISyntaxException mfue) {
+                // Fall through
+            }
         }
+        return new JLabel(text + " <" + url + ">");
     }
 
-    public static JLabel create(String url)
+    public static JLabel create(Desktop d, String url)
     {
-        try {
-            return new LinkLabel(new URL(url));
-        } catch (MalformedURLException mfue) {
-            return new JLabel(url);
+        if (d != null) {
+            try {
+                return new LinkLabel(d, new URI(url));
+            } catch (URISyntaxException mfue) {
+                // Fall through
+            }
         }
+        return new JLabel(url);
     }
 
     class ClickListener extends MouseAdapter
     {
         public void mouseClicked(MouseEvent e)
         {
-            DesktopWrapper.browse(href, LinkLabel.this);
+            try {
+                desktop.browse(href);
+            } catch (IOException ioe) {
+                JOptionPane.showMessageDialog(LinkLabel.this, ioe.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
+            } catch (UnsupportedOperationException uoe) {
+                JOptionPane.showMessageDialog(LinkLabel.this, uoe.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

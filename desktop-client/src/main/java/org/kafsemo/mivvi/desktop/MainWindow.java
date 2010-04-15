@@ -93,14 +93,14 @@ public class MainWindow extends ManagedJFrame
         jmi = new JMenuItem("Copyright...");
         jmi.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                About.showCopyright(MainWindow.this);
+                About.showCopyright(MainWindow.this, MainWindow.this.gs.getDesktop());
             }
         });
         jm.add(jmi);
         jmi = new JMenuItem("About...");
         jmi.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                About.showAbout(MainWindow.this);
+                About.showAbout(MainWindow.this, MainWindow.this.gs.getDesktop());
             }
         });
         jm.add(jmi);
@@ -167,7 +167,7 @@ public class MainWindow extends ManagedJFrame
             String label = "the Mivvi website";
 
             if (doap.getDownloadPage() != null) {
-                latestBox.add(LinkLabel.create(doap.getDownloadPage(), label));
+                latestBox.add(LinkLabel.create(MainWindow.this.gs.getDesktop(), doap.getDownloadPage(), label));
             } else {
                 latestBox.add(new JLabel(label));
             }

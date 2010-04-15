@@ -10,7 +10,6 @@
   <module>recognise</module>
   <module>rdf</module>
   <module>rest</module>
-  <module>desktop-wrapper</module>
   <module>desktop-client</module>
  </modules>
 

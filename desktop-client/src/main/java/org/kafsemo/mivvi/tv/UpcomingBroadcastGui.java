@@ -21,6 +21,7 @@ package org.kafsemo.mivvi.tv;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
@@ -30,8 +31,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,7 +54,6 @@ import org.kafsemo.mivvi.desktop.ManagedJFrame;
 import org.kafsemo.mivvi.desktop.ProgressStatus;
 import org.kafsemo.mivvi.gui.HelpButton;
 import org.kafsemo.mivvi.gui.SeriesTreeFrame;
-import org.kafsemo.mivvi.gui.dw.DesktopWrapper;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 
@@ -109,15 +109,20 @@ public class UpcomingBroadcastGui extends ManagedJFrame
         }
     }
 
-    public static void browseResource(Resource res, Component parent)
+    public void browseResource(Resource res, Component parent)
     {
         if (res instanceof URI) {
-            try {
-                URL u = new URL(((URI)res).toString());
-                
-                DesktopWrapper.browse(u, parent);
-            } catch (MalformedURLException e) {
-                JOptionPane.showMessageDialog(parent, e.toString(), "Unable to browse; bad URL", JOptionPane.ERROR_MESSAGE);
+            Desktop d = appState.getDesktop();
+            if (d != null) {
+                try {
+                    d.browse(new java.net.URI(res.stringValue()));
+                } catch (URISyntaxException use) {
+                    JOptionPane.showMessageDialog(parent, use.toString(), "Unable to browse; bad URL", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(parent, e.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
+                } catch (UnsupportedOperationException e) {
+                    JOptionPane.showMessageDialog(parent, e.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }

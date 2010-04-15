@@ -21,6 +21,7 @@ package org.kafsemo.mivvi.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.dnd.DnDConstants;
@@ -38,8 +39,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -73,7 +73,6 @@ import org.kafsemo.mivvi.app.LocalFiles;
 import org.kafsemo.mivvi.app.SeriesData;
 import org.kafsemo.mivvi.desktop.AppState;
 import org.kafsemo.mivvi.desktop.MetaData;
-import org.kafsemo.mivvi.gui.dw.DesktopWrapper;
 import org.kafsemo.mivvi.rdf.HashUris;
 import org.kafsemo.mivvi.rdf.Mivvi;
 import org.kafsemo.mivvi.rdf.RdfUtil;
@@ -197,10 +196,13 @@ public class EpisodeDetailsFrame extends JFrame
                 JLabel l = new JLabel(props[i][1] + ":"),
                 t = new JLabel(s);
 
-                if (RdfUtil.Dc.title.equals(pred) && res instanceof URI) {
+                if (RdfUtil.Dc.title.equals(pred) && res instanceof URI
+                        && state.getDesktop() != null)
+                {
                     try {
-                        t = new LinkLabel(new URL(res.toString()), s);
-                    } catch (MalformedURLException mue) {
+                        t = new LinkLabel(state.getDesktop(),
+                                new java.net.URI(res.toString()), s);
+                    } catch (URISyntaxException e) {
                         // Do nothing
                     }
                 }
@@ -237,10 +239,17 @@ public class EpisodeDetailsFrame extends JFrame
             gbc.anchor = GridBagConstraints.LINE_START;
 
             for (SeriesData.NamedResource nr : cl) {
-                JComponent comp;
-                try {
-                    comp = new LinkLabel(new URL(nr.getResource().toString()), nr.getName());
-                } catch (MalformedURLException mfue) {
+                JComponent comp = null;
+                if (state.getDesktop() != null) {
+                    try {
+                        comp = new LinkLabel(state.getDesktop(),
+                                new java.net.URI(nr.getResource().toString()),
+                                nr.getName());
+                    } catch (URISyntaxException e) {
+                        // Fall through
+                    }
+                }
+                if (comp == null) {
                     comp = new JLabel(nr.getName());
                 }
                 details.add(comp);
@@ -344,37 +353,29 @@ public class EpisodeDetailsFrame extends JFrame
                     int idx = jl.locationToIndex(e.getPoint());
                     if (idx == jl.getSelectedIndex()) {
                         if (idx >= 0) {
+                            Desktop d = EpisodeDetailsFrame.this.state.getDesktop();
+                            
+                            if (d == null) {
+                                JOptionPane.showMessageDialog(EpisodeDetailsFrame.this, "No Desktop access from this JVM.", "Unable to browse", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                            
                             ResourceItem ri = (ResourceItem)jl.getModel().getElementAt(idx);
-                            if (ri.item instanceof File) {
-                                DesktopWrapper.open((File)ri.item, EpisodeDetailsFrame.this);
-                            } else if (ri.item instanceof URI) {
-                                URI u = (URI)ri.item;
-                                try {
-                                    URL url = new URL(u.toString());
-                                    DesktopWrapper.browse(url, EpisodeDetailsFrame.this);
-                                } catch (MalformedURLException mue) {
-                                    System.err.println(mue);
-                                    if (u.toString().toLowerCase().startsWith("magnet:")) {
-                                        JPanel jp = new JPanel();
-                                        jp.add(new JLabel("Until "));
-                                        
-                                        Component brl;
-                                        try {
-                                            brl = new LinkLabel(new URL(BUG_REPORT_URL), "JDIC bug #33");
-                                        } catch (MalformedURLException x) {
-                                            brl = new JLabel("JDIC bug #33");
-                                        }
-                                        
-                                        jp.add(brl);
-                                        jp.add(new JLabel(" is fixed, please copy and paste this URI into your browser."));
-                                        
-                                        JOptionPane.showInputDialog(EpisodeDetailsFrame.this, jp,
-                                                u.toString());
+                            try {
+                                if (ri.item instanceof File) {
+                                    d.open((File)ri.item);
+                                } else if (ri.item instanceof URI) {
+                                    URI u = (URI)ri.item;
+                                    d.browse(new java.net.URI(u.toString()));
+                                } else {
+                                    System.err.println("Unknown resource item type: " + ri.item.getClass().getName() + " " + ri.item);
                                 }
-//                                  System.err.println("JDIC bug; unable to browse to non-URI URLS");
-                                }
-                            } else {
-                                System.err.println("Unknown resource item type: " + ri.item.getClass().getName() + " " + ri.item);
+                            } catch (URISyntaxException use) {
+                                JOptionPane.showMessageDialog(EpisodeDetailsFrame.this, use.toString(), "Unable to browse; bad URL", JOptionPane.ERROR_MESSAGE);
+                            } catch (IOException ioe) {
+                                JOptionPane.showMessageDialog(EpisodeDetailsFrame.this, ioe.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
+                            } catch (UnsupportedOperationException uoe) {
+                                JOptionPane.showMessageDialog(EpisodeDetailsFrame.this, uoe.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     }

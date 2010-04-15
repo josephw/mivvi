@@ -18,6 +18,7 @@
 
 package org.kafsemo.mivvi.desktop;
 
+import java.awt.Desktop;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -202,5 +203,10 @@ public class GuiState
         p.putBoolean("maximised", jf.getExtendedState() == Frame.MAXIMIZED_BOTH);
         if (!jf.id.equals("main"))
             p.putBoolean("visible", visible);
+    }
+
+    Desktop getDesktop()
+    {
+        return appState.getDesktop();
     }
 }

@@ -21,6 +21,7 @@ package org.kafsemo.mivvi.rss;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
@@ -28,8 +29,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.swing.Box;
@@ -50,7 +51,6 @@ import org.kafsemo.mivvi.desktop.ManagedJFrame;
 import org.kafsemo.mivvi.desktop.ProgressStatus;
 import org.kafsemo.mivvi.gui.HelpButton;
 import org.kafsemo.mivvi.gui.SeriesTreeFrame;
-import org.kafsemo.mivvi.gui.dw.DesktopWrapper;
 
 public class AvailableDownloadGui extends ManagedJFrame
 {
@@ -223,10 +223,17 @@ public class AvailableDownloadGui extends ManagedJFrame
 
     private void browseResource(String url)
     {
-        try {
-            DesktopWrapper.browse(new URL(url), this);
-        } catch (MalformedURLException e) {
-            JOptionPane.showMessageDialog(this, e.toString(), "Unable to download; bad URL", JOptionPane.ERROR_MESSAGE);
+        Desktop d = state.getDesktop();
+        if (d != null) {
+            try {
+                d.browse(new java.net.URI(url));
+            } catch (URISyntaxException use) {
+                JOptionPane.showMessageDialog(this, use.toString(), "Unable to browse; bad URL", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, e.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
+            } catch (UnsupportedOperationException e) {
+                JOptionPane.showMessageDialog(this, e.toString(), "Unable to browse", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 /*

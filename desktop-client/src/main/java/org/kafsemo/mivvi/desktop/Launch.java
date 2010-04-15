@@ -55,7 +55,11 @@ public class Launch
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (ClassNotFoundException cnfe) {
+            // Fall back to the default
+        }
         
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         
