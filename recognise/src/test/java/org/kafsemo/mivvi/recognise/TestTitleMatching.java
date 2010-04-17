@@ -18,6 +18,8 @@
 
 package org.kafsemo.mivvi.recognise;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -25,10 +27,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestTitleMatching extends TestCase
+public class TestTitleMatching
 {
+    @Test
     public void testMatchingComparatorPrefersExpectedTitleMatching() throws URISyntaxException
     {
         URI r1 = new URI("http://www.example.com/#1"),
@@ -56,5 +59,49 @@ public class TestTitleMatching extends TestCase
         
         assertEquals("Equivalent matchings are equal when both are expected",
                 0, cmp.compare(tm1, tm2));
+    }
+    
+    @Test
+    public void exactMatchPreferred() throws URISyntaxException
+    {
+        URI r = new URI("http://www.example.com/#1");
+        
+        TitleMatching<URI> exactMatch = new TitleMatching<URI>("", 0, 0, "", r, true, false, 0);
+        TitleMatching<URI> match2 = new TitleMatching<URI>("", 0, 0, "", r, false, false, 0);
+
+        assertEquals("An exact match is before an inexact one",
+                -1, TitleMatching.MATCHING_COMPARATOR.compare(exactMatch, match2));
+        assertEquals("An inexact match is after an exact one",
+                1, TitleMatching.MATCHING_COMPARATOR.compare(match2, exactMatch));
+    }
+    
+    @Test
+    public void titlesPreferredToDescriptions() throws URISyntaxException
+    {
+        URI r = new URI("http://www.example.com/#1");
+        
+        TitleMatching<URI> titleMatch = new TitleMatching<URI>("", 0, 0, "", r, true, true, 0);
+        TitleMatching<URI> descriptionMatch = new TitleMatching<URI>("", 0, 0, "", r, true, false, 0);
+
+        assertEquals("A title match is before a description one",
+                -1, TitleMatching.MATCHING_COMPARATOR.compare(titleMatch, descriptionMatch));
+        assertEquals("A description match is after a title one",
+                1, TitleMatching.MATCHING_COMPARATOR.compare(descriptionMatch, titleMatch));
+    }
+    
+    @Test
+    public void longerMatchesArePreferred() throws URISyntaxException
+    {
+        // Matching 'Pilot 2' against
+        URI r1 = new URI("http://www.example.com/1#"), // 'Pilot'
+            r2 = new URI("http://www.example.com/2#"); // 'Pilot 2'
+        
+        TitleMatching<URI> m1 = new TitleMatching<URI>("Pilot", 0, 5, "Pilot", r1, true, true, 0);
+        TitleMatching<URI> m2 = new TitleMatching<URI>("Pilot 2", 0, 7, "Pilot 2", r2, true, true, 0);
+
+        assertEquals("A longer match is before a shorter one",
+                -1, TitleMatching.MATCHING_COMPARATOR.compare(m2, m1));
+        assertEquals("A longer match is after a shorter one",
+                1, TitleMatching.MATCHING_COMPARATOR.compare(m1, m2));
     }
 }

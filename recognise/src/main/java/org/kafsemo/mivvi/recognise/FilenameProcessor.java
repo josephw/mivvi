@@ -243,14 +243,6 @@ public class FilenameProcessor<T>
         return null;
     }
 
-    static final String ABBREVS = " USING rdf FOR <http://www.w3.org/1999/02/22-rdf-syntax-ns#>,"
-        + "  mvi FOR <http://mivvi.net/rdf#>,"
-        + "  dc FOR <http://purl.org/dc/elements/1.1/>";
-
-//    private static Value[][] VA = {};
-//
-//    private Value[][] cachedTitles = null;
-
     private Iterable<Item<T>> getTitlesAndDescriptions() throws SeriesDataException
     {
         Collection<Item<T>> c = new ArrayList<Item<T>>();
@@ -624,8 +616,6 @@ public class FilenameProcessor<T>
         return m;
     }
 
-//    private static URI KW_URI = new URIImpl("tag:kafsemo.org,2004:mivvi#keyword");
-
     private List<NormalisedString> keywords = null;
 
     public Matching<T> matchKeyword(String s) throws SeriesDataException
@@ -652,7 +642,6 @@ public class FilenameProcessor<T>
                 /* The amount of the original string covered by this match */
                 int origMatchAmount = ns.getOriginalPosition(nls.toString().length());
                 if ((m == null) || (origMatchAmount > m.matchLength()))
-//                    m = new Matching<T>(s, ns.getOriginalPosition(0), origMatchAmount, nls.getOriginal(), KW_URI);
                     m = new Matching<T>(s, ns.getOriginalPosition(0), origMatchAmount, nls.getOriginal(), null);
             }
         }
@@ -710,8 +699,7 @@ public class FilenameProcessor<T>
             }
         }
 
-//        Collections.sort(matches, TitleMatching.MATCHING_COMPARATOR);
-        Collections.sort(matches, new TitleMatching.MatchPriorityComparator());
+        Collections.sort(matches, TitleMatching.MATCHING_COMPARATOR);
 
         return matches;
     }
@@ -771,28 +759,6 @@ public class FilenameProcessor<T>
 
         return new Matching<T>(string, start, end, sb.toString(), null);
     }
-
-//    private void addEpisodeTitlesAndDescriptions(List<EpisodeTitleDetails> l, Resource ep)
-//        throws RepositoryException
-//    {
-//        RepositoryResult<Statement> si;
-//
-//        si = rep.getStatements(ep, RdfUtil.Dc.title, null, true);
-//        while (si.hasNext()) {
-//            Statement stmt = si.next();
-//            String t = RdfUtil.literalString(stmt.getObject());
-//            if (t != null)
-//                l.add(new EpisodeTitleDetails(ep, t, true));
-//        }
-//
-//        si = rep.getStatements(ep, RdfUtil.Dc.description, null, true);
-//        while (si.hasNext()) {
-//            Statement stmt = si.next();
-//            String t = RdfUtil.literalString(stmt.getObject());
-//            if (t != null)
-//                l.add(new EpisodeTitleDetails(ep, t, false));
-//        }
-//    }
 
     private SeriesDetails<T> getSeriesDetailsImpl(T series) throws SeriesDataException
     {

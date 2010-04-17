@@ -40,8 +40,16 @@ public class TitleMatching<T> extends Matching<T>
         this.weight = weight;
     }
 
-//    static Comparator<TitleMatching<?>> MATCHING_COMPARATOR = new MatchPriorityComparator();
+    static Comparator<TitleMatching<?>> MATCHING_COMPARATOR = new MatchPriorityComparator();
 
+    /**
+     * A comparator to put matches in order, better ones first. If a match
+     * is closer, or for a title rather than a description, it will
+     * be placed earlier.
+     * 
+     * @author joe
+     *
+     */
     static class MatchPriorityComparator implements Comparator<TitleMatching<?>>
     {
         MatchPriorityComparator()
@@ -51,6 +59,12 @@ public class TitleMatching<T> extends Matching<T>
 
         private final Set<?> expectedUris;
 
+        /**
+         * A comparator that gives priority to any of the expected identifiers
+         * provided.
+         * 
+         * @param expectedUris
+         */
         MatchPriorityComparator(Set<?> expectedUris)
         {
             this.expectedUris = expectedUris;

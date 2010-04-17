@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -68,8 +69,13 @@ public class SimpleSeriesData implements SeriesDataSource<URI>
             throw new IOException("Missing resource '" + filename
             		+ "' for class " + c.getName());
         }
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf-8"));
+        
+        load(new InputStreamReader(in, "utf-8"));
+    }
+    
+    public void load(Reader r) throws IOException, URISyntaxException
+    {
+        BufferedReader br = new BufferedReader(r);
 
         String uri = br.readLine();
         URI u = new URI(uri);
@@ -108,12 +114,10 @@ public class SimpleSeriesData implements SeriesDataSource<URI>
 
             URI ep = new URI(m.group(3));
 
-            // TODO Constrain to number or single uppercase letter
-
+            String season = m.group(1);
+            
             sd.episodesByNumber.put(
-//                    Integer.parseInt(m.group(1)) +
-                    m.group(1)
-                    + "x" + Integer.parseInt(m.group(2)),
+                    season + "x" + Integer.parseInt(m.group(2)),
                     ep);
 
             episode++;
