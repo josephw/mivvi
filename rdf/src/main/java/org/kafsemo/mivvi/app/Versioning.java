@@ -20,38 +20,72 @@ package org.kafsemo.mivvi.app;
 
 import java.text.ParseException;
 
+/**
+ * A wrapper around a version string that treats valid release
+ * versions specially.
+ * 
+ * @author joe
+ */
 public class Versioning
 {
-    private final Version version;
-
-    private Versioning()
+    private final String s;
+    private final Version v;
+    
+    public Versioning(String s)
     {
-        Package p = getClass().getPackage();
-        if (p != null) {
-            Version v = null;
-            String s = p.getImplementationVersion();
-            if (s != null) {
-                try {
-                    v = Version.parse(s);
-                } catch (ParseException pe) {
-                    System.err.println("Unable to parse version: " + pe);
-                }
+        this.s = s;
+        this.v = toVersion(s);
+    }
+
+    private static Version toVersion(String s)
+    {
+        if (s != null) {
+            try {
+                return Version.parse(s);
+            } catch (ParseException pe) {
+                return null;
             }
-            version = v;
         } else {
-            version = null;
+            return null;
         }
     }
     
+    public static Versioning from(Class<?> c)
+    {
+        String s;
+        
+        Package p = c.getPackage();
+        if (p != null) {
+            s = p.getImplementationVersion();
+        } else {
+            s = null;
+        }
+        
+        return new Versioning(s);
+    }
+
+    public String getVersionString()
+    {
+        return s;
+    }
+
     public Version getVersion()
     {
-        return (version != null) ? version : Version.ZERO;
+        if (v != null) {
+            return v;
+        } else {
+            return Version.ZERO;
+        }
     }
     
-    private static final Versioning v = new Versioning();
-    
-    public static Versioning getInstance()
+    public String toString()
     {
-        return v;
+        if (v != null) {
+            return v.toString();
+        } else if (s != null) {
+            return s;
+        } else {
+            return Version.ZERO.toString();
+        }
     }
 }

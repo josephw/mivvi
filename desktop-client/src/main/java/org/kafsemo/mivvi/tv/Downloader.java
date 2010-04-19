@@ -143,7 +143,7 @@ public class Downloader
         return downloadToFile(url, df, null, ps);
     }
 
-    private static final String USER_AGENT = "Mivvi/" + Versioning.getInstance().getVersion();
+    private static final String USER_AGENT = "Mivvi/" + Versioning.from(Downloader.class);
 
     public synchronized boolean downloadToFile(URL url, File df, List<String> cookies, ProgressStatus ps) throws IOException
     {

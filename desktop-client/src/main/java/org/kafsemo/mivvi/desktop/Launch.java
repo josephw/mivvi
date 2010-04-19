@@ -32,6 +32,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
+import org.kafsemo.mivvi.app.Versioning;
 import org.kafsemo.mivvi.gui.Gui;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
@@ -64,6 +65,7 @@ public class Launch
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         
         
+        Versioning v = Versioning.from(Launch.class);
         
         AppState appState = new AppState();
 
@@ -98,7 +100,7 @@ public class Launch
 
         appState.updateMappedUris();
 
-        MainWindow mw = new MainWindow(appState.gui, appState.seriesData.getDoap());
+        MainWindow mw = new MainWindow(appState.gui, appState.seriesData.getDoap(), v);
         
         appState.setGUIRunning(true);
 

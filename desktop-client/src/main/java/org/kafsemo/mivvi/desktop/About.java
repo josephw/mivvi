@@ -29,12 +29,12 @@ import org.kafsemo.mivvi.gui.LinkLabel;
 
 public class About
 {
-    public static void showAbout(Component parent, Desktop desktop)
+    public static void showAbout(Component parent, Desktop desktop, Versioning v)
     {
         Object[] message = {
                 "Metadata for Video Initiative",
                 LinkLabel.create(desktop, "http://mivvi.net/"),
-                "Mivvi " + Versioning.getInstance().getVersion()
+                "Mivvi " + v
         };
 
         JOptionPane.showMessageDialog(parent, message, "Mivvi", JOptionPane.INFORMATION_MESSAGE);

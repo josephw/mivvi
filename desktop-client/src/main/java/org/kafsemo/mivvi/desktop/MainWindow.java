@@ -46,12 +46,15 @@ public class MainWindow extends ManagedJFrame
     
     private final GuiState gs;
 
+    private final Versioning currentVersion;
+    
     MDIGlue[] mdig;
 
-    MainWindow(GuiState gs, Doap doap) throws RepositoryException
+    MainWindow(GuiState gs, Doap doap, Versioning current) throws RepositoryException
     {
         super("main", "Mivvi");
         this.gs = gs;
+        this.currentVersion = current;
 
         addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e)
@@ -100,7 +103,7 @@ public class MainWindow extends ManagedJFrame
         jmi = new JMenuItem("About...");
         jmi.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                About.showAbout(MainWindow.this, MainWindow.this.gs.getDesktop());
+                About.showAbout(MainWindow.this, MainWindow.this.gs.getDesktop(), currentVersion);
             }
         });
         jm.add(jmi);
@@ -144,17 +147,16 @@ public class MainWindow extends ManagedJFrame
         setLocation(50, 100);
 
         Version latestVersion = doap.getLatestAvailableVersion();
-        Version current = Versioning.getInstance().getVersion();
         
         /* If there is a latest version, and it's greater than the current one... */
-        if (latestVersion != null && latestVersion.compareTo(current) > 0) {
+        if (latestVersion != null && latestVersion.compareTo(current.getVersion()) > 0) {
             Box latestBox = Box.createHorizontalBox();
 
             latestBox.add(Box.createHorizontalGlue());
             
             String preamble;
 
-            if (current.compareTo(Version.ZERO) == 0) {
+            if (current.getVersion().compareTo(Version.ZERO) == 0) {
                 preamble = "The most recent version of Mivvi is " + latestVersion + ".";
             } else {
                 preamble = "A more recent version of Mivvi (" + latestVersion + ") is available.";
