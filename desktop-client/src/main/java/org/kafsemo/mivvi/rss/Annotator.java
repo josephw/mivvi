@@ -21,6 +21,7 @@ package org.kafsemo.mivvi.rss;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -34,7 +35,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
 
 import org.kafsemo.mivvi.app.Startup;
 import org.kafsemo.mivvi.rdf.Mivvi;
@@ -55,8 +56,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import com.megginson.sax.XMLWriter;
-
 /**
  * @author joe
  */
@@ -68,6 +67,7 @@ public class Annotator
         MemoryStore ms = new MemoryStore();
 
         SailRepository sr = new SailRepository(ms);
+        sr.initialize();
         
         RepositoryConnection cn = sr.getConnection();
         
@@ -144,11 +144,14 @@ public class Annotator
         Transformer t = TransformerFactory.newInstance().newTransformer();
 
         File af = annotatedName(f);
-        XMLWriter xw = new XMLWriter(new FileWriter(af));
-        xw.forceNSDecl(Mivvi.URI, "mvi");
-        xw.forceNSDecl(RdfUtil.DC_URI, "dc");
+        Writer w = new FileWriter(af);
+        
+        /* XXX Want to pre-declare these namespaces */
+//        XMLWriter xw = new XMLWriter(w);
+//        xw.forceNSDecl(Mivvi.URI, "mvi");
+//        xw.forceNSDecl(RdfUtil.DC_URI, "dc");
 
-        t.transform(new DOMSource(d), new SAXResult(xw));
+        t.transform(new DOMSource(d), new StreamResult(w));
     }
 
     public void annotate(Document d) throws TransformerException,
@@ -165,6 +168,9 @@ public class Annotator
                 continue;
             
             String title = RssUtil.getItemTitle(e);
+            if (title == null) {
+                continue;
+            }
 
             FilenameMatch<Resource> fm = fp.processName(title);
 
