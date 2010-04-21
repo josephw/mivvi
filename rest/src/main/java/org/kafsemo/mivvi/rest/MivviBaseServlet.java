@@ -55,7 +55,6 @@ public class MivviBaseServlet extends HttpServlet
         
         String dataPath = config.getServletContext().getInitParameter("mivviDataPath");
         
-        
         try {
             MemoryStore ms = new MemoryStore();
             ms.initialize();
