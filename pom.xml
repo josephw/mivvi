@@ -15,7 +15,7 @@
 
  <properties>
   <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-  <sesameVersion>2.3.0</sesameVersion>
+  <sesameVersion>2.3.1</sesameVersion>
  </properties>
 
  <licenses>
@@ -73,7 +73,7 @@
    <dependency>
     <groupId>info.aduna.commons</groupId>
     <artifactId>aduna-commons-text</artifactId>
-    <version>2.5.0</version>
+    <version>2.6.0</version>
    </dependency>
   </dependencies>
  </dependencyManagement>

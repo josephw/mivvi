@@ -45,11 +45,29 @@ public class About
         JOptionPane.showMessageDialog(parent,
                 new Object[] {
                 LinkLabel.create(desktop, "http://mivvi.net/", "Mivvi"),
-                    "Copyright 2004-2010 Joseph Walton. All rights reserved.",
+                    "Copyright 2004-2010 Joseph Walton.",
+                    "",
                     Box.createVerticalStrut(10),
-                    "Includes code licensed under the GNU Lesser General Public License:",
+                    "This program is free software: you can redistribute it and/or modify",
+                    "it under the terms of the GNU General Public License as published by",
+                    "the Free Software Foundation, either version 3 of the License, or",
+                    "(at your option) any later version.",
+                    "",
+                    Box.createVerticalStrut(10),
+                    "This program is distributed in the hope that it will be useful,",
+                    "but WITHOUT ANY WARRANTY; without even the implied warranty of",
+                    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
+                    "GNU General Public License for more details.",
+                    "",
+                    Box.createVerticalStrut(10),
+                    "You should have received a copy of the GNU General Public License",
+                    "along with this program.  If not, see",
+                    LinkLabel.create(desktop, "http://www.gnu.org/licenses/"),
+                    Box.createVerticalStrut(10),
+                    "Incorporates:",
                     LinkLabel.create(desktop, "http://www.openrdf.org/", "Sesame"),
-                    "Copyright 2001-2009 Aduna",
+                    "Copyright Aduna (http://www.aduna-software.com/) © 2001-2010",
+                    "All rights reserved."
         }, "Mivvi Copyright Notice", JOptionPane.PLAIN_MESSAGE);
     }
 }
