@@ -74,6 +74,8 @@ public abstract class TokenFile
         List<String> l = new ArrayList<String>(getTokens());
         Collections.sort(l);
 
+        FileUtil.ensureDirectory(f.getParentFile(), f.getName());
+        
         File tf = mktmp(f);
 
         FileWriter fw = new FileWriter(tf);

@@ -49,6 +49,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.kafsemo.mivvi.app.FileUtil;
 import org.kafsemo.mivvi.app.TokenFile;
 import org.kafsemo.mivvi.desktop.AppState;
 import org.kafsemo.mivvi.desktop.BackgroundRefreshable;
@@ -142,6 +143,8 @@ public class RssDownloading extends BackgroundRefreshable
     {
         File f = state.getConfig().getFeedListFile();
 
+        FileUtil.ensureDirectory(f.getParentFile(), f.getName());
+        
         File tf = TokenFile.mktmp(f);
 
         OutputStream out = new FileOutputStream(tf);

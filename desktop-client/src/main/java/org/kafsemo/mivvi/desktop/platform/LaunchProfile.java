@@ -87,6 +87,18 @@ public class LaunchProfile
 
     public static LaunchProfile forLinux()
     {
-        return new LaunchProfile("Linux", new XdgApplicationDirectories(APP_NAME));
+        /* The native L+F crashes for me; avoid it for now */
+        
+        return new LaunchProfile("Linux", new XdgApplicationDirectories(APP_NAME)){
+            public void initialiseLookAndFeel() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+            {
+                /* Use Nimbus if available */
+                try {
+                    UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+                } catch (ClassNotFoundException cnfe) {
+                    // Fall back to the default
+                }
+            }
+        };
     }
 }

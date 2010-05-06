@@ -19,6 +19,7 @@
 package org.kafsemo.mivvi.app;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -151,6 +152,14 @@ public class FileUtil
             return PREFIX + "//" + uri.substring(PREFIX.length());
         } else {
             return uri;
+        }
+    }
+    
+    public static void ensureDirectory(File d, String name) throws IOException
+    {
+        if (!d.isDirectory() && !d.mkdirs()) {
+            throw new IOException("Unable to create directory " + d + " to save "
+                    + name);
         }
     }
 }
