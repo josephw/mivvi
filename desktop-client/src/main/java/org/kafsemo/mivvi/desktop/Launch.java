@@ -25,7 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -33,6 +32,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.kafsemo.mivvi.app.Versioning;
+import org.kafsemo.mivvi.desktop.platform.LaunchProfile;
 import org.kafsemo.mivvi.gui.Gui;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
@@ -51,23 +51,18 @@ public class Launch
         System.setProperty("apple.laf.useScreenMenuBar", "true");
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Mivvi");
 
-        // For Windows
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows"))
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        LaunchProfile lp = LaunchProfile.forOsName(System.getProperty("os.name"));
 
-
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (ClassNotFoundException cnfe) {
-            // Fall back to the default
-        }
+        lp.initialiseLookAndFeel();
         
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         
         
         Versioning v = Versioning.from(Launch.class);
         
-        AppState appState = new AppState();
+        Config cfg = new Config(lp.getAppPaths());
+        
+        AppState appState = new AppState(cfg);
 
         List<File> files = new MivviDataStartup().refreshLocalData(appState.getConfig(), appState.getDownloader());
 

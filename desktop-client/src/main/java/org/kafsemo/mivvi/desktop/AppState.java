@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -50,6 +51,9 @@ import org.openrdf.sail.memory.MemoryStore;
 
 public class AppState
 {
+    public static final String LOCAL_RESOURCES_FILENAME = 
+        "local-resources.rdf";
+    
     /*
      * Decisions the user has made, and directories and paths to use.
      */
@@ -88,10 +92,10 @@ public class AppState
     
     private final Desktop desktop;
     
-    public AppState() throws IOException, URISyntaxException,
+    public AppState(Config config) throws IOException, URISyntaxException,
             RepositoryException, ParserConfigurationException
     {
-        this.cfg = Config.getInstance();
+        this.cfg = config;
         this.decisions = new Decisions();
         this.userState = new UserState(cfg, this.decisions);
         
@@ -100,8 +104,16 @@ public class AppState
 
         localFiles = new LocalFiles();
         localFiles.initLocalFiles();
+        try {
+            File f = cfg.getDataFile(LOCAL_RESOURCES_FILENAME);
+            if (f.exists()) {
+                localFiles.load(f);
+            }
+        } catch (RDFParseException rpe) {
+            System.err.println("Failed to load information about local files: " + rpe);
+        }
         
-        this.downloader = new Downloader(cfg.getCacheDirectory());
+        this.downloader = new Downloader(cfg.getWebcacheDirectory());
         channelAvailability = ChannelAvailability.getInstance();
 
         this.rssDownloadThread = new RssDownloading(this);
@@ -127,7 +139,7 @@ public class AppState
             System.err.println("Exception shutting down GUI: " + e);
         }
         try {
-            localFiles.save(new File(Const.LOCAL_RESOURCE_FILE));
+            localFiles.save(cfg.getDataFile(LOCAL_RESOURCES_FILENAME));
         } catch (Exception e) {
             System.err.println("Exception saving local file RDF: " + e);
         }
@@ -231,7 +243,12 @@ public class AppState
     // Must be called from the EDT
     public void updatedSubscriptions()
     {
-        gui.getUpcomingBroadcastFrame().updatedSubscriptions();
+        assert SwingUtilities.isEventDispatchThread();
+        try {
+            gui.getUpcomingBroadcastFrame().updatedSubscriptions();
+        } catch (IOException ioe) {
+            System.err.println(ioe);
+        }
         gui.getAvailableDownloadFrame().updatedSubscriptions();
     }
 

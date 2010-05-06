@@ -32,7 +32,6 @@ import javax.swing.table.AbstractTableModel;
 import org.kafsemo.mivvi.app.TokenFile;
 import org.kafsemo.mivvi.app.TokenSetFile;
 import org.kafsemo.mivvi.cal.ICalFile;
-import org.kafsemo.mivvi.desktop.Const;
 import org.kafsemo.mivvi.desktop.UserState;
 import org.kafsemo.mivvi.rss.DownloadTableModel;
 
@@ -46,7 +45,9 @@ public class BroadcastTableModel extends AbstractTableModel
             "Title",
             "Seen?"
     };
-
+    
+    private final File icalFile;
+    
     public int getColumnCount()
     {
         return 6;
@@ -78,9 +79,10 @@ public class BroadcastTableModel extends AbstractTableModel
     final ArrayList<Broadcast> displayBroadcasts;
     final Collection<Broadcast> allBroadcasts;
 
-    public BroadcastTableModel(UserState ustate)
+    public BroadcastTableModel(UserState ustate, File icalFile)
     {
         this.userState = ustate;
+        this.icalFile = icalFile;
         this.displayBroadcasts = new ArrayList<Broadcast>();
         this.allBroadcasts = new ArrayList<Broadcast>();
     }
@@ -244,16 +246,14 @@ public class BroadcastTableModel extends AbstractTableModel
             displayBroadcasts.clear();
             displayBroadcasts.addAll(nl);
             fireTableDataChanged();
-            writeICalSchedule();
+            writeICalSchedule(icalFile);
         }
     }
     
-    void writeICalSchedule()
+    void writeICalSchedule(File f)
     {
         /* Write the schedule out to a file */
         try {
-            File f = new File(Const.BASE, "tv-schedule.ics");
-            
             File tf = TokenFile.mktmp(f);
 
             ICalFile icf = new ICalFile(tf);

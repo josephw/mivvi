@@ -19,29 +19,16 @@
 package org.kafsemo.mivvi.desktop;
 
 import java.io.File;
+import java.io.IOException;
 
-public class Const
+/**
+ * Specific directories to use for data and configuration files.
+ * 
+ * @author joe
+ */
+public interface AppPaths
 {
-    public static final String BASE;
-    
-    static {
-        File m = new File(System.getProperty("user.home"), ".mivvi");
-        if (!m.exists())
-            m.mkdirs();
-        BASE = m.getPath();
-    }
-    
-    private static String getPath(String name)
-    {
-        return new File(BASE, name).getPath();
-    }
-
-    // The repository for local resource identification
-    public static final String LOCAL_RESOURCE_FILE = getPath("local-resources.rdf");
-    
-    // Local subscription list
-    public static final String SUBSCRIPTION_FILE = getPath("subscription.uris");
-    
-    // MVI repository
-    public static final String MVI_REPOSITORY = getPath("mvi");
+    File getCacheDirectory() throws IOException;
+    File getConfigDirectory() throws IOException;
+    File getDataDirectory() throws IOException;
 }

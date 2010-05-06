@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -50,7 +51,8 @@ public class MainWindow extends ManagedJFrame
     
     MDIGlue[] mdig;
 
-    MainWindow(GuiState gs, Doap doap, Versioning current) throws RepositoryException
+    MainWindow(GuiState gs, Doap doap, Versioning current)
+        throws RepositoryException, IOException
     {
         super("main", "Mivvi");
         this.gs = gs;

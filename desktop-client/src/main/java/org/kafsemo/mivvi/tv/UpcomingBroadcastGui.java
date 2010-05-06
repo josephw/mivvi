@@ -31,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -75,6 +76,8 @@ public class UpcomingBroadcastGui extends ManagedJFrame
     
     private final Thread backgroundThreadTasksThread;
 
+    private final File icalFile;
+    
     static final String HELP_TEXT = "Upcoming television broadcasts are shown.\n"
         + "Double-click on episode titles to show program details in a web browser; double-click"
         + " on series titles to show series details.\n"
@@ -127,7 +130,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
         }
     }
     
-    public UpcomingBroadcastGui(AppState state)
+    public UpcomingBroadcastGui(AppState state) throws IOException
     {
         super("broadcast", "Mivvi - Upcoming broadcasts");
         
@@ -135,7 +138,9 @@ public class UpcomingBroadcastGui extends ManagedJFrame
 
         backgroundThreadTasks = new BackgroundThreadTasks(state, this);
 
-        model = new BroadcastTableModel(state.getUserState());
+        this.icalFile = state.getConfig().getDataFile("tv-schedule.ics");
+        model = new BroadcastTableModel(state.getUserState(),
+                icalFile);
 
         table = new JTable(model);
         table.addMouseListener(new MouseAdapter() {
@@ -398,6 +403,6 @@ public class UpcomingBroadcastGui extends ManagedJFrame
     
     void writeICalSchedule()
     {
-        model.writeICalSchedule();
+        model.writeICalSchedule(icalFile);
     }
 }

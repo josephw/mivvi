@@ -34,17 +34,16 @@ import org.kafsemo.mivvi.app.UriSetFile;
 
 public class Config
 {
-    public static Config getInstance() throws IOException, URISyntaxException
-    {
-        return new Config();
-    }
+    private final AppPaths appDirs;
     
     private final String radiotimesUrl;
     
     private final String[] dataUrls;
 
-    Config() throws IOException, URISyntaxException
+    Config(AppPaths dirs) throws IOException, URISyntaxException
     {
+        this.appDirs = dirs;
+        
         InputStream in = getClass().getResourceAsStream("Mivvi.properties");
         if (in == null)
             throw new FileNotFoundException("Internal resource 'Mivvi.properties' not found");
@@ -68,19 +67,19 @@ public class Config
         this.dataUrls = l.toArray(new String[l.size()]);
     }
 
-    public UriSetFile getUriSetFile(String collectionName)
+    public UriSetFile getUriSetFile(String collectionName) throws IOException
     {
-        return new UriSetFile(new File(Const.BASE, collectionName + ".uris"));
+        return new UriSetFile(getDataFile(collectionName + ".uris"));
     }
     
-    public TokenSetFile getTokenSetFile(String collectionName)
+    public TokenSetFile getTokenSetFile(String collectionName) throws IOException
     {
-        return new TokenSetFile(new File(Const.BASE, collectionName + ".tokens"));
+        return new TokenSetFile(getDataFile(collectionName + ".tokens"));
     }
     
-    public File getCacheDirectory()
+    public File getWebcacheDirectory() throws IOException
     {
-        return new File(Const.BASE, "webcache");
+        return new File(appDirs.getCacheDirectory(), "webcache");
     }
     
     public String getRadioTimesBaseUrl()
@@ -93,8 +92,13 @@ public class Config
         return dataUrls;
     }
 
-    public File getFeedListFile()
+    public File getFeedListFile() throws IOException
     {
-        return new File(Const.BASE, "feeds.xml");
+        return new File(appDirs.getConfigDirectory(), "feeds.xml");
+    }
+
+    public File getDataFile(String filename) throws IOException
+    {
+        return new File(appDirs.getDataDirectory(), filename);
     }
 }

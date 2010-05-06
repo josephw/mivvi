@@ -29,7 +29,6 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.kafsemo.mivvi.app.UriSetFile;
 import org.kafsemo.mivvi.desktop.AppState;
 import org.kafsemo.mivvi.desktop.UserState;
 import org.kafsemo.mivvi.gui.EpisodeItem;
@@ -55,12 +54,12 @@ public class DownloadTableModel extends AbstractTableModel
     }
 
     final UserState userState;
-    final UriSetFile subscribed;
+//    final UriSetFile subscribed;
     
     DownloadTableModel(AppState appState)
     {
         this.userState = appState.getUserState();
-        this.subscribed = userState.getSubscription();
+//        this.subscribed = userState.getSubscription();
     }
 
     private final Collection<Download> allDownloads = new ArrayList<Download>();

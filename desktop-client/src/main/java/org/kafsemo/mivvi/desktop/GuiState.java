@@ -48,7 +48,7 @@ public class GuiState
     SeriesTreeFrame seriesTreeFrame;
     boolean seriesTreeFrameShown;
 
-    SeriesTreeFrame getSeriesTreeFrame() throws RepositoryException
+    SeriesTreeFrame getSeriesTreeFrame() throws RepositoryException, IOException
     {
         if (seriesTreeFrame == null) {
             seriesTreeFrame = new SeriesTreeFrame(appState);
@@ -72,7 +72,7 @@ public class GuiState
     UpcomingBroadcastGui ubg;
     boolean ubgShown;
 
-    UpcomingBroadcastGui getUpcomingBroadcastFrame()
+    UpcomingBroadcastGui getUpcomingBroadcastFrame() throws IOException
     {
         if (ubg == null) {
             ubg = new UpcomingBroadcastGui(appState);
@@ -127,9 +127,9 @@ public class GuiState
         if (seriesTreeFrame != null) {
             Set<String> enu = seriesTreeFrame.getExpandedNodeUris();
             
-            TokenSetFile tsf = appState.getConfig().getTokenSetFile("gui-expanded-nodes");
-            tsf.replace(enu);
             try {
+                TokenSetFile tsf = appState.getConfig().getTokenSetFile("gui-expanded-nodes");
+                tsf.replace(enu);
                 tsf.save();
                 
                 Point scrollPoint = seriesTreeFrame.getScrollportPosition();

@@ -47,6 +47,7 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.helpers.RDFHandlerBase;
@@ -63,27 +64,25 @@ import org.openrdf.sail.memory.MemoryStore;
 public class LocalFiles
 {
     private RepositoryConnection localFiles;
-//    private Graph localFilesGraph;
 
     public void initLocalFiles() throws IOException, RepositoryException
     {
-        Repository rep = new SailRepository(new MemoryStore()); //new File(Const.LOCAL_RESOURCE_FILE + ".dir")));
+        Repository rep = new SailRepository(new MemoryStore());
         rep.initialize();
         
-//        RepositoryConfig cfg = new RepositoryConfig("localResRep", "Local resource repository");
-//        
-//        cfg.addSail(new RdfRepositoryConfig(Const.LOCAL_RESOURCE_FILE, RDFFormat.RDFXML));
-//
-//        cfg.setWorldReadable(true);
-//        cfg.setWorldWriteable(true);
-        
-        initLocalFiles(rep.getConnection());// Sesame.getService().createRepository(cfg));
+        initLocalFiles(rep.getConnection());
     }
     
     public void initLocalFiles(RepositoryConnection cn) throws IOException
     {
         this.localFiles = cn;
-//        this.localFilesGraph = localFiles.getGraph();
+    }
+    
+    public void load(File rdfXmlFile) throws RDFParseException, RepositoryException, IOException
+    {
+        this.localFiles.add(rdfXmlFile,
+                rdfXmlFile.toURI().toString(),
+                RDFFormat.RDFXML);
     }
     
     public void save(File rdfXmlFile) throws IOException, RDFHandlerException, RepositoryException
