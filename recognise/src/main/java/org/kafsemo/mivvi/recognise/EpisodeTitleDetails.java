@@ -34,6 +34,21 @@ public class EpisodeTitleDetails<T>
         this.isPrimary = isPrimary;
     }
 
+    public T getResource()
+    {
+        return res;
+    }
+    
+    public String getTitle()
+    {
+        return title;
+    }
+    
+    public boolean isPrimary()
+    {
+        return isPrimary;
+    }
+    
     public String toString()
     {
         return res + " (" + title + "," + isPrimary + ")";
