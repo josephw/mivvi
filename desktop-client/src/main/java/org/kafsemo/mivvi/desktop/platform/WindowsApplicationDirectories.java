@@ -26,11 +26,16 @@ import org.kafsemo.mivvi.desktop.AppPaths;
 /**
  * Application state locations for Windows. Uses the %AppData%
  * and %LocalAppData% variables with an app-specific subdirectory.
+ * If, on Windows XP, %LocalAppData% is unavailable, fall back to
+ * %AppData%.
  * 
  * @author joe
  */
 public class WindowsApplicationDirectories implements AppPaths
 {
+    private static final String APP_DATA = "AppData";
+    private static final String LOCAL_APP_DATA = "LocalAppData";
+    
     private final String app;
     private File cacheDirectory;
     private File configDirectory;
@@ -49,22 +54,36 @@ public class WindowsApplicationDirectories implements AppPaths
     {
         return System.getenv(n);
     }
-    
-    private File envBasedDir(String var, String appName) throws IOException
+
+    private File getAppData() throws IOException
     {
-        String d = getenv(var);
+        String d = getenv(APP_DATA);
         if (d == null) {
-            throw new IOException("Missing environment variable: " + var);
+            throw new IOException("Missing environment variable: " + APP_DATA);
         }
-        
-        return new File(d, appName);
+        return new File(d);
+    }
+    
+    private File getLocalAppDataIfAvailable() throws IOException
+    {
+        String d = getenv(LOCAL_APP_DATA);
+        if (d != null) {
+            return new File(d);
+        } else {
+            return getAppData();
+        }
+    }
+    
+    private File basedDir(File base, String appName) throws IOException
+    {
+        return new File(base, appName);
     }
 
     @Override
     public File getCacheDirectory() throws IOException
     {
         if (cacheDirectory == null) {
-            cacheDirectory = envBasedDir("LocalAppData", app);
+            cacheDirectory = basedDir(getLocalAppDataIfAvailable(), app);
         }
         return cacheDirectory;
     }
@@ -73,7 +92,7 @@ public class WindowsApplicationDirectories implements AppPaths
     public File getConfigDirectory() throws IOException
     {
         if (configDirectory == null) {
-            configDirectory = envBasedDir("AppData", app);
+            configDirectory = basedDir(getAppData(), app);
         }
         return configDirectory;
     }
@@ -82,7 +101,7 @@ public class WindowsApplicationDirectories implements AppPaths
     public File getDataDirectory() throws IOException
     {
         if (dataDirectory == null) {
-            dataDirectory = envBasedDir("AppData", app);
+            dataDirectory = basedDir(getAppData(), app);
         }
         return dataDirectory;
     }

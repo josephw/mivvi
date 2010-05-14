@@ -55,7 +55,7 @@ public class TestWindowsApplicationDirectories
     public void failsWithNullAppName()
         throws Exception
     {
-        AppPaths ap = new WindowsApplicationDirectories(null);
+        new WindowsApplicationDirectories(null);
     }
     
     @Test
@@ -75,6 +75,32 @@ public class TestWindowsApplicationDirectories
         };
         
         assertEquals(new File("local-app-data/test"), ap.getCacheDirectory());
+        assertEquals(new File("app-data/test"), ap.getConfigDirectory());
+        assertEquals(new File("app-data/test"), ap.getDataDirectory());
+    }
+
+    /**
+     * Windows XP lacks the <code>%LocalAppData%</code> variable. Ensure that
+     * it works with only %AppData%.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void setsDirectoriesWithOnlyAppDataOnXp()
+        throws Exception
+    {
+        final Map<String, String> m = new HashMap<String, String>();
+        m.put("APPDATA", "app-data");
+        
+        AppPaths ap = new WindowsApplicationDirectories("test"){
+            @Override
+            String getenv(String n)
+            {
+                return m.get(n.toUpperCase());
+            }
+        };
+        
+        assertEquals(new File("app-data/test"), ap.getCacheDirectory());
         assertEquals(new File("app-data/test"), ap.getConfigDirectory());
         assertEquals(new File("app-data/test"), ap.getDataDirectory());
     }

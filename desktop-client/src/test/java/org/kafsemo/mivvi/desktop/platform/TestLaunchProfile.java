@@ -73,4 +73,10 @@ public class TestLaunchProfile
                 WindowsApplicationDirectories.class,
                 lp.getAppPaths().getClass());
     }
+    
+    @Test
+    public void macOsXRecognisedByOsName() throws Exception
+    {
+        assertEquals("Mac OS X", LaunchProfile.forOsName("Mac OS X").getName());
+    }
 }

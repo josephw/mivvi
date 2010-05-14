@@ -29,6 +29,7 @@ import org.kafsemo.mivvi.desktop.SingleDotDirectoryAppPaths;
 public class LaunchProfile
 {
     private static final String APP_NAME = "mivvi";
+    private static final String APP_BUNDLE_NAME = "org.kafsemo.Mivvi";
     private final String name;
     private final AppPaths paths;
     
@@ -53,6 +54,8 @@ public class LaunchProfile
             return forLinux();
         } else if (osName.toLowerCase().startsWith("windows")) {
             return forWindows();
+        } else if (osName.toLowerCase().startsWith("mac os x")) {
+            return forMacOsX();
         } else {
             return new LaunchProfile();
         }
@@ -98,6 +101,17 @@ public class LaunchProfile
                 } catch (ClassNotFoundException cnfe) {
                     // Fall back to the default
                 }
+            }
+        };
+    }
+
+    /// TODO Needs to learn about the Mac OS X application directory structure
+    public static LaunchProfile forMacOsX() throws IOException
+    {
+        return new LaunchProfile("Mac OS X", new MacOsXApplicationDirectories(APP_BUNDLE_NAME)) {
+            public void initialiseLookAndFeel()
+            {
+                // Stick with defaults
             }
         };
     }
