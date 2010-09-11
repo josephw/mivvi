@@ -105,7 +105,6 @@ public class LaunchProfile
         };
     }
 
-    /// TODO Needs to learn about the Mac OS X application directory structure
     public static LaunchProfile forMacOsX() throws IOException
     {
         return new LaunchProfile("Mac OS X", new MacOsXApplicationDirectories(APP_BUNDLE_NAME)) {

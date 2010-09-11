@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +47,8 @@ import org.openrdf.repository.RepositoryException;
 
 public class RadioTimesService
 {
+    private static final Logger log = Logger.getLogger(RadioTimesService.class.getName());
+    
 //    public static final String DEFAULT_URL_ROOT = "http://xmltv.radiotimes.com/xmltv/";
     private final Downloader downloader;
     private final File baseDirectory;
@@ -77,7 +80,9 @@ public class RadioTimesService
 
     public static List<Programme> parseListing(InputStream in, String channel) throws IOException
     {
-        Pattern datePattern = Pattern.compile("\\~(\\d{2})/(\\d{2})/(\\d{4})\\~(\\d{2}):(\\d{2})\\~(\\d{2}):(\\d{2})\\~(\\d+)$");
+        Pattern datePattern = Pattern.compile("(\\d{2})/(\\d{2})/(\\d{4})\\ (\\d{2}):(\\d{2}) (\\d+)");
+        Pattern epNumPattern = Pattern.compile("(\\d+)/(\\d+), series (\\d+)");
+        
 
         Calendar cal = new GregorianCalendar();
         cal.setTimeZone(TimeZone.getTimeZone("Europe/London"));
@@ -98,29 +103,50 @@ public class RadioTimesService
             
             Programme p = new Programme();
             
-            int i = s.indexOf('~');
+            String[] sa = s.split("\\~");
+
+            if(sa.length == 1) {
+                // Non-listing line
+                continue;
+            }
             
-            if (i >= 0) {
-                p.title = s.substring(0, i);
+            if(sa.length != 23) {
+                // Malformed line
+                log.info("Unexpected line in listing with " + sa.length + " fields: " + s);
+                continue;
+            }
+
+            if(sa[0].length() > 0) {
+                p.title = sa[0];
+            }
+
+            Matcher m;
+            
+            m = epNumPattern.matcher(sa[1]);
+            if (m.matches()) {
+                p.episodeNumber = Integer.valueOf(m.group(1));
+                p.seasonLength = Integer.valueOf(m.group(2));
+                p.seasonNumber = Integer.parseInt(m.group(3));
+            }
+            
+            if(sa[2].length() > 0) {
+                p.subtitle = sa[2];
+            }
+
+            m = datePattern.matcher(sa[19] + ' ' + sa[20] + ' ' + sa[22]);
+            
+            if (m.matches()) {
+                cal.clear();
+                cal.set(Calendar.YEAR, Integer.parseInt(m.group(3)));
+                cal.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
+                cal.set(Calendar.DATE, Integer.parseInt(m.group(1)));
+                cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(4)));
+                cal.set(Calendar.MINUTE, Integer.parseInt(m.group(5)));
                 
-                int j = s.indexOf('~', i + 2);
-                if (j >= 0)
-                    p.subtitle = s.substring(i + 2, j);
-            
-                Matcher m = datePattern.matcher(s.substring(i));
-                if (m.find()) {
-                    cal.clear();
-                    cal.set(Calendar.YEAR, Integer.parseInt(m.group(3)));
-                    cal.set(Calendar.MONTH, Integer.parseInt(m.group(2)) - 1);
-                    cal.set(Calendar.DATE, Integer.parseInt(m.group(1)));
-                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(4)));
-                    cal.set(Calendar.MINUTE, Integer.parseInt(m.group(5)));
-                    
-                    p.start = cal.getTime();
-                    
-                    cal.add(Calendar.MINUTE, Integer.parseInt(m.group(8)));
-                    p.end = cal.getTime();
-                }
+                p.start = cal.getTime();
+                
+                cal.add(Calendar.MINUTE, Integer.parseInt(m.group(6)));
+                p.end = cal.getTime();
             }
             
             p.channel = channel;

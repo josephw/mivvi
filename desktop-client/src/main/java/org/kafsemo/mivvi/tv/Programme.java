@@ -27,6 +27,9 @@ public class Programme
     Date start;
     Date end;
     String channel;
+    Integer seasonNumber;
+    Integer seasonLength;
+    Integer episodeNumber;
 
     public String getTitle()
     {
@@ -51,5 +54,20 @@ public class Programme
     public Date getEnd()
     {
         return end;
+    }
+
+    public Integer getEpisodeNumber()
+    {
+        return episodeNumber;
+    }
+
+    public Integer getSeasonLength()
+    {
+        return seasonLength;
+    }
+
+    public Integer getSeasonNumber()
+    {
+        return seasonNumber;
     }
 }

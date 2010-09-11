@@ -18,25 +18,35 @@
 
 package org.kafsemo.mivvi.tv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.kafsemo.mivvi.app.SeriesData;
-import org.kafsemo.mivvi.tv.RadioTimesService;
 import org.openrdf.model.Resource;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.memory.MemoryStore;
 
-public class TestRadioTimesParsing extends TestCase
+/**
+ * Tests for {@link RadioTimesService}.
+ * 
+ * @author joe
+ */
+public class TestRadioTimesParsing
 {
+    @Test
     public void testParseChannels() throws IOException
     {
         Map<Integer, String> m;
@@ -50,7 +60,8 @@ public class TestRadioTimesParsing extends TestCase
         assertEquals("Channel One", m.get(Integer.valueOf(1)));
         assertEquals("Channel Two", m.get(Integer.valueOf(2)));
     }
-    
+
+    @Test
     public void testParseListing() throws IOException
     {
         List<Programme> l;
@@ -65,7 +76,7 @@ public class TestRadioTimesParsing extends TestCase
         
         p = l.get(0);
         assertEquals("Sample Show", p.getTitle());
-        assertEquals("", p.getSubTitle());
+        assertNull(p.getSubTitle());
         assertEquals(946684800000L, p.getStart().getTime());
         assertEquals(946688400000L, p.getEnd().getTime());
         assertEquals("Sample Channel", p.getChannel());
@@ -77,12 +88,27 @@ public class TestRadioTimesParsing extends TestCase
         assertEquals(946688400000L, p.getEnd().getTime());
         assertEquals("Sample Channel", p.getChannel());
     }
+
+    public static List<Programme> parse(String s) throws UnsupportedEncodingException, IOException
+    {
+        return RadioTimesService.parseListing(new ByteArrayInputStream(s.getBytes("windows-1252")), "Channel");
+    }
     
+    @Test
+    public void initialNonListingLinesAreIgnored() throws Exception
+    {
+        assertEquals("An empty line is ignored",
+                Collections.emptyList(), parse("\n"));
+        assertEquals("A line with no tildes is ignored",
+                Collections.emptyList(), parse("This line is a textual note.\n"));
+    }
+    
+    @Test
     public void testParseListingEndOfDay() throws IOException
     {
-        String s = "Sample Show~~Episode Ending at Midnight~~~~~~~~~~~~~~~~28/03/2005~22:20~00:00~100";
+        String s = "Sample Show~~Episode Ending at Midnight~~~~~~~~~~~~~~~~~28/03/2005~22:20~00:00~100";
         
-        List<Programme> l = RadioTimesService.parseListing(new ByteArrayInputStream(s.getBytes("windows-1252")), "Sky One");
+        List<Programme> l = parse(s);
         
         assertEquals(1, l.size());
         
@@ -96,6 +122,7 @@ public class TestRadioTimesParsing extends TestCase
         assertEquals(1112050800000L, p.getEnd().getTime());
     }
     
+    @Test
     public void testDetectionByEpisodeNumberWithinSingleSeason() throws Exception
     {
         Repository rep = new SailRepository(new MemoryStore());
@@ -110,7 +137,8 @@ public class TestRadioTimesParsing extends TestCase
         Resource series = new URIImpl("http://www.example.com/#");
         assertEquals(new URIImpl("http://www.example.com/1/1#"), RadioTimesService.recognise(sd, series, "1/2"));
     }
-    
+
+    @Test
     public void testGetSingleChannel()
     {
         List<String> l = Arrays.asList(new String[]{
@@ -130,7 +158,8 @@ public class TestRadioTimesParsing extends TestCase
         s = RadioTimesService.getSingleChannel(l, "ITV1");
         assertEquals("ITV1 London", s);
     }
-    
+
+    @Test
     public void testGetSingleChannelWithMissingChannels()
     {
         List<String> l = Arrays.asList(new String[]{
@@ -150,13 +179,14 @@ public class TestRadioTimesParsing extends TestCase
      * 
      * @throws Exception
      */
+    @Test
     public void testParseListingMultiLineReview() throws Exception
     {
-        String s = "Show Title~~~~~~~false~false~false~true~true~false~false~false~~~Category~This is a very long description \n"
+        String s = "Show Title~~~~~~~~~~~~~~~~~This is a very long description \n"
             + " \n"
             + " Over multiple lines.~true~20/01/2009~16:00~18:00~120\n";
         
-        List<Programme> l = RadioTimesService.parseListing(new ByteArrayInputStream(s.getBytes("us-ascii")), "BBC1");
+        List<Programme> l = parse(s);
         
         assertEquals(1, l.size());
         
@@ -167,5 +197,24 @@ public class TestRadioTimesParsing extends TestCase
         assertNotNull(p.getStart());
         assertEquals(1232467200000L, p.getStart().getTime());
         assertEquals(1232474400000L, p.getEnd().getTime());
+    }
+
+    @Test
+    public void getSeasonNumberAndLengthWhenPresent() throws Exception
+    {
+        String s = "Show Title~2/13, series 4~Episode Title~~~~~~~~~~~~~~~~~~~~45";
+
+        List<Programme> l = parse(s);
+
+        assertEquals(1, l.size());
+        
+        Programme p;
+        
+        p = l.get(0);
+        assertEquals("Show Title", p.getTitle());
+        assertEquals("Episode Title", p.getSubTitle());
+        assertEquals(Integer.valueOf(2), p.getEpisodeNumber());
+        assertEquals(Integer.valueOf(13), p.getSeasonLength());
+        assertEquals(Integer.valueOf(4), p.getSeasonNumber());
     }
 }
