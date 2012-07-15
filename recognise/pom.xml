@@ -8,7 +8,5 @@
  <groupId>org.kafsemo.mivvi</groupId>
  <artifactId>mivvi-recognise</artifactId>
  <name>Mivvi Recognise</name>
- <packaging>jar</packaging>
- <version>0.3.0-SNAPSHOT</version>
 
 </project>

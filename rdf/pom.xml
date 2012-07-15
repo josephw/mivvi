@@ -8,14 +8,12 @@
  <groupId>org.kafsemo.mivvi</groupId>
  <artifactId>mivvi-rdf</artifactId>
  <name>Mivvi RDF</name>
- <packaging>jar</packaging>
- <version>0.3.0-SNAPSHOT</version>
 
  <dependencies>
   <dependency>
    <groupId>org.kafsemo.mivvi</groupId>
    <artifactId>mivvi-recognise</artifactId>
-   <version>0.3.0-SNAPSHOT</version>
+   <version>${project.version}</version>
   </dependency>
 
 
@@ -45,6 +43,3 @@
  </dependencies>
 
 </project>
-
-
-

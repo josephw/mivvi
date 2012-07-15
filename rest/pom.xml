@@ -9,18 +9,17 @@
  <artifactId>mivvi-rest</artifactId>
  <name>Mivvi REST</name>
  <packaging>war</packaging>
- <version>0.3.0-SNAPSHOT</version>
 
  <dependencies>
   <dependency>
    <groupId>org.kafsemo.mivvi</groupId>
    <artifactId>mivvi-recognise</artifactId>
-   <version>0.3.0-SNAPSHOT</version>
+   <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.kafsemo.mivvi</groupId>
    <artifactId>mivvi-rdf</artifactId>
-   <version>0.3.0-SNAPSHOT</version>
+   <version>${project.version}</version>
   </dependency>
 
   <dependency>
