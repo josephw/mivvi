@@ -15,7 +15,7 @@
 
  <properties>
   <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-  <sesameVersion>2.6.8</sesameVersion>
+  <sesameVersion>2.7.0</sesameVersion>
  </properties>
 
  <licenses>

@@ -26,6 +26,7 @@ import java.io.InputStream;
 import org.openrdf.model.URI;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
 
 /**
@@ -49,7 +50,8 @@ public class JarRDFXMLParser extends RDFXMLParser
         if (baseURI.toLowerCase().startsWith("jar:")) {
                 int i = baseURI.indexOf('!');
                 if (i < 0) {
-                    reportError("Bad jar: URI; no path specified");
+                    reportError("Bad jar: URI; no path specified",
+                            BasicParserSettings.VERIFY_RELATIVE_URIS);
                 } else {
                     jarBase = baseURI.substring(0, i + 1);
                     jarPath = new ParsedURI(baseURI.substring(i + 1));
