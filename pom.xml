@@ -26,18 +26,6 @@
   </license>
  </licenses>
 
- <repositories>
-  <!-- Sesame releases come from the Aduna repository -->
-  <repository>
-   <id>aduna-releases</id>
-   <name>Aduna Repository</name>
-   <url>https://repo.aduna-software.org/maven2/releases</url>
-   <snapshots>
-    <enabled>false</enabled>
-   </snapshots>
-  </repository>
- </repositories>
-
  <dependencies>
   <dependency>
    <groupId>junit</groupId>
