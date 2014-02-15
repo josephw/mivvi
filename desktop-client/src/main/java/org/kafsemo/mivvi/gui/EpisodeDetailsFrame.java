@@ -76,11 +76,11 @@ import org.kafsemo.mivvi.desktop.MetaData;
 import org.kafsemo.mivvi.rdf.HashUris;
 import org.kafsemo.mivvi.rdf.Mivvi;
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.openrdf.model.Graph;
+import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.GraphImpl;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
@@ -662,7 +662,7 @@ public class EpisodeDetailsFrame extends JFrame
             LocalFiles localFiles, SeriesData seriesData, Resource res)
         throws RepositoryException, RDFHandlerException
     {
-        Graph g = new GraphImpl();
+        Model g = new LinkedHashModel();
 
         localFiles.exportRelevantStatements(g, res);
         seriesData.exportRelevantStatements(g, res);

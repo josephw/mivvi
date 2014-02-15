@@ -28,9 +28,10 @@ import java.util.List;
 import org.junit.Test;
 import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.GraphImpl;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
@@ -47,42 +48,42 @@ public class TestSeriesData
         SailRepository sr = new SailRepository(ms);
         sr.initialize();
         RepositoryConnection cn = sr.getConnection();
-        
+
         for (Statement st : g) {
             cn.add(st);
         }
 
         SeriesData sd = new SeriesData();
         sd.initMviRepository(sr);
-        
+
         return sd;
     }
-    
+
     @Test
     public void getIconForResource() throws Exception
     {
-        Graph g = new GraphImpl();
-        
+        Model g = new LinkedHashModel();
+
         /* A directly defined icon */
         g.add(new URIImpl("http://www.example.com/#"),
                 RdfMiscVocabulary.smIcon,
                 new URIImpl("file:///example-icon.png"));
-        
+
         SeriesData sd = fromGraph(g);
 
         List<? extends URI> expected = Arrays.asList(
                 new URIImpl("file:///example-icon.png"));
-        
+
         List<URI> icons = sd.getResourceIcons(new URIImpl("http://www.example.com/#"));
 
         assertEquals(expected, icons);
     }
-    
+
     @Test
     public void getIconByTypeForResource() throws Exception
     {
-        Graph g = new GraphImpl();
-        
+        Model g = new LinkedHashModel();
+
         /* It has a type... */
         g.add(new URIImpl("http://www.example.com/#"),
                 RdfUtil.Rdf.type,
@@ -92,12 +93,12 @@ public class TestSeriesData
         g.add(RdfUtil.Mvi.Series,
                 RdfMiscVocabulary.smIcon,
                 new URIImpl("file:///generic-series-icon.png"));
-        
+
         SeriesData sd = fromGraph(g);
 
         List<? extends URI> expected = Arrays.asList(
                 new URIImpl("file:///generic-series-icon.png"));
-        
+
         List<URI> icons = sd.getResourceIcons(new URIImpl("http://www.example.com/#"));
 
         assertEquals(expected, icons);
@@ -106,15 +107,15 @@ public class TestSeriesData
     @Test
     public void getIconReturnsNullIfNoIcon() throws Exception
     {
-        Graph g = new GraphImpl();
-        
+        Model g = new LinkedHashModel();
+
         /* It has a type... */
         g.add(new URIImpl("http://www.example.com/#"),
                 RdfUtil.Rdf.type,
                 RdfUtil.Mvi.Series);
 
         /* ...but no icon for that type */
-        
+
         SeriesData sd = fromGraph(g);
 
         List<URI> icons = sd.getResourceIcons(new URIImpl("http://www.example.com/#"));

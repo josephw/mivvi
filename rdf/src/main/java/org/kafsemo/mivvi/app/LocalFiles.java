@@ -37,11 +37,12 @@ import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
 import org.kafsemo.mivvi.sesame.RelativeRDFXMLWriter;
 import org.openrdf.model.Graph;
+import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.model.impl.GraphImpl;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.Repository;
@@ -184,7 +185,7 @@ public class LocalFiles
     public boolean saveIndex(File f, Collection<File> filesToIndex)
         throws IOException, RDFHandlerException, RepositoryException, URISyntaxException
     {
-        Graph ig = new GraphImpl();
+        Model ig = new LinkedHashModel();
 
         File parent = f.getParentFile();
 
@@ -274,12 +275,11 @@ public class LocalFiles
      * @throws RDFParseException
      */
     public int processIndex(File f, final IdentifierMappings im)
-//            throws RepositoryException, RDFParseException, RDFHandlerException
     {
         try {
             final File baseDir = f.getParentFile().getCanonicalFile();
 
-            final Graph g = new GraphImpl();
+            final Model g = new LinkedHashModel();
 
             RDFXMLParser rxp = new JarRDFXMLParser();
             rxp.setRDFHandler(new RDFHandlerBase() {
