@@ -35,13 +35,13 @@ import junit.framework.TestCase;
 public class TestTokenSetFile extends TestCase
 {
     File tf;
-    
+
     public void setUp() throws IOException
     {
         tf = File.createTempFile(getClass().getName(), "tokens");
         tf.deleteOnExit();
     }
-    
+
     public void tearDown()
     {
         tf = null;
@@ -50,43 +50,45 @@ public class TestTokenSetFile extends TestCase
     public void testLoadTokensEmpty() throws IOException
     {
         TokenSetFile tsf = new TokenSetFile(tf);
-        
+
         assertTrue(tsf.load());
-        
+
         assertTrue(tsf.isEmpty());
     }
-    
+
     public void testLoadTokensDuplicate() throws IOException
     {
         FileWriter fw = new FileWriter(tf);
         fw.write("Test\nTest2\nTest\n");
         fw.close();
-        
+
         TokenSetFile tsf = new TokenSetFile(tf);
-        
+
         assertTrue(tsf.load());
-        
+
         assertEquals(2, tsf.getTokens().size());
     }
-    
+
     public void testSaveTokens() throws IOException
     {
         TokenSetFile tsf = new TokenSetFile(tf);
-        
+
         tsf.add("TestB");
         tsf.add("TestC");
         tsf.add("TestA");
-        
+
         tsf.save();
-        
+
         BufferedReader br = new BufferedReader(new FileReader(tf));
-        
+
         assertEquals("TestA", br.readLine());
         assertEquals("TestB", br.readLine());
         assertEquals("TestC", br.readLine());
         assertNull(br.readLine());
+
+        br.close();
     }
-    
+
     public void testSaveReloadUriSetWithBlankNodes() throws IOException
     {
         UriSetFile usf = new UriSetFile(tf);
@@ -98,9 +100,9 @@ public class TestTokenSetFile extends TestCase
         usf.add(a);
         usf.add(b);
         usf.add(c);
-        
+
         usf.save();
-        
+
         assertTrue(usf.load());
 
         assertTrue(usf.remove(a));

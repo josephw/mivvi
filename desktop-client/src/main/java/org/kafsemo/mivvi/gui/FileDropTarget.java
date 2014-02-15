@@ -34,12 +34,17 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class FileDropTarget extends DropTargetAdapter
 {
+    private static final Logger log = LoggerFactory.getLogger(FileDropTarget.class);
+
     public void drop(DropTargetDropEvent dtde)
     {
         Transferable t =  dtde.getTransferable();
-        
+
         if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             dtde.acceptDrop(DnDConstants.ACTION_LINK);
 
@@ -55,11 +60,11 @@ public abstract class FileDropTarget extends DropTargetAdapter
                 }
 
 //                System.err.println('\'' + s + '\'');
-            
+
                 java.net.URI uri = new java.net.URI(s);
 
                 dropped(Collections.singleton(uri));
-                
+
                 dtde.dropComplete(true);
             } catch (URISyntaxException use) {
                 System.err.println(use);
@@ -82,7 +87,7 @@ public abstract class FileDropTarget extends DropTargetAdapter
                 }
 
                 dropped(uris);
-                
+
                 dtde.dropComplete(true);
             } catch (IOException ioe) {
                 System.err.println(ioe);
@@ -90,15 +95,12 @@ public abstract class FileDropTarget extends DropTargetAdapter
                 System.err.println(ufe);
             }
         } else {
-            if (false) {
-                DataFlavor[] dfa = t.getTransferDataFlavors();
-                for (int i = 0 ; i < dfa.length ; i++) {
-                    System.err.println(dfa[i]);
-                }
+            for (DataFlavor df : t.getTransferDataFlavors()) {
+                log.debug("Supported flavor: {}", df);
             }
             dtde.rejectDrop();
         }
     }
-    
+
     public abstract void dropped(Collection<URI> uris);
 }

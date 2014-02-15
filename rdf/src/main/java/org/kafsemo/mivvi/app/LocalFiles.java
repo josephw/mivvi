@@ -18,6 +18,8 @@
 
 package org.kafsemo.mivvi.app;
 
+import info.aduna.iteration.Iterations;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -58,7 +60,7 @@ import org.openrdf.sail.memory.MemoryStore;
 /**
  * A standalone, thread-safe repository for information about files stored on the local
  * machine.
- * 
+ *
  * @author Joseph Walton
  */
 public class LocalFiles
@@ -69,38 +71,38 @@ public class LocalFiles
     {
         Repository rep = new SailRepository(new MemoryStore());
         rep.initialize();
-        
+
         initLocalFiles(rep.getConnection());
     }
-    
+
     public void initLocalFiles(RepositoryConnection cn) throws IOException
     {
         this.localFiles = cn;
     }
-    
+
     public void load(File rdfXmlFile) throws RDFParseException, RepositoryException, IOException
     {
         this.localFiles.add(rdfXmlFile,
                 rdfXmlFile.toURI().toString(),
                 RDFFormat.RDFXML);
     }
-    
+
     public void save(File rdfXmlFile) throws IOException, RDFHandlerException, RepositoryException
     {
         File tf = new File(rdfXmlFile.getPath() + ".tmp");
-        
+
         OutputStream out = new FileOutputStream(tf);
         try {
             RDFXMLWriter rxw = new RDFXMLWriter(out);
-            
+
             localFiles.export(rxw);
 
             out.close();
-            
+
             if(rdfXmlFile.exists() && !rdfXmlFile.delete()) {
                 throw new IOException("Unable to remove old local file RDF");
             }
-            
+
             if (!tf.renameTo(rdfXmlFile)) {
                 throw new IOException("Unable to move local file RDF into place");
             }
@@ -108,7 +110,7 @@ public class LocalFiles
             out.close();
         }
     }
-    
+
     public void close() throws RepositoryException
     {
         localFiles.close();
@@ -124,7 +126,7 @@ public class LocalFiles
             return null;
         }
     }
-    
+
     public synchronized boolean hasEpisodeForFile(URI file) throws RepositoryException
     {
         return localFiles.hasStatement(file, RdfUtil.Mvi.episode, null, true);
@@ -139,16 +141,16 @@ public class LocalFiles
     {
         localFiles.add(file, RdfUtil.Mvi.episode, episode);
     }
-    
+
     public synchronized void addFileEpisode(File file, Resource episode) throws RepositoryException
     {
         addFileEpisode(FileUtil.createFileURI(file), episode);
     }
-    
+
     public synchronized void getResourcesFor(Resource episode, Collection<Resource> target) throws RepositoryException
     {
         RepositoryResult<Statement> si;
-        
+
         si = localFiles.getStatements(null, RdfUtil.Mvi.episode, episode, true);
         while (si.hasNext()) {
             target.add(si.next().getSubject());
@@ -163,11 +165,11 @@ public class LocalFiles
     /**
      * Save an RDF index file, identifying known resources in the same
      * directory and subdirectories.
-     * 
+     *
      * @param f the index file to save
-     * @throws RDFHandlerException 
-     * @throws RepositoryException 
-     * @throws URISyntaxException 
+     * @throws RDFHandlerException
+     * @throws RepositoryException
+     * @throws URISyntaxException
      */
     public boolean saveIndex(File f)
         throws IOException, RDFHandlerException, RepositoryException, URISyntaxException
@@ -178,23 +180,23 @@ public class LocalFiles
 
         return saveIndex(f, c);
     }
-    
+
     public boolean saveIndex(File f, Collection<File> filesToIndex)
         throws IOException, RDFHandlerException, RepositoryException, URISyntaxException
     {
         Graph ig = new GraphImpl();
 
         File parent = f.getParentFile();
-        
+
         // XXX Get cleverer about catching faults here
         final java.net.URI base = new java.net.URI(FileUtil.fixupUri(parent.toURI().toString()));
 
         for (File rf : filesToIndex) {
             Resource r = FileUtil.createFileURI(rf);
-            
+
             synchronized (this) {
                 RepositoryResult<Statement> si = localFiles.getStatements(r, null, null, false);
-                ig.addAll(si.asList());
+                Iterations.addAll(si, ig);
             }
         }
 
@@ -210,20 +212,20 @@ public class LocalFiles
                 rxw.handleStatement(s);
                 statementCount++;
             }
-            
+
             rxw.endRDF();
         } finally {
             out.close();
         }
-        
+
         return statementCount > 0;
     }
 
     /**
      * Drop any statements about files that don't exist.
-     * 
+     *
      * @return the number of statements deleted
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public int pruneMissingFiles() throws RepositoryException
     {
@@ -233,7 +235,7 @@ public class LocalFiles
             RepositoryResult<Statement> si = localFiles.getStatements(null, null, null, false);
             while (si.hasNext()) {
                 Statement s = si.next();
-                
+
                 File f = FileUtil.fileFrom(s.getSubject());
                 if (f != null) {
                     allFileStatements.add(s);
@@ -247,9 +249,9 @@ public class LocalFiles
         Iterator<Statement> i = allFileStatements.iterator();
         while (i.hasNext()) {
             Statement s = i.next();
-            
+
             File f = FileUtil.fileFrom(s.getSubject());
-            
+
             if ((f != null) && !f.exists()) {
                 synchronized (this) {
                     localFiles.remove(s);
@@ -264,19 +266,19 @@ public class LocalFiles
     /**
      * Process an index file, accepting all statements with real files, in
      * the current directory or subdirectories.
-     * 
+     *
      * @param f
      * @return
-     * @throws RepositoryException 
-     * @throws RDFHandlerException 
-     * @throws RDFParseException 
+     * @throws RepositoryException
+     * @throws RDFHandlerException
+     * @throws RDFParseException
      */
     public int processIndex(File f, final IdentifierMappings im)
 //            throws RepositoryException, RDFParseException, RDFHandlerException
     {
         try {
             final File baseDir = f.getParentFile().getCanonicalFile();
-            
+
             final Graph g = new GraphImpl();
 
             RDFXMLParser rxp = new JarRDFXMLParser();
@@ -287,7 +289,7 @@ public class LocalFiles
                     File rf = FileUtil.fileFrom(stmt.getSubject());
                     if (rf != null && FileUtil.contains(baseDir, rf) && rf.exists()) {
                         Value obj = stmt.getObject();
-                        
+
                         /* Check for mappings */
                         if (im != null && stmt.getPredicate().equals(RdfUtil.Mvi.episode)) {
                             URI uri = RdfUtil.asUri(obj);
@@ -298,14 +300,14 @@ public class LocalFiles
                                 }
                             }
                         }
-                        
+
                         g.add(stmt.getSubject(), stmt.getPredicate(), obj);
                     }
                 }
             });
-        
+
             rxp.parse(new FileInputStream(f), FileUtil.fixupUri(f.toURI().toString()));
-            
+
             int c = 0;
 
             Iterator<Statement> si = g.iterator();
@@ -314,7 +316,7 @@ public class LocalFiles
                 synchronized (this) {
                     if (localFiles.hasStatement(s, false))
                         continue;
-    
+
                     localFiles.add(s);
                 }
 /*
@@ -327,7 +329,7 @@ public class LocalFiles
                 } */
                 c++;
             }
-            
+
             return c;
         } catch (IOException ioe) {
             System.err.println(ioe);
@@ -338,16 +340,16 @@ public class LocalFiles
         } catch (RepositoryException e) {
             System.err.println(e);
         }
-        
+
         return 0;
     }
 
     /**
      * Export all statements relevant to a specific episode into another graph.
-     * 
+     *
      * @param g
      * @param episode
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public synchronized void exportRelevantStatements(Graph g, Resource episode)
             throws RepositoryException
@@ -356,17 +358,17 @@ public class LocalFiles
         while (si.hasNext()) {
             Statement s = si.next();
             g.add(s);
-            
+
             /* Check for hashes; apply transitivity of dc:identifier */
             RepositoryResult<Statement> si2;
-            
+
             si2 = localFiles.getStatements(s.getSubject(), RdfUtil.Dc.identifier, null, true);
-            g.addAll(si2.asList());
+            Iterations.addAll(si2, g);
 
             si2 = localFiles.getStatements(s.getSubject(), RdfUtil.Dc.identifier, null, true);
             while (si2.hasNext()) {
                 s = si2.next();
-                
+
                 Resource idRes = RdfUtil.asResource(s.getObject());
                 if (idRes instanceof URI) {
                     URI uri = (URI)idRes;
@@ -386,7 +388,7 @@ public class LocalFiles
     synchronized void exportResourceHashes(Resource r, Collection<URI> hashUris) throws RepositoryException
     {
         RepositoryResult<Statement> si = localFiles.getStatements(r, RdfUtil.Dc.identifier, null, true);
-        
+
         while (si.hasNext()) {
             Value v = si.next().getObject();
             if (HashUris.isHashUri(v)) {
@@ -399,7 +401,7 @@ public class LocalFiles
     synchronized URI getResourceByHash(URI hash) throws RepositoryException
     {
         RepositoryResult<Statement> si = localFiles.getStatements(null, RdfUtil.Dc.identifier, hash, true);
-        
+
         if (si.hasNext()) {
             return RdfUtil.asUri(si.next().getSubject());
         } else {
@@ -409,9 +411,9 @@ public class LocalFiles
 
     /**
      * Update any statements concerning old URIs to refer, only, to the new URIs.
-     * 
+     *
      * @param im
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public synchronized void update(IdentifierMappings im) throws RepositoryException
     {
@@ -430,12 +432,12 @@ public class LocalFiles
                 }
             }
         }
-        
+
         Iterator<Statement> i = toRemove.iterator();
         while (i.hasNext()) {
             localFiles.remove(i.next());
         }
-        
+
         localFiles.add(replacements);
     }
 }

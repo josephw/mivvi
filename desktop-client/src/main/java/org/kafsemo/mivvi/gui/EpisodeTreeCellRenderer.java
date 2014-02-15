@@ -39,18 +39,18 @@ public class EpisodeTreeCellRenderer extends JPanel implements TreeCellRenderer
 //    private String value = "";
     JComponent jcb = new JComponent(){};
     JLabel jl = new JLabel();
-    
-    private final AppState state;
+
+//    private final AppState state;
 
     EpisodeTreeCellRenderer(AppState state)
     {
-        this.state = state;
+//        this.state = state;
 
         setLayout(null);
-        
+
         Color bg = UIManager.getColor("Tree.textBackground"),
             fg = UIManager.getColor("Tree.textForeground");
-        
+
         setBackground(bg);
         setForeground(fg);
 //        jcb.setBackground(bg);
@@ -58,7 +58,7 @@ public class EpisodeTreeCellRenderer extends JPanel implements TreeCellRenderer
         this.add(jcb);
         this.add(jl);
     }
-    
+
     private boolean implicit, selected;
 
     public Component getTreeCellRendererComponent(
@@ -71,7 +71,7 @@ public class EpisodeTreeCellRenderer extends JPanel implements TreeCellRenderer
         boolean hasFocus)
     {
         jl.setFont(tree.getFont());
-        
+
         /*
          * Icons are *important*; this is (obviously) wholly inadequate ATM.
          * Individual programs should have their own icons, where possible
@@ -86,33 +86,33 @@ public class EpisodeTreeCellRenderer extends JPanel implements TreeCellRenderer
         } else {
             jl.setIcon(UIManager.getIcon("Tree.closedIcon"));
         }
-        
+
 //        this.value = value.toString();
         jl.setText(value.toString());
         jl.setForeground(Color.BLACK);
-        
+
         Checkable c = (Checkable)value;
 
         this.implicit = c.implicit;
         this.selected = c.isSelected();
-        
+
         if (c instanceof EpisodeTreeNode) {
             EpisodeTreeNode n = (EpisodeTreeNode)c;
             if (n.icon != null)
                 jl.setIcon(n.icon);
-                
+
         }
-        
+
         if (c.isLocal) {
             jl.setFont(jl.getFont().deriveFont(Font.BOLD));
         }
-        
+
         if (c.isPartiallyLocal) {
             jl.setForeground(Color.BLUE);
         } else if (selected) {
             jl.setForeground(UIManager.getColor("Tree.selectionForeground"));
         }
-        
+
         if (selected) {
             jl.setBackground(UIManager.getColor("Tree.selectionBackground"));
         } else {
@@ -121,15 +121,15 @@ public class EpisodeTreeCellRenderer extends JPanel implements TreeCellRenderer
 
         return this;
     }
-    
+
     public Dimension getPreferredSize()
     {
         Dimension a = ui.getPreferredSize(),
             b = jl.getPreferredSize();
-            
+
         return new Dimension(a.width + b.width + PAD, Math.max(a.height, b.height) + 2);
     }
-    
+
     private static final int PAD = 10;
 
     static TristateUI ui = TristateUI.getInstance();
@@ -137,22 +137,22 @@ public class EpisodeTreeCellRenderer extends JPanel implements TreeCellRenderer
     public void paintComponent(Graphics g)
     {
         Dimension d = getSize();
-        
+
         Dimension a = ui.getPreferredSize();
-        
+
         jcb.setBounds(0, (d.height - a.height) / 2, a.width, a.height);
-        
+
         Graphics g2 = g.create(0, (d.height - a.height) / 2, a.width, a.height);
 
         ui.paint(g2, jcb, selected, implicit, false);
-        
+
         int labelWidth = d.width - a.width - PAD,
             labelHeight = d.height;
 
         jl.setBounds(a.width + PAD, 0, labelWidth, labelHeight);
 
         g2 = g.create(a.width + PAD, 0, labelWidth, labelHeight);
-        
+
         Color c = jl.getBackground();
         if (c != null) {
             g2.setColor(c);
@@ -160,11 +160,11 @@ public class EpisodeTreeCellRenderer extends JPanel implements TreeCellRenderer
         }
         jl.paint(g2);
     }
-    
+
     public static void getCheckboxRect(Dimension bounds, Rectangle t)
     {
         Dimension a = ui.getPreferredSize();
-        
+
         t.setBounds(0, (bounds.height - a.height) / 2, a.width, a.height);
     }
 }

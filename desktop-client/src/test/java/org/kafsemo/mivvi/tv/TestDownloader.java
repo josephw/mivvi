@@ -47,52 +47,53 @@ public class TestDownloader extends TestCase
     {
         File tf = File.createTempFile("TestDownloader", ".txt");
         tf.deleteOnExit();
-        
+
         OutputStream out = new FileOutputStream(tf);
         out.write("This file is 28 bytes long.\n".getBytes("us-ascii"));
-        
+        out.close();
+
         sampleLocalFile = tf.toURI().toURL();
         assertNotNull(sampleLocalFile);
-        
+
         server = HttpServer.create();
-        
+
         server.createContext("/static-resource",
                 new StaticContentHandler(sampleLocalFile));
-        
+
         InetSocketAddress addr = new InetSocketAddress("localhost", 0);
         server.bind(addr, 0);
-        
+
         port = server.getAddress().getPort();
-        
+
         server.start();
     }
-    
+
     @Override
     protected void tearDown() throws Exception
     {
         server.stop(0);
         super.tearDown();
     }
-    
+
     public void testInitialDownload() throws IOException
     {
         Downloader d  = new Downloader();
 
         File df = File.createTempFile(getClass().getName() + "-", ".tmp");
         df.deleteOnExit();
-        
+
         assertTrue(d.downloadToFile(sampleLocalFile, df));
         assertEquals(28, df.length());
     }
-    
+
     private String localUrl(String path)
     {
         return "http://localhost:" + port + path;
     }
-    
+
     /**
      * This test requires a real web server, for conditional GET testing.
-     * 
+     *
      * @throws IOException
      */
     public void testRepeatedDownload() throws IOException
@@ -101,19 +102,19 @@ public class TestDownloader extends TestCase
 
         /* This can be anything served by a proper web server */
         URL url = new URL(localUrl("/static-resource"));
-        
+
         File df = File.createTempFile(getClass().getName(), "tmp");
         df.deleteOnExit();
 
         assertTrue(d.downloadToFile(url, df));
         assertEquals(28, df.length());
-        
+
         assertFalse(d.downloadToFile(url, df));
     }
 
     /**
      * Make sure a Downloader can persist and restore its state.
-     * 
+     *
      * @throws IOException
      */
     public void testSerialisation() throws IOException
@@ -130,13 +131,13 @@ public class TestDownloader extends TestCase
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         d.saveState(baos);
-        
+
         d = new Downloader();
         assertFalse(d.isFresh(url.toString(), df, 1000L * 60));
         d.loadState(new ByteArrayInputStream(baos.toByteArray()));
         assertTrue(d.isFresh(url.toString(), df, 1000L * 60));
     }
-    
+
     public void testRemovedLocalFile() throws IOException
     {
         Downloader d = new Downloader();
@@ -146,7 +147,7 @@ public class TestDownloader extends TestCase
         df.deleteOnExit();
 
         assertTrue(d.downloadToFile(url, df));
-        
+
         df.delete();
         assertTrue(d.downloadToFile(url, df));
     }
@@ -162,10 +163,10 @@ public class TestDownloader extends TestCase
         assertTrue(df.exists());
 
         assertTrue(d.downloadToFile(url, df));
-        
+
         assertFalse(df.exists());
     }
-    
+
     public void testNoLocalFileForMissingLocalFile() throws IOException
     {
         Downloader d = new Downloader();
@@ -177,51 +178,51 @@ public class TestDownloader extends TestCase
         assertTrue(df.exists());
 
         assertTrue(d.downloadToFile(url, df));
-        
+
         assertFalse(df.exists());
     }
-    
+
     public void testFreshness() throws IOException
     {
         Downloader d  = new Downloader();
 
         URL url = sampleLocalFile;
-        
+
         File df = File.createTempFile(getClass().getName() + "-", ".tmp");
         df.deleteOnExit();
-        
+
         d.downloadToFile(url, df);
-        
+
         assertFalse(d.isFresh(url.toString(), df, -1));
         assertTrue(d.isFresh(url.toString(), df, 1000L * 60));
-        
+
         df.delete();
 
         assertFalse(d.isFresh(url.toString(), df, 1000L * 60));
     }
-    
+
     public void testSerialiseAfterMultipleFiles() throws IOException
     {
         Downloader d  = new Downloader();
 
         URL url = sampleLocalFile;
-        
+
         File df = File.createTempFile(getClass().getName() + "-", ".tmp");
         df.deleteOnExit();
-        
+
         d.downloadToFile(url, df);
-        
+
         File f = new File("test-data/tv-listings/bleb-itv3-no-subtitles.xml");
         url = f.toURI().toURL();
-        
+
         df = File.createTempFile(getClass().getName() + "-", ".tmp");
         df.deleteOnExit();
-        
+
         d.downloadToFile(url, df);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         d.saveState(baos);
-        
+
         d = new Downloader();
         d.loadState(new ByteArrayInputStream(baos.toByteArray()));
     }

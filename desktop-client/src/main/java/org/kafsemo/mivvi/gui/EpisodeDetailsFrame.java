@@ -108,7 +108,7 @@ public class EpisodeDetailsFrame extends JFrame
             e.getWindow().dispose();
         }
     };
-    
+
     static DateFormat df = new SimpleDateFormat("yyyy-MM-dd"),
         df2 = new SimpleDateFormat("EEEE, d MMMM yyyy");
 
@@ -123,7 +123,7 @@ public class EpisodeDetailsFrame extends JFrame
 
     private final DefaultListModel lm;
     private JButton updateHashesButton;
-    
+
     private final Runnable refreshRunnable = new Runnable(){
         public void run()
         {
@@ -156,7 +156,7 @@ public class EpisodeDetailsFrame extends JFrame
         gbc.ipady = 2;
 
         JComponent details = new JPanel(gridBag);
-        
+
         for (int i = 0 ; i < props.length ; i++) {
             URI pred = (URI)props[i][0];
 
@@ -164,7 +164,7 @@ public class EpisodeDetailsFrame extends JFrame
                 List<String> akal = state.getSeriesData().getStringList(res, pred);
                 if (akal.isEmpty())
                     continue;
-                
+
                 JLabel l = new JLabel(props[i][1] + ":");
                 details.add(l);
                 gbc.gridx = GridBagConstraints.RELATIVE;
@@ -185,14 +185,14 @@ public class EpisodeDetailsFrame extends JFrame
                 }
             } else {
                 String s = state.getSeriesData().getStringProperty(res, pred);
-                
+
                 // An untitled episode. TODO Show in italics?
                 if (s == null && pred.equals(RdfUtil.Dc.title))
                     s = "Untitled";
 
                 if (RdfUtil.Dc.date.equals(pred) && s != null)
                     s = formatDate(s);
-                
+
                 JLabel l = new JLabel(props[i][1] + ":"),
                 t = new JLabel(s);
 
@@ -221,7 +221,7 @@ public class EpisodeDetailsFrame extends JFrame
                 gridBag.setConstraints(t, gbc);
             }
         }
-        
+
         List<SeriesData.NamedResource> cl = state.getSeriesData().getContributors(res);
 
         if (!cl.isEmpty()) {
@@ -262,29 +262,29 @@ public class EpisodeDetailsFrame extends JFrame
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(details, BorderLayout.CENTER);
-        
+
         Box b = Box.createVerticalBox();
         b.add(Box.createVerticalGlue());
         b.add(new DetailsRdfWidget(state.getMetaData()));
         b.add(Box.createVerticalGlue());
-        
+
         topPanel.add(b, BorderLayout.LINE_END);
 
         getContentPane().add(topPanel, BorderLayout.PAGE_START);
-        
+
         this.lm = new DefaultListModel();
-        
+
         refreshEpisodeResources();
         final JList jl = new JList(lm) {
             public String getToolTipText(MouseEvent evt)
             {
                 int index = locationToIndex(evt.getPoint());
-                
+
                 if (index >= 0) {
                     if (!getCellBounds(index, index).contains(evt.getPoint()))
                         index = -1;
                 }
-                
+
                 if (index >= 0) {
                     ResourceItem ri = (ResourceItem)getModel().getElementAt(index);
                     if (ri == null) {
@@ -297,9 +297,9 @@ public class EpisodeDetailsFrame extends JFrame
                 }
             }
         };
-        
+
         final JPopupMenu pop = new JPopupMenu();
-        
+
         final JMenuItem dropItem = new JMenuItem("Drop");
         dropItem.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e)
@@ -320,7 +320,7 @@ public class EpisodeDetailsFrame extends JFrame
         pop.add(dropItem);
 
         jl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         jl.addMouseListener(new MouseAdapter(){
             private void checkPopup(MouseEvent e)
             {
@@ -354,12 +354,12 @@ public class EpisodeDetailsFrame extends JFrame
                     if (idx == jl.getSelectedIndex()) {
                         if (idx >= 0) {
                             Desktop d = EpisodeDetailsFrame.this.state.getDesktop();
-                            
+
                             if (d == null) {
                                 JOptionPane.showMessageDialog(EpisodeDetailsFrame.this, "No Desktop access from this JVM.", "Unable to browse", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
-                            
+
                             ResourceItem ri = (ResourceItem)jl.getModel().getElementAt(idx);
                             try {
                                 if (ri.item instanceof File) {
@@ -382,25 +382,25 @@ public class EpisodeDetailsFrame extends JFrame
                 }
             }
         });
-        
+
         jl.setCellRenderer(new DefaultListCellRenderer(){/*
            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
            {
                Component c = super.getListCellRendererComponent(list, value, index, isSelected,
                     cellHasFocus);
-               
+
                if (c instanceof JComponent) {
                    String tt = ((ResourceItem)value).getToolTip();
                    ((JComponent)c).setToolTipText(tt);
                }
-               
+
                return c;
            } */
         });
-        
+
         jl.setCellRenderer(new ResourceCellRenderer());
-        
-        DropTarget dt = new DropTarget(jl, DnDConstants.ACTION_LINK, new FileDropTarget(){
+
+        new DropTarget(jl, DnDConstants.ACTION_LINK, new FileDropTarget(){
             public void dropped(Collection<java.net.URI> uris)
             {
                 try {
@@ -411,14 +411,14 @@ public class EpisodeDetailsFrame extends JFrame
                     // XXX Logging
                     System.err.println(re);
                 }
-                
+
                 try {
                     refreshEpisodeResources();
                 } catch (RepositoryException re) {
                     // XXX Logging
                     System.err.println(re);
                 }
-                
+
                 try {
                     etr.loadedCheckImplications(treeModel);
                 } catch (RepositoryException re) {
@@ -427,49 +427,49 @@ public class EpisodeDetailsFrame extends JFrame
                 }
             }
         });
-        
+
         JComponent scrollpane = new JScrollPane(jl);
-        
+
         scrollpane.setBorder(new CompoundBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Available")));
 
         this.getContentPane().add(scrollpane);
-        
+
         this.updateHashesButton = new JButton("Update hashes");
-        
+
         updateHashesButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e)
             {
                 updateHashesButton.setEnabled(false);
-                
+
                 final List<Resource> episodeResources = new ArrayList<Resource>();
-                
+
                 try {
                     EpisodeDetailsFrame.this.state.getLocalFiles().getResourcesFor(EpisodeDetailsFrame.this.res, episodeResources);
                 } catch (RepositoryException re) {
                     JOptionPane.showMessageDialog(EpisodeDetailsFrame.this, "Error getting list of files for hashing: " + re, "Error updating hashes", JOptionPane.ERROR_MESSAGE);
                 }
-                
+
                 /* XXX Need collection of all files */
                 new Thread(){
                     public void run()
                     {
                         try {
                             for (Resource r : episodeResources) {
-                                
+
                                 File f = FileUtil.fileFrom(r);
                                 if (f != null) {
                                     Collection<URI> newHashes;
-                                    
+
                                     try {
                                         newHashes = HashUris.digest(f);
                                     } catch (FileNotFoundException fnfe) {
                                         newHashes = Collections.emptyList();
                                     }
-                                    
+
                                     EpisodeDetailsFrame.this.state.getLocalFiles().replaceHashes(r, newHashes);
                                     queueRefreshEpisodeResources();
                                 }
-                                    
+
                             }
                         } catch (final RepositoryException re) {
                             SwingUtilities.invokeLater(new Runnable(){
@@ -490,7 +490,7 @@ public class EpisodeDetailsFrame extends JFrame
                                public void run()
                                 {
                                    updateHashesButton.setEnabled(true);
-                                } 
+                                }
                             });
                         }
                     }
@@ -504,14 +504,14 @@ public class EpisodeDetailsFrame extends JFrame
         bottomBarBox.add(updateHashesButton);
         bottomBarBox.add(Box.createHorizontalStrut(10));
         bottomBarBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-        
+
         getContentPane().add(BorderLayout.PAGE_END, bottomBarBox);
-        
+
         this.pack();
     }
 
     private boolean isQueued = false;
-    
+
     void queueRefreshEpisodeResources()
     {
         synchronized (this) {
@@ -519,10 +519,10 @@ public class EpisodeDetailsFrame extends JFrame
                 return;
             isQueued = true;
         }
-        
+
         SwingUtilities.invokeLater(refreshRunnable);
     }
-    
+
     void refreshEpisodeResources() throws RepositoryException
     {
         synchronized (this) {
@@ -532,13 +532,13 @@ public class EpisodeDetailsFrame extends JFrame
         lm.clear();
 
         List<EpisodeResource> episodeResources = new ArrayList<EpisodeResource>();
-        
+
         EpisodeResource.extractResources(res, episodeResources, state.getSeriesData(), state.getLocalFiles());
-        
+
         List<ResourceItem> l = new ArrayList<ResourceItem>();
-        
+
         for (EpisodeResource er : episodeResources) {
-            
+
             URI actionUri = er.getActionUri(state.getSeriesData());
             String label = er.getLabel(state.getSeriesData());
             String tooltip = er.getDescription(state.getSeriesData());
@@ -561,7 +561,7 @@ public class EpisodeDetailsFrame extends JFrame
             ResourceItem re = new ResourceItem(action, label, droppableRes, tooltip);
             l.add(re);
         }
-        
+
         Collections.sort(l);
 
         for (ResourceItem item : l) {
@@ -574,12 +574,12 @@ public class EpisodeDetailsFrame extends JFrame
         final String label;
         final Object item;
         final Resource droppableResource;
-/*        
+/*
         ResourceItem(Object item, String label)
         {
             this(item, label, null);
         }
-*/        
+*/
         private final String tooltip;
 
         public String getToolTip()
@@ -609,21 +609,21 @@ public class EpisodeDetailsFrame extends JFrame
         public int compareTo(ResourceItem a)
         {
             int c;
-            
+
             c = compareNullness(droppableResource, a.droppableResource);
             if (c != 0)
                 return c;
-            
+
             c = compareNullness(label, a.label);
             if (c != 0)
                 return c;
-            
+
             if (label != null) {
                 c = label.compareTo(a.label);
                 if (c != 0)
                     return c;
             }
-            
+
             int hc = hashCode(), ahc = hashCode();
             if (hc > ahc) {
                 return 1;
@@ -634,7 +634,7 @@ public class EpisodeDetailsFrame extends JFrame
             }
         }
     }
-    
+
     class DetailsRdfWidget extends RdfDragWidget
     {
         DetailsRdfWidget(MetaData md)
@@ -655,35 +655,35 @@ public class EpisodeDetailsFrame extends JFrame
                 throw new IOException("Unable to create RDF: " + re);
             }
         }
-        
+
     }
-    
+
     public static InputStream createInputStream(
             LocalFiles localFiles, SeriesData seriesData, Resource res)
         throws RepositoryException, RDFHandlerException
     {
         Graph g = new GraphImpl();
-        
+
         localFiles.exportRelevantStatements(g, res);
         seriesData.exportRelevantStatements(g, res);
-        
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        
+
         RDFXMLWriter rxw = new RDFXMLWriter(baos);
         rxw.handleNamespace("mvi", Mivvi.URI);
         rxw.handleNamespace("dc", RdfUtil.DC_URI);
-        
+
         rxw.startRDF();
-        
+
         for (Statement s : g) {
             rxw.handleStatement(s);
         }
-        
+
         rxw.endRDF();
-        
+
         return new ByteArrayInputStream(baos.toByteArray());
     }
-    
+
     static class ResourceCellRenderer extends DefaultListCellRenderer
     {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
@@ -692,16 +692,16 @@ public class EpisodeDetailsFrame extends JFrame
                     cellHasFocus);
 
             Color col = Color.BLACK;
-            
+
             if (((ResourceItem)value).item instanceof File) {
                 // Okay
             } else {
                 col = Color.GRAY;
             }
-            
+
 
             c.setForeground(col);
-            
+
             return c;
         }
     }

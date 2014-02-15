@@ -35,16 +35,16 @@ import org.kafsemo.mivvi.rss.RssDownloading;
  */
 public class UserState
 {
-    private final Config cfg;
+//    private final Config cfg;
     private UriSetFile watched;
     private UriSetFile subscriptions;
     private TokenSetFile channels;
-    
+
     private List<Feed> feeds;
 
     public UserState(Config cfg, Decisions decisions) throws IOException
     {
-        this.cfg = cfg;
+//        this.cfg = cfg;
         watched = cfg.getUriSetFile("watched");
         watched.load();
         subscriptions = cfg.getUriSetFile("subscription");
@@ -63,25 +63,25 @@ public class UserState
     {
         return subscriptions;
     }
-    
+
     public TokenSetFile getChannels()
     {
         return channels;
     }
-    
+
     public void save(Decisions decisions, RssDownloading rssDownloadThread) throws IOException
     {
         if (subscriptions != null)
             subscriptions.save();
-        
+
         if (watched != null)
             watched.save();
-        
+
         if (channels != null)
             channels.save();
-        
+
         decisions.setShowOnlySubscribed(getShowOnlySubscribed());
-        
+
         if (feeds != null) {
             try {
                 rssDownloadThread.saveFeeds(feeds);
