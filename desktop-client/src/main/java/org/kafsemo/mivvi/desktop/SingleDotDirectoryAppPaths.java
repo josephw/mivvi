@@ -24,19 +24,16 @@ import java.io.File;
  * An implementation of {@link AppPaths} with old-style Unix
  * behaviour - a single dotted application directory in $HOME
  * for all configuration and data.
- * 
+ *
  * @author joe
  */
 public class SingleDotDirectoryAppPaths implements AppPaths
 {
     private final File base;
-    
+
     public SingleDotDirectoryAppPaths()
     {
         File m = new File(System.getProperty("user.home"), ".mivvi");
-        if (!m.exists()) {
-            m.mkdirs();
-        }
         base = m;
     }
 
@@ -45,13 +42,13 @@ public class SingleDotDirectoryAppPaths implements AppPaths
     {
         return base;
     }
-    
+
     @Override
     public File getConfigDirectory()
     {
         return base;
     }
-    
+
     @Override
     public File getDataDirectory()
     {
