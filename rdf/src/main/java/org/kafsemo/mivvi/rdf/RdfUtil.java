@@ -1,6 +1,6 @@
 /*
  * Mivvi - Metadata, organisation and identification for television programs
- * Copyright (C) 2004, 2005, 2006, 2010  Joseph Walton
+ * Copyright © 2004-2014 Joseph Walton
  *
  * This library is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 
 /*
  * Mivvi - Metadata, organisation and identification for television programs
- * Copyright (C) 2004, 2006 Joseph Walton
+ * Copyright © 2004-2014 Joseph Walton
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
