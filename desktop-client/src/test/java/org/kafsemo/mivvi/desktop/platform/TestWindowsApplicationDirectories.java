@@ -32,7 +32,7 @@ import org.kafsemo.mivvi.desktop.AppPaths;
  * Tests for {@link WindowsApplicationDirectories}, to ensure
  * it asserts the environment variables it needs and returns
  * the expected results when they are present.
- * 
+ *
  * @author joe
  */
 public class TestWindowsApplicationDirectories
@@ -50,14 +50,14 @@ public class TestWindowsApplicationDirectories
         };
         ap.getDataDirectory();
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void failsWithNullAppName()
         throws Exception
     {
         new WindowsApplicationDirectories(null);
     }
-    
+
     @Test
     public void expectedDirectoriesBasedOnVariables()
         throws Exception
@@ -65,7 +65,7 @@ public class TestWindowsApplicationDirectories
         final Map<String, String> m = new HashMap<String, String>();
         m.put("APPDATA", "app-data");
         m.put("LOCALAPPDATA", "local-app-data");
-        
+
         AppPaths ap = new WindowsApplicationDirectories("test"){
             @Override
             String getenv(String n)
@@ -73,7 +73,7 @@ public class TestWindowsApplicationDirectories
                 return m.get(n.toUpperCase());
             }
         };
-        
+
         assertEquals(new File("local-app-data/test"), ap.getCacheDirectory());
         assertEquals(new File("app-data/test"), ap.getConfigDirectory());
         assertEquals(new File("app-data/test"), ap.getDataDirectory());
@@ -82,7 +82,7 @@ public class TestWindowsApplicationDirectories
     /**
      * Windows XP lacks the <code>%LocalAppData%</code> variable. Ensure that
      * it works with only %AppData%.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -91,7 +91,7 @@ public class TestWindowsApplicationDirectories
     {
         final Map<String, String> m = new HashMap<String, String>();
         m.put("APPDATA", "app-data");
-        
+
         AppPaths ap = new WindowsApplicationDirectories("test"){
             @Override
             String getenv(String n)
@@ -99,7 +99,7 @@ public class TestWindowsApplicationDirectories
                 return m.get(n.toUpperCase());
             }
         };
-        
+
         assertEquals(new File("app-data/test"), ap.getCacheDirectory());
         assertEquals(new File("app-data/test"), ap.getConfigDirectory());
         assertEquals(new File("app-data/test"), ap.getDataDirectory());

@@ -24,63 +24,66 @@ import org.kafsemo.mivvi.desktop.AppPaths;
 
 /**
  * Paths to store data on Mac OS X, as described by
- * <a href='http://developer.apple.com/mac/library/documentation/MacOSX/Conceptual/BPFileSystem/Articles/LibraryDirectory.html'>this document</a>.
- * 
- * @author joe
+ * <a href='https://developer.apple.com/library/mac/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/MacOSXDirectories/MacOSXDirectories.html'>OS X Library Directory Details</a>.
  */
 public class MacOsXApplicationDirectories implements AppPaths
 {
     private final File cacheDirectory;
-    private final File configDirectory;
-    private final File dataDirectory;
+    private final File applicationSupportDirectory;
 
     public MacOsXApplicationDirectories(String bundle, String userHome)
     {
         if (bundle == null) {
             throw new IllegalArgumentException("Bundle name may not be null");
         }
-        
+
         if (userHome == null) {
             throw new IllegalArgumentException("user.home may not be null");
         }
-        
+
         if (!bundle.contains(".")) {
             throw new IllegalArgumentException("Bundle name must be dotted reverse domain name");
         }
-        
+
         File library = new File(userHome, "Library");
-        
+
+        // "Contains cached data that can be regenerated as needed."
         cacheDirectory = new File(new File(library, "Caches"), bundle);
-        configDirectory = new File(new File(library, "Preferences"), bundle);
-        dataDirectory = new File(new File(library, "Application Support"), bundle);
+
+        // "Contains all app-specific data and support files. These are the files that your
+        //  app creates and manages on behalf of the user and can include files that contain
+        //  user data."
+        applicationSupportDirectory = new File(new File(library, "Application Support"), bundle);
     }
 
     public MacOsXApplicationDirectories(String bundle)
     {
         this(bundle, System.getProperty("user.home"));
     }
-    
+
     @Override
     public File getCacheDirectory()
     {
         return cacheDirectory;
     }
 
+    /**
+     * Uses <code>Application Support</code>. (<code>Preferences</code> says "You should never
+     * create files in this directory yourself.")
+     */
     @Override
     public File getConfigDirectory()
     {
-        return configDirectory;
+        return applicationSupportDirectory;
     }
 
     /**
-     * Uses ~/Library/Application Support. Apple documentation says
-     * "This directory should never contain any kind of user data," but
-     * at least Firefox and Chrome use it. Do what they do, not what
-     * Apple says.
+     * Uses <code>~/Library/Application Support</code>. Apple documentation now says
+     * this "can include files that contain user data."
      */
     @Override
     public File getDataDirectory()
     {
-        return dataDirectory;
+        return applicationSupportDirectory;
     }
 }

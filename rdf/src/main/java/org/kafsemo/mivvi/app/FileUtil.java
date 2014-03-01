@@ -36,7 +36,7 @@ public class FileUtil
     /**
      * Is <code>b</code> contained within the directory <code>a</code>,
      * at any depth?
-     * 
+     *
      * @param a
      * @param b
      * @return
@@ -44,7 +44,7 @@ public class FileUtil
     public static boolean contains(File a, File b)
     {
         String pa = a.getPath(), pb = b.getPath();
-        
+
         if (pb.startsWith(pa)) {
             if (!pb.equals(pa)) {
                 if ((pa.length() == 0) || (pb.charAt(pa.length()) == File.separatorChar)) {
@@ -98,7 +98,7 @@ public class FileUtil
 
     /**
      * If a URI identifies a local file, return the appropriate object.
-     * 
+     *
      * @param v
      * @return
      */
@@ -113,7 +113,7 @@ public class FileUtil
                 // Fall through
             }
         }
-        
+
         return null;
     }
 
@@ -128,7 +128,7 @@ public class FileUtil
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -140,21 +140,21 @@ public class FileUtil
     /**
      * Java seems to use file:/path, rather than file:///path. This
      * method corrects this.
-     * 
+     *
      * @param uri
      * @return
      */
     public static String fixupUri(String uri)
     {
         String PREFIX = "file:/";
-    
+
         if (uri.toLowerCase().startsWith(PREFIX) && !uri.substring(PREFIX.length()).startsWith("/")) {
             return PREFIX + "//" + uri.substring(PREFIX.length());
         } else {
             return uri;
         }
     }
-    
+
     public static void ensureDirectory(File d, String name) throws IOException
     {
         if (!d.isDirectory() && !d.mkdirs()) {
