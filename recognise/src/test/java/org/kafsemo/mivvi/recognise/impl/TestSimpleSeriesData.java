@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -37,41 +38,52 @@ public class TestSimpleSeriesData
         SimpleSeriesData ssd = new SimpleSeriesData();
         ssd.load(getClass(), "no-resource-with-this-name");
     }
-    
+
     @Test
     public void loadFromReader() throws Exception
     {
         String contents = "http://www.example.com/#\nExample Show\n\n";
- 
+
         SimpleSeriesData ssd = new SimpleSeriesData();
-        
+
         ssd.load(new StringReader(contents));
-        
+
         List<Item<URI>> descs = new ArrayList<Item<URI>>(ssd.getSeriesTitles());
-        
+
         assertEquals(1, descs.size());
         assertEquals(
                 new Item<URI>("Example Show", new URI("http://www.example.com/#")),
                 descs.get(0));
     }
-    
+
+    @Test
+    public void loadDetailsFromReader() throws Exception
+    {
+        String contents = "http://www.example.com/#\nExample Show\n\n";
+
+        SimpleSeriesDetails details = SimpleSeriesData.loadDetails(new StringReader(contents));
+
+        assertEquals(new URI("http://www.example.com/#"), details.id);
+        assertEquals("Example Show", details.getTitle());
+        assertEquals(Collections.emptyList(), details.descriptions());
+
+        assertEquals(Collections.emptyMap(), details.episodesByNumber);
+        assertEquals(Collections.emptyList(), details.episodeTitlesAndDescriptions);
+    }
+
     @Test(expected = IOException.class)
     public void invalidSeasonCodeCausesException() throws Exception
     {
         String contents = "http://www.example.com/#\nExample Show\n\nax1 http://www.example.com/a/1#\n";
-        
-        SimpleSeriesData ssd = new SimpleSeriesData();
-        
-        ssd.load(new StringReader(contents));
+
+        SimpleSeriesData.loadDetails(new StringReader(contents));
     }
-    
+
     @Test(expected = IOException.class)
     public void unexpectedContinuationLineCausesException() throws Exception
     {
         String contents = "http://www.example.com/#\nExample Show\n\n Continuation Line\n";
-        
-        SimpleSeriesData ssd = new SimpleSeriesData();
-        
-        ssd.load(new StringReader(contents));
+
+        SimpleSeriesData.loadDetails(new StringReader(contents));
     }
 }

@@ -69,11 +69,24 @@ public class SimpleSeriesData implements SeriesDataSource<URI>
             throw new IOException("Missing resource '" + filename
             		+ "' for class " + c.getName());
         }
-        
+
         load(new InputStreamReader(in, "utf-8"));
     }
-    
+
     public void load(Reader r) throws IOException, URISyntaxException
+    {
+        SimpleSeriesDetails sd = loadDetails(r);
+
+        titles.add(new Item<URI>(sd.getTitle(), sd.id));
+
+        for (String desc : sd.descriptions()) {
+            descriptions.add(new Item<URI>(desc, sd.id));
+        }
+
+        seriesDetails.put(sd.id, sd);
+    }
+
+    public static SimpleSeriesDetails loadDetails(Reader r) throws IOException, URISyntaxException
     {
         BufferedReader br = new BufferedReader(r);
 
@@ -81,15 +94,13 @@ public class SimpleSeriesData implements SeriesDataSource<URI>
         URI u = new URI(uri);
         String title = br.readLine();
 
-        titles.add(new Item<URI>(title, u));
-
+        SimpleSeriesDetails sd = new SimpleSeriesDetails(u);
+        sd.setTitle(title);
 
         String desc;
         while((desc = br.readLine()).length() > 0) {
-            descriptions.add(new Item<URI>(desc, u));
+            sd.addDescription(desc);
         }
-
-        SeriesDetails<URI> sd = new SeriesDetails<URI>();
 
         int episode = 0;
         URI mostRecentEpisode = null;
@@ -115,7 +126,7 @@ public class SimpleSeriesData implements SeriesDataSource<URI>
             URI ep = new URI(m.group(3));
 
             String season = m.group(1);
-            
+
             sd.episodesByNumber.put(
                     season + "x" + Integer.parseInt(m.group(2)),
                     ep);
@@ -133,6 +144,6 @@ public class SimpleSeriesData implements SeriesDataSource<URI>
             mostRecentEpisode = ep;
         }
 
-        seriesDetails.put(u, sd);
+        return sd;
     }
 }

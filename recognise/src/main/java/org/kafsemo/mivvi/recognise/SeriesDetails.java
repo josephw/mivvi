@@ -29,6 +29,6 @@ import java.util.Map;
 
 public class SeriesDetails<T>
 {
-    public List<EpisodeTitleDetails<T>> episodeTitlesAndDescriptions = new ArrayList<EpisodeTitleDetails<T>>();
-    public Map<String, T> episodesByNumber = new HashMap<String, T>();
+    public final List<EpisodeTitleDetails<T>> episodeTitlesAndDescriptions = new ArrayList<EpisodeTitleDetails<T>>();
+    public final Map<String, T> episodesByNumber = new HashMap<String, T>();
 }
