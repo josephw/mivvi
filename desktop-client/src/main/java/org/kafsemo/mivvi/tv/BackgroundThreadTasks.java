@@ -42,7 +42,7 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
 {
     private final AppState appState;
     private final UpcomingBroadcastGui ubg;
-    
+
     BackgroundThreadTasks(AppState state, UpcomingBroadcastGui ubg)
     {
         super(Downloader.HOUR_MILLIS);
@@ -117,14 +117,14 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
             return;
 
         Collection<String> channels = appState.getUserState().getChannels().getTokens();
-        
+
         synchronized (ps) {
             ps.indeterminate = false;
             ps.maximum = channels.size();
             ps.value = 0;
             ps.label = "";
         }
-        
+
         updateStatus();
 
         Collection<String> failedChannels = new ArrayList<String>();
@@ -142,11 +142,11 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
                 ps.label = "Fetching " + c;
                 ps.value = p;
             }
-            
+
             updateStatus();
 
             int id = rts.getChannelId(c);
-            
+
             if (id >= 0) {
                 try {
                     File f = rts.refreshChannel(id);
@@ -155,11 +155,11 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
                         InputStream in = new FileInputStream(f);
                         programs = RadioTimesService.parseListing(in, c);
                         in.close();
-                        
+
                         final Collection<Broadcast> broadcasts = detectBroadcasts(programs);
-                        
+
 //                        System.err.println("Detected broadcasts on " + c + ": " + broadcasts.size());
-                        
+
                         SwingUtilities.invokeLater(new Runnable(){
                             public void run()
                             {
@@ -183,10 +183,10 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
             } else {
                 failedChannels.add(c);
             }
-            
+
             p++;
         }
-        
+
         synchronized (ps) {
             ps.value = p;
             if (failedChannels.isEmpty()) {
@@ -210,34 +210,34 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
     Collection<Broadcast> detectBroadcasts(Collection<Programme> progs)
             throws RepositoryException, SeriesDataException
     {
-        int programs = 0;
-        int withKnownSeries = 0;
-        int recognised = 0;
+//        int programs = 0;
+//        int withKnownSeries = 0;
+//        int recognised = 0;
 
         Collection<Broadcast> broadcasts = new ArrayList<Broadcast>();
 
         Iterator<Programme> i = progs.iterator();
         while (i.hasNext()) {
-            programs++;
+//            programs++;
             Programme p = i.next();
-            
+
             String title = p.getTitle();
 
             if (title == null) {
                 continue;
             }
-            
+
             Resource series = appState.getSeriesData().getSeries(title);
-            
+
             if (series != null) {
-                withKnownSeries++;
+//                withKnownSeries++;
                 String st = p.getSubTitle();
                 if (st != null && !st.equals("")) {
                     Resource ep = RadioTimesService.recognise(appState.getSeriesData(), series, st);
 
                     if (ep != null) {
                         Presentation.Details details = appState.getSeriesData().getDetailsFor(ep);
-                        
+
                         if (details != null) {
                             Broadcast b = new Broadcast(ep, details);
                             b.channel = p.getChannel();
@@ -245,9 +245,9 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
                             b.end = p.getEnd();
 
                             b.displayName = Presentation.filenameFor(details);
-                            
+
                             broadcasts.add(b);
-                            recognised++;
+//                            recognised++;
                         } else {
                             System.err.println("Unable to get details for " + ep);
                         }
@@ -259,7 +259,7 @@ public class BackgroundThreadTasks extends BackgroundRefreshable
                 }
             }
         }
-        
+
         return broadcasts;
     }
 }

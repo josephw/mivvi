@@ -59,11 +59,11 @@ public class SeriesTreeFrame extends ManagedJFrame
     DefaultTreeModel tm;
     EpisodeTreeRoot treeRoot;
     final JScrollPane scrollPane;
-    
+
     final EpisodeTreeExpandedState expandedState;
 
     public static String HELP_BRIEF = "Use the 'All series' window to manage which series and episodes you're interested in.";
-    
+
     private static final String HELP_TEXT = HELP_BRIEF + "\n"
             + "Click on the boxes to the left of the titles to subscribe and unsubscribe.\n"
             + "Drag local media (files or folders) onto this window to have Mivvi attempt to recognise them."
@@ -79,11 +79,11 @@ public class SeriesTreeFrame extends ManagedJFrame
         treeRoot = new EpisodeTreeRoot(state, SeriesData.ROOT_IDENTIFIER);
         treeRoot.initCategoryNodes();
         tm = new DefaultTreeModel(treeRoot);
-        
+
         JPanel jp = new JPanel(new BorderLayout());
-        
+
         JPanel footerPanel = new JPanel(new BorderLayout());
-        
+
         final JCheckBox showOnlySubscribedCheckbox = new JCheckBox("Show only subscribed programs in listings",
                 appState.getUserState().getShowOnlySubscribed());
         showOnlySubscribedCheckbox.addActionListener(new ActionListener(){
@@ -102,16 +102,16 @@ public class SeriesTreeFrame extends ManagedJFrame
         final Commands cmds = new Commands(state, this);
 
         setJMenuBar(cmds.createMenuBar());
-        
+
         JTree jt = new JTree(tm);
-        
+
         jt.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         jt.addMouseListener(new SelectionListener(state, this, jt));
-        
+
         jt.setCellRenderer(new EpisodeTreeCellRenderer(state));
 
-        DropTarget dt = new DropTarget(jt, DnDConstants.ACTION_LINK, new FileDropTarget(){
+        new DropTarget(jt, DnDConstants.ACTION_LINK, new FileDropTarget(){
             public void dropped(Collection<URI> uris)
             {
                 Collection<File> localFiles = new ArrayList<File>(uris.size());
@@ -119,44 +119,44 @@ public class SeriesTreeFrame extends ManagedJFrame
                 Iterator<URI> i = uris.iterator();
                 while (i.hasNext()) {
                     URI u = i.next();
-                    
+
                     File f = FileUtil.fileFrom(u);
                     if (f != null)
                         localFiles.add(f);
                 }
-                
+
                 cmds.importWithProgress(localFiles);
             }
         });
-        
+
         scrollPane = new JScrollPane(jt);
 
         JPanel jp2 = new JPanel(new BorderLayout());
-        
+
         jp2.setBorder(BorderFactory.createEtchedBorder());
 
         jp2.add(scrollPane);
 
         jp.add(BorderLayout.CENTER, jp2);
-        
+
         jp.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
         getContentPane().add(jp);
-        
+
         this.expandedState = new EpisodeTreeExpandedState(jt, treeRoot);
 
         pack();
-        
+
         setSize(720, 486);
         setLocation(72, 49);
     }
-    
+
     void exit(App app)
     {
         dispose();
         app.setGUIRunning(false);
     }
-    
+
     public void disposeAll()
     {
         Iterator<? extends JFrame> i = episodeDetailsFrames.values().iterator();
@@ -184,7 +184,7 @@ public class SeriesTreeFrame extends ManagedJFrame
             });
             episodeDetailsFrames.put(resource, jf);
         }
-        
+
         return jf;
     }
 
@@ -194,7 +194,7 @@ public class SeriesTreeFrame extends ManagedJFrame
             edf.refreshEpisodeResources();
         }
     }
-    
+
     public Set<String> getExpandedNodeUris()
     {
         return expandedState.getExpandedNodeUris();

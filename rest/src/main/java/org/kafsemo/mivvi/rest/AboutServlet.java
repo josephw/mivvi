@@ -26,11 +26,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.kafsemo.mivvi.rdf.Presentation;
-import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.kafsemo.mivvi.rdf.Presentation.Details;
-import org.openrdf.model.Graph;
+import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.openrdf.model.Model;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.GraphImpl;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
@@ -39,35 +39,35 @@ import org.openrdf.rio.RDFHandlerException;
 public class AboutServlet extends MivviBaseServlet
 {
     Presentation pres;
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException
     {
         super.init(config);
-        
+
         try {
             pres = new Presentation(rep.getConnection());
         } catch (RepositoryException e) {
             throw new ServletException(e);
         }
     }
-    
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException
     {
         String subject = req.getParameter("subject");
-        
+
         if (subject == null || subject.equals("")) {
             sendError(resp, HttpServletResponse.SC_BAD_REQUEST, "You must provide a subject URI.");
             return;
         }
-        
+
         try {
             URI uri = new URIImpl(subject);
-            
+
             /* Generate output */
-            Graph g = new GraphImpl();
+            Model g = new LinkedHashModel();
 
             StringBuffer myself = req.getRequestURL();
             String q = req.getQueryString();
@@ -75,15 +75,15 @@ public class AboutServlet extends MivviBaseServlet
                 myself.append('?');
                 myself.append(q);
             }
-            
+
             g.add(new URIImpl(myself.toString()),
                     RdfUtil.Dc.title,
                     new LiteralImpl("Mivvi data about " + subject));
-                    
+
             /* Is it an episode? */
             if (sd.hasType(uri, RdfUtil.Mvi.Episode)) {
                 sd.exportRelevantStatements(g, uri);
-                
+
                 Details details = pres.getDetailsFor(uri);
                 if (details != null) {
                     g.add(uri, RdfUtil.Mvi.season, details.season);
@@ -98,7 +98,7 @@ public class AboutServlet extends MivviBaseServlet
             }
 
 //            localFiles.exportRelevantStatements(g, res);
-            
+
             writeGraphAsRdfXml(g, resp);
         } catch (RepositoryException e) {
             throw new ServletException(e);

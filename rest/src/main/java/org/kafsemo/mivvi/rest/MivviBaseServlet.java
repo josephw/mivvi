@@ -38,7 +38,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.sail.SailException;
 import org.openrdf.sail.memory.MemoryStore;
@@ -52,18 +51,18 @@ public class MivviBaseServlet extends HttpServlet
     public void init(ServletConfig config) throws ServletException
     {
         super.init(config);
-        
+
         String dataPath = config.getServletContext().getInitParameter("mivviDataPath");
-        
+
         try {
             MemoryStore ms = new MemoryStore();
             ms.initialize();
             rep = new SailRepository(ms);
             this.sd = new SeriesData();
             sd.initMviRepository(rep);
-            
+
             File base = new File(dataPath);
-            
+
             Collection<File> fns = FileUtil.gatherFilenames(base);
             for (File f : fns) {
                 if (f.getName().endsWith(".rdf")) {
@@ -80,13 +79,13 @@ public class MivviBaseServlet extends HttpServlet
             throw new ServletException(e);
         }
     }
-    
+
     void writeGraphAsRdfXml(Graph g, HttpServletResponse resp)
         throws IOException, RDFHandlerException
     {
         resp.setContentType("application/rdf+xml");
 
-        RDFXMLWriter rxw = new RDFXMLPrettyWriter(resp.getOutputStream());
+        RDFXMLPrettyWriter rxw = new RDFXMLPrettyWriter(resp.getOutputStream());
         rxw.handleNamespace("mvi", Mivvi.URI);
         rxw.handleNamespace("dc", RdfUtil.DC_URI);
 
@@ -97,15 +96,16 @@ public class MivviBaseServlet extends HttpServlet
         }
 
         rxw.endRDF();
+        rxw.close();
     }
-    
+
     void sendError(HttpServletResponse resp, int status, String message)
         throws IOException
     {
         resp.setStatus(status);
-        
+
         resp.setContentType("text/plain");
-        
+
         PrintWriter pw = resp.getWriter();
         pw.print(message);
         pw.close();
