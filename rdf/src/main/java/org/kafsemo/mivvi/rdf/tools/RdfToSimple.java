@@ -44,11 +44,10 @@ public class RdfToSimple
         sr.initialize();
 
         SailRepositoryConnection cn = sr.getConnection();
-        
+
         RdfMivviDataSource ds = new RdfMivviDataSource(cn);
 
-//        ds.load("../../java/test-data/data/dr-katz.rdf");
-        ds.load("../../java/test-data/data/the-power-of-nightmares.rdf");
+        ds.load("src/test/resources/org/kafsemo/mivvi/rdf/example-show.rdf");
 
         for(Item<Resource> i : ds.getSeriesTitles()) {
             SeriesDetails<Resource> d = ds.getSeriesDetails(i.resource);
@@ -64,9 +63,9 @@ public class RdfToSimple
                     si.remove();
                 }
             }
-            
+
             Collections.sort(epNums, new EpNumComparator());
-            
+
             for (String ep : epNums) {
                 if (ep.contains("x")) {
                     Resource episode = d.episodesByNumber.get(ep);
@@ -81,16 +80,16 @@ public class RdfToSimple
             }
         }
     }
-    
+
     private static final class EpNumComparator implements Comparator<String>
     {
         Pattern p = Pattern.compile("(\\d+)x(\\d+)");
-        
+
         public int compare(String o1, String o2)
         {
             Matcher m1 = p.matcher(o1),
                 m2 = p.matcher(o2);
-            
+
             if (!m1.matches() || !m2.matches()) {
                 throw new RuntimeException(o1 + " " + o2);
 //                return o1.compareTo(o2);
@@ -98,7 +97,7 @@ public class RdfToSimple
 
             int s1 = Integer.parseInt(m1.group(1)),
                 s2 = Integer.parseInt(m2.group(1));
-        
+
             if (s1 > s2) {
                 return 1;
             } else if (s1 < s2) {
@@ -106,7 +105,7 @@ public class RdfToSimple
             } else {
                 int e1 = Integer.parseInt(m1.group(2)),
                     e2 = Integer.parseInt(m2.group(2));
-                
+
                 if (e1 > e2) {
                     return 1;
                 } else if (e1 < e2) {
