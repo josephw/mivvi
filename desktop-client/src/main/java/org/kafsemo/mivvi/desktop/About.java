@@ -66,7 +66,7 @@ public class About
                     Box.createVerticalStrut(10),
                     "Incorporates:",
                     LinkLabel.create(desktop, "http://www.openrdf.org/", "Sesame"),
-                    "Copyright Aduna (http://www.aduna-software.com/) © 2001-2010",
+                    "Copyright Aduna (http://www.aduna-software.com/) 2001-2013",
                     "All rights reserved."
         }, "Mivvi Copyright Notice", JOptionPane.PLAIN_MESSAGE);
     }
