@@ -9,11 +9,16 @@ public class JarAwareParsedURI extends ParsedURI
     private final String jarBase;
     private final ParsedURI jarPath;
 
+    public static boolean isJarUri(String urlSpec)
+    {
+        return urlSpec.toLowerCase(Locale.ROOT).startsWith("jar:");
+    }
+
     public JarAwareParsedURI(String urlSpec)
     {
         super(urlSpec);
 
-        if (urlSpec.toLowerCase(Locale.ROOT).startsWith("jar:")) {
+        if (isJarUri(urlSpec)) {
             int i = urlSpec.indexOf('!');
             if (i < 0) {
                 throw new IllegalArgumentException("Bad jar: URI; no path specified: " + urlSpec);
@@ -24,6 +29,21 @@ public class JarAwareParsedURI extends ParsedURI
         } else {
             jarBase = null;
             jarPath = null;
+        }
+    }
+
+    @Override
+    public boolean isOpaque()
+    {
+        return jarBase == null;
+    }
+
+    public String toString()
+    {
+        if (jarBase != null) {
+            return jarBase + jarPath;
+        } else {
+            return super.toString();
         }
     }
 
