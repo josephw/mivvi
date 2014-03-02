@@ -18,9 +18,10 @@
 
 package org.kafsemo.mivvi.app;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -121,5 +122,50 @@ public class TestSeriesData
         List<URI> icons = sd.getResourceIcons(new URIImpl("http://www.example.com/#"));
 
         assertEquals(Collections.emptyList(), icons);
+    }
+
+    @Test
+    public void canImportFromRdfXml() throws Exception
+    {
+        URL data = getClass().getResource("../rdf/example-show.rdf");
+        assertNotNull(data);
+
+        Model g = new LinkedHashModel();
+        SeriesData sd = fromGraph(g);
+
+        sd.importMivvi(data.toString());
+
+        assertEquals(Collections.singletonList(new URIImpl("http://www.example.com/#")),
+                Arrays.asList(sd.getAllSeries()));
+    }
+
+    @Test
+    public void canImportFromNTriples() throws Exception
+    {
+        URL data = getClass().getResource("../rdf/example-show.nt");
+        assertNotNull(data);
+
+        Model g = new LinkedHashModel();
+        SeriesData sd = fromGraph(g);
+
+        sd.importMivvi(data.toString());
+
+        assertEquals(Collections.singletonList(new URIImpl("http://www.example.com/#")),
+                Arrays.asList(sd.getAllSeries()));
+    }
+
+    @Test
+    public void canImportFromTurtle() throws Exception
+    {
+        URL data = getClass().getResource("../rdf/example-show.ttl");
+        assertNotNull(data);
+
+        Model g = new LinkedHashModel();
+        SeriesData sd = fromGraph(g);
+
+        sd.importMivvi(data.toString());
+
+        assertEquals(Collections.singletonList(new URIImpl("http://www.example.com/#")),
+                Arrays.asList(sd.getAllSeries()));
     }
 }

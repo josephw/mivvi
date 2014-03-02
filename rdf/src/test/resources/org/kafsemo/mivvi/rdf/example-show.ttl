@@ -1,0 +1,44 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mvi: <http://mivvi.net/rdf#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+<http://www.example.com/#>
+    mvi:seasons [
+        rdf:_1 [
+            mvi:episodes [
+                rdf:_1 <http://www.example.com/1/1#> ;
+                rdf:_2 <http://www.example.com/1/2#> ;
+                a rdf:Seq
+            ] ;
+            mvi:seasonNumber "1" ;
+            a mvi:Season
+        ] ;
+        rdf:_2 [
+            mvi:episodes [
+                rdf:_1 <http://www.example.com/2/1#> ;
+                rdf:_2 <http://www.example.com/2/2#> ;
+                a rdf:Seq
+            ] ;
+            mvi:seasonNumber "2" ;
+            a mvi:Season
+        ] ;
+        a rdf:Bag
+    ] ;
+    dc:title "Example Show" ;
+    a mvi:Series .
+
+<http://www.example.com/1/1#>
+    dc:title "Named Episode" ;
+    a mvi:Episode .
+
+<http://www.example.com/1/2#>
+    a mvi:Episode .
+
+<http://www.example.com/2/1#>
+    dc:title "Named Episode" ;
+    a mvi:Episode .
+
+<http://www.example.com/2/2#>
+    dc:title "The Final Episode" ;
+    a mvi:Episode .
+

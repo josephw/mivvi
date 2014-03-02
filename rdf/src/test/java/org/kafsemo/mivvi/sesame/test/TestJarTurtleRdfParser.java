@@ -1,22 +1,5 @@
-/*
- * Mivvi - Metadata, organisation and identification for television programs
- * Copyright © 2004-2014 Joseph Walton
- *
- * This library is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.kafsemo.mivvi.sesame.test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -27,18 +10,13 @@ import java.util.Collection;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
+import org.kafsemo.mivvi.sesame.JarTurtleParser;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.StatementCollector;
 
-/**
- * Verify reading RDF from inside jars.
- *
- * @author Joseph
- */
-public class TestJarRDFXMLParser
+public class TestJarTurtleRdfParser
 {
     /**
      * Ensure that relative paths in RDF from a jar: are resolved correctly.
@@ -46,14 +24,14 @@ public class TestJarRDFXMLParser
     @Test
     public void testLoading() throws Exception
     {
-        URL zipfileUrl = TestJarRDFXMLParser.class.getResource("sample-data.zip");
+        URL zipfileUrl = TestJarRDFXMLParser.class.getResource("sample-with-turtle-data.zip");
 
         assertNotNull("The sample-data.zip file must be present for this test", zipfileUrl);
 
-        String url = "jar:" + zipfileUrl + "!/index.rdf";
+        String url = "jar:" + zipfileUrl + "!/index.ttl";
 
         RDFParser parser;
-        parser = new JarRDFXMLParser();
+        parser = new JarTurtleParser();
 
         StatementCollector sc = new StatementCollector();
         parser.setRDFHandler(sc);
@@ -64,7 +42,7 @@ public class TestJarRDFXMLParser
 
         Collection<Statement> stmts = sc.getStatements();
 
-        assertEquals("There should be exactly one statement in index.rdf", 1, stmts.size());
+        assertEquals("There should be exactly one statement in index.ttl", 1, stmts.size());
 
         Statement stmt = stmts.iterator().next();
 

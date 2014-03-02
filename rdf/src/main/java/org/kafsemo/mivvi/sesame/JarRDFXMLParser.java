@@ -26,54 +26,36 @@ import java.io.InputStream;
 import org.openrdf.model.URI;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
 
 /**
  * A wrapper for {@link RDFXMLParser} that knows how relative jar: URIs work.
- * 
- * @author Joseph
  */
 public class JarRDFXMLParser extends RDFXMLParser
 {
-    private String jarBase;
-    private ParsedURI jarPath;
-    
+    private ParsedURI base;
+
     @Override
     public synchronized void parse(InputStream in, String baseURI)
         throws IOException, RDFParseException, RDFHandlerException
     {
-        jarBase = null;
-        jarPath = null;
-        
         // A special case check for jar: URIs
-        if (baseURI.toLowerCase().startsWith("jar:")) {
-                int i = baseURI.indexOf('!');
-                if (i < 0) {
-                    reportError("Bad jar: URI; no path specified",
-                            BasicParserSettings.VERIFY_RELATIVE_URIS);
-                } else {
-                    jarBase = baseURI.substring(0, i + 1);
-                    jarPath = new ParsedURI(baseURI.substring(i + 1));
-                }
+        if (JarAwareParsedURI.isJarUri(baseURI)) {
+            base = new JarAwareParsedURI(baseURI);
+        } else {
+            base = null;
         }
-        
+
         super.parse(in, baseURI);
     }
-    
+
     @Override
     protected URI resolveURI(String uriSpec) throws RDFParseException
     {
-        if(jarBase != null && jarPath != null) {
-            ParsedURI uri = new ParsedURI(uriSpec);
-        
-            if (uri.isRelative() && !uri.isSelfReference()) {
-                ParsedURI path = jarPath.resolve(uri);
-                
-                return createURI(jarBase + path.toString());
-            }
+        if (base != null) {
+            return createURI(base.resolve(uriSpec).toString());
+        } else {
+            return super.resolveURI(uriSpec);
         }
-        
-        return super.resolveURI(uriSpec);
     }
 }
