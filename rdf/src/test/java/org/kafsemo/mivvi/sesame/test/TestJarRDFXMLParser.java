@@ -19,22 +19,23 @@
 package org.kafsemo.mivvi.sesame.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.StatementCollector;
-import org.openrdf.rio.rdfxml.RDFXMLParserFactory;
 
 /**
  * Verify reading RDF from inside jars.
- * 
+ *
  * @author Joseph
  */
 public class TestJarRDFXMLParser
@@ -46,32 +47,37 @@ public class TestJarRDFXMLParser
     public void testLoading() throws Exception
     {
         URL zipfileUrl = TestJarRDFXMLParser.class.getResource("sample-data.zip");
-        
+
         assertNotNull("The sample-data.zip file must be present for this test", zipfileUrl);
-        
+
         String url = "jar:" + zipfileUrl + "!/index.rdf";
-        
-        RDFParser parser = new RDFXMLParserFactory().getParser();
+
+        RDFParser parser;
         parser = new JarRDFXMLParser();
-        
+
         StatementCollector sc = new StatementCollector();
         parser.setRDFHandler(sc);
 
         InputStream in = new URL(url).openStream();
-        
+
         parser.parse(in, url);
-        
+
         Collection<Statement> stmts = sc.getStatements();
 
         assertEquals("There should be exactly one statement in index.rdf", 1, stmts.size());
-        
+
         Statement stmt = stmts.iterator().next();
 
         Resource res = (Resource) stmt.getObject();
 
         String resourceUrl = res.stringValue();
 
-        InputStream uc = new URL(resourceUrl).openStream();
+        assertThat(resourceUrl, CoreMatchers.startsWith("jar:" + zipfileUrl + "!"));
+
+        URL javaUrl = new URL(resourceUrl);
+        assertEquals("jar", javaUrl.getProtocol());
+
+        InputStream uc = javaUrl.openStream();
         assertEquals("The resource stream should be empty", -1, uc.read());
         uc.close();
     }
