@@ -1,9 +1,9 @@
 package org.kafsemo.mivvi.app;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.openrdf.rio.RDFFormat;
 
 public class TestStartup
 {
@@ -11,6 +11,7 @@ public class TestStartup
     public void rdfXmlRecognisedAsRdf()
     {
         assertTrue(Startup.isRdfFile("anything.rdf"));
+        assertTrue(Startup.isRdfFile("anything.RDF"));
     }
 
     @Test
@@ -19,5 +20,17 @@ public class TestStartup
         assertFalse(Startup.isRdfFile("anything.txt"));
         assertFalse(Startup.isRdfFile("anything.png"));
         assertFalse(Startup.isRdfFile("anything"));
+    }
+
+    @Test
+    public void typeForRecognisesRdfXml()
+    {
+        assertEquals(RDFFormat.RDFXML, Startup.typeFor("anything.rdf"));
+    }
+
+    @Test
+    public void typeForFailsForOtherTypes()
+    {
+        assertNull(Startup.typeFor("anything.txt"));
     }
 }

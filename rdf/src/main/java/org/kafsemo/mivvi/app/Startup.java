@@ -29,6 +29,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.Rio;
+
 
 /**
  * @author joe
@@ -43,7 +46,7 @@ public class Startup
     /**
      * Examine bootstrap data locations and find all URLs referring to
      * RDF data.
-     * 
+     *
      * @param ps
      * @return
      * @throws IOException
@@ -85,20 +88,25 @@ public class Startup
         Enumeration<JarEntry> e = jf.entries();
         while (e.hasMoreElements()) {
             ZipEntry ze = e.nextElement();
-            
+
             if (ze.isDirectory())
                 continue;
-            
+
             String n = ze.getName();
             if (isRdfFile(n))
                 l.add(base + n);
         }
-        
+
         return l;
     }
-    
+
     public static boolean isRdfFile(String name)
     {
         return name.toLowerCase().endsWith(".rdf");
+    }
+
+    public static RDFFormat typeFor(String url)
+    {
+        return Rio.getParserFormatForFileName(url);
     }
 }
