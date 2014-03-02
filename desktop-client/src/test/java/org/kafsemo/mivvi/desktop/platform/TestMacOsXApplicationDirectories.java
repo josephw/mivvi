@@ -61,6 +61,6 @@ public class TestMacOsXApplicationDirectories
         
         assertEquals(new File("home/Library/Caches/com.example.Test"), ap.getCacheDirectory());
         assertEquals(new File("home/Library/Application Support/com.example.Test"), ap.getDataDirectory());
-        assertEquals(new File("home/Library/Preferences/com.example.Test"), ap.getConfigDirectory());
+        assertEquals(new File("home/Library/Application Support/com.example.Test"), ap.getConfigDirectory());
     }
 }
