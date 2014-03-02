@@ -1,0 +1,25 @@
+<http://www.example.com/#> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mivvi.net/rdf#Series> .
+<http://www.example.com/#> <http://purl.org/dc/elements/1.1/title> "Example Show" .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
+_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mivvi.net/rdf#Season> .
+_:genid2 <http://mivvi.net/rdf#seasonNumber> "1" .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> .
+<http://www.example.com/1/1#> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mivvi.net/rdf#Episode> .
+<http://www.example.com/1/1#> <http://purl.org/dc/elements/1.1/title> "Named Episode" .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://www.example.com/1/1#> .
+<http://www.example.com/1/2#> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mivvi.net/rdf#Episode> .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://www.example.com/1/2#> .
+_:genid2 <http://mivvi.net/rdf#episodes> _:genid3 .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> _:genid2 .
+_:genid4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mivvi.net/rdf#Season> .
+_:genid4 <http://mivvi.net/rdf#seasonNumber> "2" .
+_:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> .
+<http://www.example.com/2/1#> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mivvi.net/rdf#Episode> .
+<http://www.example.com/2/1#> <http://purl.org/dc/elements/1.1/title> "Named Episode" .
+_:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://www.example.com/2/1#> .
+<http://www.example.com/2/2#> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mivvi.net/rdf#Episode> .
+<http://www.example.com/2/2#> <http://purl.org/dc/elements/1.1/title> "The Final Episode" .
+_:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://www.example.com/2/2#> .
+_:genid4 <http://mivvi.net/rdf#episodes> _:genid5 .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> _:genid4 .
+<http://www.example.com/#> <http://mivvi.net/rdf#seasons> _:genid1 .

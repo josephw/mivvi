@@ -68,14 +68,14 @@ public class Annotator
 
         SailRepository sr = new SailRepository(ms);
         sr.initialize();
-        
+
         RepositoryConnection cn = sr.getConnection();
-        
+
         List<String> l = Startup.gatherDataURLs();
         Iterator<String> i = l.iterator();
         while (i.hasNext()) {
             String url = i.next();
-            cn.add(new URL(url), url, org.openrdf.rio.RDFFormat.RDFXML);
+            cn.add(new URL(url), url, Startup.typeFor(url));
         }
 
         return cn;
@@ -130,22 +130,22 @@ public class Annotator
 
         File af = new File(f.getParentFile(), n.substring(0, i)
                 + "-mivvi-annotated" + n.substring(i));
-        
+
         return af;
     }
-    
+
     public void annotate(File f) throws SAXException, IOException,
             TransformerException, RepositoryException, SeriesDataException
     {
         Document d = db.parse(f);
-        
+
         annotate(d);
-        
+
         Transformer t = TransformerFactory.newInstance().newTransformer();
 
         File af = annotatedName(f);
         Writer w = new FileWriter(af);
-        
+
         /* XXX Want to pre-declare these namespaces */
 //        XMLWriter xw = new XMLWriter(w);
 //        xw.forceNSDecl(Mivvi.URI, "mvi");
@@ -166,7 +166,7 @@ public class Annotator
             /* Skip if this already has Mivvi decoration */
             if (e.getElementsByTagNameNS(Mivvi.URI, "*").getLength() > 0)
                 continue;
-            
+
             String title = RssUtil.getItemTitle(e);
             if (title == null) {
                 continue;
@@ -176,7 +176,7 @@ public class Annotator
 
             if (fm != null) {
                 int ignoredLength = ignoredLength(fm);
-                
+
                 /**
                  * Usual length of a file typing. This needs to be smarter,
                  * and to use feed-specific heuristics. For example, skip
@@ -195,7 +195,7 @@ public class Annotator
             }
         }
     }
-    
+
     private static <X> int ignoredLength(FilenameMatch<X> fm)
     {
         int count = 0;
@@ -205,7 +205,7 @@ public class Annotator
             Matching<X> m = i.next();
             count += m.matchLength();
         }
-        
+
         return count;
     }
 

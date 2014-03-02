@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -102,7 +103,8 @@ public class Startup
 
     public static boolean isRdfFile(String name)
     {
-        return name.toLowerCase().endsWith(".rdf");
+        String ln = name.toLowerCase(Locale.ROOT);
+        return ln.endsWith(".rdf") || ln.endsWith(".ttl") || ln.endsWith(".nt");
     }
 
     public static RDFFormat typeFor(String url)

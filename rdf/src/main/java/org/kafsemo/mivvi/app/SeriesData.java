@@ -38,13 +38,14 @@ import java.util.TreeMap;
 import org.kafsemo.mivvi.rdf.HashUris;
 import org.kafsemo.mivvi.rdf.IdentifierMappings;
 import org.kafsemo.mivvi.rdf.Presentation;
+import org.kafsemo.mivvi.rdf.Presentation.Details;
 import org.kafsemo.mivvi.rdf.RdfMivviDataSource;
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.kafsemo.mivvi.rdf.Presentation.Details;
 import org.kafsemo.mivvi.recognise.FilenameMatch;
 import org.kafsemo.mivvi.recognise.FilenameProcessor;
 import org.kafsemo.mivvi.recognise.SeriesDataException;
 import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
+import org.kafsemo.mivvi.sesame.JarTurtleParser;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -61,6 +62,8 @@ import org.openrdf.repository.util.RDFInserter;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.ntriples.NTriplesParser;
 import org.openrdf.sail.Sail;
 import org.openrdf.sail.memory.MemoryStore;
 
@@ -69,7 +72,7 @@ public class SeriesData
 //    private Repository mviRep;
     RepositoryConnection mviRepCn;
     RdfMivviDataSource mviDataSource;
-    
+
     private FilenameProcessor<Resource> fp;
     private Presentation presentation = null;
 
@@ -77,7 +80,7 @@ public class SeriesData
     public synchronized void initMviRepository() throws IOException, RepositoryException
     {
         Sail sail;
-        
+
         sail = new MemoryStore();
         /*
         RepositoryConfig cfg = new RepositoryConfig("mviRepository", "MVI repository");
@@ -88,12 +91,12 @@ public class SeriesData
 
         mviRep = Sesame.getService().createRepository(cfg);
         */
-        
+
         SailRepository rep = new SailRepository(sail);
         rep.initialize();
         initMviRepository(rep);
     }
-    
+
     public synchronized void initMviRepository(Repository rep) throws IOException, RepositoryException
     {
 //        this.mviRep = rep;
@@ -102,7 +105,7 @@ public class SeriesData
         fp = new FilenameProcessor<Resource>(mviDataSource, mviDataSource);
         presentation = new Presentation(mviRepCn);
     }
-    
+
     public synchronized void closeMviRepository() throws RepositoryException
     {
         presentation = null;
@@ -128,21 +131,21 @@ public class SeriesData
 
         while (si.hasNext()) {
             Statement stmt = si.next();
-            
+
             if (stmt.getSubject() != null)
                 al.add(stmt.getSubject());
         }
-        
+
         return al.toArray(RA);
     }
-    
+
     public synchronized Resource[] getCollectionIds(Resource uri, URI pred)
         throws RepositoryException
     {
         RepositoryResult<Statement> si;
 
         Resource c = RdfUtil.getResProperty(mviRepCn, uri, pred);
-        
+
         if (c == null)
             return RA;
 
@@ -157,7 +160,7 @@ public class SeriesData
                 sm.put(Integer.valueOf(i), s.getObject());
             }
         }
-        
+
         return sm.values().toArray(RA);
     }
 
@@ -165,7 +168,7 @@ public class SeriesData
     {
         return getCollectionIds(series, RdfUtil.Mvi.seasons);
     }
-    
+
     public synchronized Resource[] getEpisodes(Resource season) throws RepositoryException
     {
         return getCollectionIds(season, RdfUtil.Mvi.episodes);
@@ -176,19 +179,32 @@ public class SeriesData
         URL u = file.toURI().toURL();
         mviRepCn.add(file, u.toString(), RDFFormat.RDFXML);
     }
-    
+
     public synchronized void importMivvi(InputStream in, String uri) throws RDFParseException, RepositoryException, IOException
     {
         mviRepCn.add(in, uri, RDFFormat.RDFXML);
     }
-    
+
     public synchronized void importMivvi(String url) throws MalformedURLException, IOException, RDFParseException, RepositoryException
     {
         URL u = new URL(url);
-        
+
         RDFInserter inserter = new RDFInserter(mviRepCn);
-        
-        JarRDFXMLParser parser = new JarRDFXMLParser();
+
+        RDFParser parser;
+
+        RDFFormat format = Startup.typeFor(url);
+
+        if (format == RDFFormat.RDFXML) {
+            parser = new JarRDFXMLParser();
+        } else if (format == RDFFormat.TURTLE) {
+            parser = new JarTurtleParser();
+        } else if (format == RDFFormat.NTRIPLES) {
+            parser = new NTriplesParser();
+        } else {
+            throw new RDFParseException("Unexpected RDF format: " + format);
+        }
+
         parser.setRDFHandler(inserter);
 
         try {
@@ -221,7 +237,7 @@ public class SeriesData
             if (v instanceof Literal)
                 l.add(((Literal)v).getLabel());
         }
-        
+
         Collections.sort(l);
         return l;
     }
@@ -242,36 +258,36 @@ public class SeriesData
                 Resource c = (Resource)v;
 
                 String s = getNameOf(c);
-                
+
                 if (s != null) {
                     NamedResource nr = new NamedResource();
                     nr.res = c;
                     nr.name = s;
-                    
+
                     l.add(nr);
                 }
             }
         }
-        
+
         return l;
     }
-    
+
     public static class NamedResource
     {
         Resource res;
         String name;
-        
+
         public Resource getResource()
         {
             return res;
         }
-        
+
         public String getName()
         {
             return name;
         }
     }
-    
+
     private String getNameOf(Resource contributor) throws RepositoryException
     {
         String s = getStringProperty(contributor, RdfUtil.Dc.title);
@@ -300,12 +316,12 @@ public class SeriesData
     {
         return fp.process(f);
     }
-    
+
     public synchronized FilenameMatch<Resource> processName(String name) throws RepositoryException, SeriesDataException
     {
         return fp.processName(name);
     }
-    
+
     public synchronized Details getDetailsFor(Resource episode) throws RepositoryException
     {
         return presentation.getDetailsFor(episode);
@@ -335,47 +351,47 @@ public class SeriesData
 
     /**
      * Export all statements relevant to a specific episode into another graph.
-     * 
+     *
      * @param g
      * @param episode
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public synchronized void exportRelevantStatements(Graph g, Resource episode) throws RepositoryException
     {
         RepositoryResult<Statement> si;
-        
+
         si = mviRepCn.getStatements(episode, null, null, true);
         while (si.hasNext()) {
             Statement s = si.next();
             g.add(s);
         }
-        
+
         si = mviRepCn.getStatements(null, RdfUtil.Mvi.episode, episode, true);
         while (si.hasNext()) {
             Statement s = si.next();
             g.add(s);
         }
     }
- 
+
     synchronized void extractEpisodeResources(Resource episode, Collection<? super SkuEpisodeResource> c)
         throws RepositoryException
     {
         RepositoryResult<Statement> si;
-        
+
         Collection<Resource> resl = new ArrayList<Resource>();
 
         si = mviRepCn.getStatements(null, RdfUtil.Mvi.episode, episode, true);
         while (si.hasNext()) {
             Statement s = si.next();
-            
+
             resl.add(s.getSubject());
         }
-        
+
         // Resource -> Set
         Map<Resource, Set<Resource>> equivs = new HashMap<Resource, Set<Resource>>();
 
         Iterator<Resource> i;
-        
+
         i = resl.iterator();
         while (i.hasNext()) {
             Resource r = i.next();
@@ -390,47 +406,47 @@ public class SeriesData
             Collection<Resource> linked = new ArrayList<Resource>();
             linked.add(r);
             findAllLinkedIdentifiers(r, linked);
-            
+
             Iterator<Resource> j = linked.iterator();
             while (j.hasNext()) {
                 Resource ir = j.next();
-                
+
                 Set<Resource> s2 = equivs.get(ir);
 
                 Set<Resource> combined = new HashSet<Resource>();
                 combined.addAll(s);
-                
+
                 if (s2 != null) {
                     combined.addAll(s2);
                 }
-                
+
                 combined.add(ir);
-                
+
                 Iterator<Resource> ci = combined.iterator();
                 while (ci.hasNext()) {
                     equivs.put(ci.next(), combined);
                 }
             }
         }
-        
+
         Iterator<Set<Resource>> ei = new HashSet<Set<Resource>>(equivs.values()).iterator();
         while (ei.hasNext()) {
             Set<Resource> equivClass = ei.next();
-            
+
             SkuEpisodeResource sr = new SkuEpisodeResource();
-            
+
             Iterator<Resource> ri = equivClass.iterator();
 
             while (ri.hasNext()) {
                 Resource ir = ri.next();
-                
+
                 if (SkuEpisodeResource.isIsbn(ir)) {
                     sr.isbn = ir;
                 } else if (SkuEpisodeResource.isAsin(ir)) {
                     sr.asin = ir;
                 }
             }
-            
+
             if (sr.isbn != null || sr.asin != null) {
                 entitle(sr);
                 c.add(sr);
@@ -441,10 +457,10 @@ public class SeriesData
     /**
      * Extract resources that are web locations, rather than local files
      * or identifiers.
-     * 
+     *
      * @param episode
      * @param c
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     synchronized void extractWebEpisodeResources(Resource episode, Collection<? super WebEpisodeResource> c) throws RepositoryException
     {
@@ -461,13 +477,13 @@ public class SeriesData
             }
         }
     }
-    
+
     private void entitle(SkuEpisodeResource sr) throws RepositoryException
     {
         if (sr.isbn != null) {
             sr.title = RdfUtil.getStringProperty(mviRepCn, sr.isbn, RdfUtil.Dc.title);
         }
-        
+
         if (sr.asin != null && sr.title == null) {
             sr.title = RdfUtil.getStringProperty(mviRepCn, sr.asin, RdfUtil.Dc.title);
         }
@@ -475,21 +491,21 @@ public class SeriesData
 
     /**
      * Fetch all resources owl:sameAs this resource, symmetrically.
-     * 
+     *
      * @param r
      * @param c
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     private void findAllLinkedIdentifiers(Resource r, Collection<Resource> c)
         throws RepositoryException
     {
         RepositoryResult<Statement> si;
-        
+
         si = mviRepCn.getStatements(null, RdfUtil.Owl.sameAs, r, true);
         while (si.hasNext()) {
             c.add(si.next().getSubject());
         }
-        
+
         si = mviRepCn.getStatements(r, RdfUtil.Owl.sameAs, null, true);
         while (si.hasNext()) {
             Resource nr = RdfUtil.asResource(si.next().getObject());
@@ -497,19 +513,19 @@ public class SeriesData
                 c.add(nr);
         }
     }
-    
+
     /**
      * Get all hashes that are identified as representing a particular episode.
-     * 
+     *
      * @param episode
      * @param c
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     synchronized void exportAllIdentifiedHashes(Resource episode, Collection<URI> c) throws RepositoryException
     {
         RepositoryResult<Statement> si =
             mviRepCn.getStatements(null, RdfUtil.Mvi.episode, episode, true);
-        
+
         while (si.hasNext()) {
             Resource r = si.next().getSubject();
             if (HashUris.isHashUri(r)) {
@@ -517,21 +533,21 @@ public class SeriesData
             }
         }
     }
- 
+
     /**
      * Find one-degree synonyms of for a collection of hashes, storing the
      * result in a second set. That is, all hashes that are owl:sameAs
      * hashes in the original set (or vice-versa, for symmetry).
-     * 
+     *
      * @param origHashes
      * @param c
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     synchronized void exportHashSynonyms(Collection<URI> origHashes, Set<URI> c) throws RepositoryException
     {
         RepositoryResult<Statement> si;
         Iterator<URI> i;
-        
+
         /* Go to two degrees:
          *  Get all hashes that are identifiers for this hash.
          */
@@ -539,7 +555,7 @@ public class SeriesData
         while (i.hasNext()) {
             URI uri = i.next();
             si = mviRepCn.getStatements(uri, RdfUtil.Owl.sameAs, null, true);
-            
+
             while (si.hasNext()) {
                 Value v = si.next().getObject();
                 if (HashUris.isHashUri(v)) {
@@ -547,7 +563,7 @@ public class SeriesData
                 }
             }
         }
-        
+
         /*
          * And all hashes this hash is an identifier for
          */
@@ -555,7 +571,7 @@ public class SeriesData
         while (i.hasNext()) {
             URI uri = i.next();
             si = mviRepCn.getStatements(null, RdfUtil.Owl.sameAs, uri, true);
-            
+
             while (si.hasNext()) {
                 Resource r = si.next().getSubject();
                 if (HashUris.isHashUri(r)) {
@@ -572,9 +588,9 @@ public class SeriesData
 
     /**
      * Extract identifier mappings from the loaded series data.
-     * 
+     *
      * @return
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public synchronized IdentifierMappings createIdentifierMappings() throws RepositoryException
     {
@@ -585,9 +601,9 @@ public class SeriesData
 
     /**
      * Extract up-to-date version information from available DOAP.
-     * 
+     *
      * @return
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public synchronized Doap getDoap() throws RepositoryException
     {
@@ -597,7 +613,7 @@ public class SeriesData
     /**
      * Export extra statements about a resource that are
      * either simple literals or which indicate its type.
-     * 
+     *
      * @param g
      * @param res
      * @throws RepositoryException
@@ -605,11 +621,11 @@ public class SeriesData
     public void exportStatementsAbout(Graph g, Resource res) throws RepositoryException
     {
         RepositoryResult<Statement> si;
-        
+
         si = mviRepCn.getStatements(res, null, null, true);
         while (si.hasNext()) {
             Statement s = si.next();
-            
+
             if (s.getObject() instanceof Literal
                     || s.getPredicate().equals(RdfUtil.Rdf.type))
             {
@@ -622,14 +638,14 @@ public class SeriesData
     {
         return mviRepCn.hasStatement(res, RdfUtil.Rdf.type, type, false);
     }
-    
+
     public synchronized List<URI> getResourceIcons(Resource res) throws RepositoryException
     {
         List<URI> icons = new ArrayList<URI>();
-        
+
         /* A specific icon */
         icons.addAll(getSpecificIcons(res));
-        
+
         /* A generic class-based icon */
         RepositoryResult<Statement> si = mviRepCn.getStatements(res, RdfUtil.Rdf.type, null, true);
         while (si.hasNext()) {
@@ -638,14 +654,14 @@ public class SeriesData
                 icons.addAll(getSpecificIcons((Resource)v));
             }
         }
-        
+
         return icons;
     }
-    
+
     public synchronized List<URI> getSpecificIcons(Resource res) throws RepositoryException
     {
         List<URI> icons = new ArrayList<URI>();
-        
+
         RepositoryResult<Statement> si = mviRepCn.getStatements(res, RdfMiscVocabulary.smIcon, null, true);
         while (si.hasNext()) {
             Value o = si.next().getObject();
@@ -653,7 +669,7 @@ public class SeriesData
                 icons.add((URI) o);
             }
         }
-        
+
         return icons;
     }
 }

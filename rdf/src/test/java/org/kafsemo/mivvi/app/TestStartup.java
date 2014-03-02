@@ -33,4 +33,18 @@ public class TestStartup
     {
         assertNull(Startup.typeFor("anything.txt"));
     }
+
+    @Test
+    public void recogniseTurtle()
+    {
+        assertTrue(Startup.isRdfFile("anything.ttl"));
+        assertEquals(RDFFormat.TURTLE, Startup.typeFor("anything.ttl"));
+    }
+
+    @Test
+    public void recogniseNTriples()
+    {
+        assertTrue(Startup.isRdfFile("anything.nt"));
+        assertEquals(RDFFormat.NTRIPLES, Startup.typeFor("anything.nt"));
+    }
 }
