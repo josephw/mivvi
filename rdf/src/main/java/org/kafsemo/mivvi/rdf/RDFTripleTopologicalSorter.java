@@ -285,6 +285,20 @@ public class RDFTripleTopologicalSorter
             result = cmp.compare(a, b);
         }
 
+        <T> void compareNullsFirst(T a, T b, Comparator<? super T> cmp)
+        {
+            if (result != 0)
+            {
+                return;
+            }
+
+            compareTrueFirst(a == null, b == null);
+            if (a != null && b != null)
+            {
+                result = cmp.compare(a, b);
+            }
+        }
+
         void compareIndexUris(URI o1, URI o2)
         {
             if (result != 0)
@@ -321,6 +335,13 @@ public class RDFTripleTopologicalSorter
         }
     }
 
+    private static final Comparator<String> STRING_COMPARATOR = new Comparator<String>() {
+        public int compare(String o1, String o2)
+        {
+            return o1.compareTo(o2);
+        };
+    };
+
     static final Comparator<Literal> LITERAL_ORDER = new Comparator<Literal>()
     {
         @Override
@@ -329,21 +350,8 @@ public class RDFTripleTopologicalSorter
             CompBuilder cb = new CompBuilder();
 
             cb.compare(o1.getLabel(), o2.getLabel());
-
-            cb.compareTrueFirst(typeFor(o1) == null, typeFor(o2) == null);
-            if (typeFor(o1) != null && typeFor(o2) != null)
-            {
-                cb.compare(typeFor(o1), typeFor(o2), RESOURCE_ORDER);
-            }
-
-            String l1 = o1.getLanguage(), l2 = o2.getLanguage();
-
-            cb.compareTrueFirst(l1 == null, l2 == null);
-
-            if (l1 != null && l2 != null)
-            {
-                cb.compare(l1, l2);
-            }
+            cb.compareNullsFirst(typeFor(o1), typeFor(o2), RESOURCE_ORDER);
+            cb.compareNullsFirst(o1.getLanguage(), o2.getLanguage(), STRING_COMPARATOR);
 
             return cb.build();
         }
