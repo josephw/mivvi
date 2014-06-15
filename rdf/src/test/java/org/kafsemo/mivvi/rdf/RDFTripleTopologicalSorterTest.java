@@ -1,6 +1,7 @@
 package org.kafsemo.mivvi.rdf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -11,7 +12,6 @@ import java.util.List;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
@@ -388,5 +388,23 @@ public class RDFTripleTopologicalSorterTest
         List<Literal> list = shuffled(literals);
 
         assertEquals(literals, sortedBy(list, RDFTripleTopologicalSorter.LITERAL_ORDER));
+    }
+
+    @Test
+    public void literalWithTheSameLabelAndNoDatatypeCanBeCompared()
+    {
+        Literal a = new LiteralImpl("a");
+        assertNull(a.getDatatype());
+
+        assertEquals(0, RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a, a));
+    }
+
+    @Test
+    public void aLiteralWithNoDatatypeSortsBeforeOneWith()
+    {
+        Literal a1 = new LiteralImpl("a", (URI) null),
+                a2 = new LiteralImpl("a", new URIImpl("http://test/#type"));
+
+        assertThat(RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a1, a2), Matchers.lessThan(0));
     }
 }

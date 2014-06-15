@@ -309,6 +309,18 @@ public class RDFTripleTopologicalSorter
         }
     }
 
+    private static URI typeFor(Literal literal)
+    {
+        if (literal.getLanguage() != null)
+        {
+            return RDF.LANGSTRING;
+        }
+        else
+        {
+            return literal.getDatatype();
+        }
+    }
+
     static final Comparator<Literal> LITERAL_ORDER = new Comparator<Literal>()
     {
         @Override
@@ -317,7 +329,12 @@ public class RDFTripleTopologicalSorter
             CompBuilder cb = new CompBuilder();
 
             cb.compare(o1.getLabel(), o2.getLabel());
-            cb.compare(o1.getDatatype(), o2.getDatatype(), RESOURCE_ORDER);
+
+            cb.compareTrueFirst(typeFor(o1) == null, typeFor(o2) == null);
+            if (typeFor(o1) != null && typeFor(o2) != null)
+            {
+                cb.compare(typeFor(o1), typeFor(o2), RESOURCE_ORDER);
+            }
 
             String l1 = o1.getLanguage(), l2 = o2.getLanguage();
 
