@@ -1,5 +1,7 @@
 package org.kafsemo.mivvi.rdf.tools;
 
+import info.aduna.iteration.Iterations;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -9,22 +11,29 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.kafsemo.mivvi.rdf.Mivvi;
+import org.kafsemo.mivvi.rdf.RDFTripleTopologicalSorter;
 import org.kafsemo.mivvi.rdf.RdfUtil.Mvi;
 import org.kafsemo.mivvi.recognise.EpisodeTitleDetails;
 import org.kafsemo.mivvi.recognise.impl.SimpleSeriesData;
 import org.kafsemo.mivvi.recognise.impl.SimpleSeriesDetails;
+import org.openrdf.model.Model;
+import org.openrdf.model.Namespace;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.BNodeImpl;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.DC;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.repository.RepositoryException;
+import org.openrdf.repository.RepositoryResult;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.repository.sail.SailRepositoryConnection;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sail.memory.MemoryStore;
 
@@ -119,6 +128,22 @@ public class SimpleToRdf
 //        writer = new RDFXMLPrettyWriter(System.out);
 
 
-        cn.export(writer);
+        RepositoryResult<Namespace> ns = cn.getNamespaces();
+        while (ns.hasNext()) {
+            Namespace n = ns.next();
+            writer.handleNamespace(n.getPrefix(), n.getName());
+        }
+
+        writer.startRDF();
+
+        Model model  = new LinkedHashModel();
+
+        Iterations.addAll(cn.getStatements(null, null, null, false), model);
+
+        for (Statement s : RDFTripleTopologicalSorter.sorted(model)) {
+            writer.handleStatement(s);
+        }
+
+        writer.endRDF();
     }
 }
