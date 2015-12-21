@@ -1,7 +1,6 @@
 package org.kafsemo.mivvi.rdf;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import org.openrdf.model.impl.StatementImpl;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.model.vocabulary.DC;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.model.vocabulary.XMLSchema;
 
 public class RDFTripleTopologicalSorterTest
 {
@@ -391,20 +391,20 @@ public class RDFTripleTopologicalSorterTest
     }
 
     @Test
-    public void literalWithTheSameLabelAndNoDatatypeCanBeCompared()
+    public void literalWithTheSameLabelAndNoSpecificDatatypeCanBeCompared()
     {
         Literal a = new LiteralImpl("a");
-        assertNull(a.getDatatype());
+        assertEquals(XMLSchema.STRING, a.getDatatype());
 
         assertEquals(0, RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a, a));
     }
 
     @Test
-    public void aLiteralWithNoDatatypeSortsBeforeOneWith()
+    public void aLiteralWithNoSpecificDatatypeSortsDifferentlyFromOneWith()
     {
-        Literal a1 = new LiteralImpl("a", (URI) null),
+        Literal a1 = new LiteralImpl("a"),
                 a2 = new LiteralImpl("a", new URIImpl("http://test/#type"));
 
-        assertThat(RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a1, a2), Matchers.lessThan(0));
+        assertThat(RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a1, a2), Matchers.not(0));
     }
 }

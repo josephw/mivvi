@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openrdf.model.BNode;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
@@ -230,7 +231,6 @@ public class RDFTripleTopologicalSorter
     {
         public int compare(Resource o1, Resource o2)
         {
-
             return compareByType(URI.class, URI_ORDER, BNODE_ORDER, o1, o2);
         }
     };
@@ -323,9 +323,9 @@ public class RDFTripleTopologicalSorter
         }
     }
 
-    private static URI typeFor(Literal literal)
+    private static IRI typeFor(Literal literal)
     {
-        if (literal.getLanguage() != null)
+        if (literal.getLanguage().isPresent())
         {
             return RDF.LANGSTRING;
         }
