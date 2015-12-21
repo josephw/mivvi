@@ -37,6 +37,7 @@
 
 package org.kafsemo.mivvi.rdf;
 
+import org.openrdf.model.IRI;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -102,8 +103,8 @@ public class RdfUtil
         public static final URI episodes = new URIImpl(MVI("episodes"));
         public static final URI episodeNumber = new URIImpl(MVI("episodeNumber"));
         public static final URI seasons = new URIImpl(MVI("seasons"));
-        public static final URI episode = new URIImpl(MVI("episode"));
-        
+        public static final IRI episode = new URIImpl(MVI("episode"));
+
         public static final URI productionCode = new URIImpl(MVI("productionCode"));
 
 // These two predicates indicate that a resource "is" a particular season or series
