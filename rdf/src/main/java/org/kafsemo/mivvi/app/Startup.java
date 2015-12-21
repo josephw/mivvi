@@ -109,6 +109,6 @@ public class Startup
 
     public static RDFFormat typeFor(String url)
     {
-        return Rio.getParserFormatForFileName(url);
+        return Rio.getParserFormatForFileName(url).orElse(null);
     }
 }

@@ -23,7 +23,7 @@ import info.aduna.net.ParsedURI;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.rdfxml.RDFXMLParser;
@@ -50,7 +50,7 @@ public class JarRDFXMLParser extends RDFXMLParser
     }
 
     @Override
-    protected URI resolveURI(String uriSpec) throws RDFParseException
+    protected IRI resolveURI(String uriSpec) throws RDFParseException
     {
         if (base != null) {
             return createURI(base.resolve(uriSpec).toString());

@@ -351,7 +351,7 @@ public class RDFTripleTopologicalSorter
 
             cb.compare(o1.getLabel(), o2.getLabel());
             cb.compareNullsFirst(typeFor(o1), typeFor(o2), RESOURCE_ORDER);
-            cb.compareNullsFirst(o1.getLanguage(), o2.getLanguage(), STRING_COMPARATOR);
+            cb.compareNullsFirst(o1.getLanguage().orElse(null), o2.getLanguage().orElse(null), STRING_COMPARATOR);
 
             return cb.build();
         }
