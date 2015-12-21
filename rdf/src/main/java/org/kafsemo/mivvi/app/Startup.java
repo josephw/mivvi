@@ -85,17 +85,18 @@ public class Startup
 
         List<String> l = new ArrayList<String>();
 
-        JarFile jf = new JarFile(f);
-        Enumeration<JarEntry> e = jf.entries();
-        while (e.hasMoreElements()) {
-            ZipEntry ze = e.nextElement();
+        try (JarFile jf = new JarFile(f)) {
+            Enumeration<JarEntry> e = jf.entries();
+            while (e.hasMoreElements()) {
+                ZipEntry ze = e.nextElement();
 
-            if (ze.isDirectory())
-                continue;
+                if (ze.isDirectory())
+                    continue;
 
-            String n = ze.getName();
-            if (isRdfFile(n))
-                l.add(base + n);
+                String n = ze.getName();
+                if (isRdfFile(n))
+                    l.add(base + n);
+            }
         }
 
         return l;
