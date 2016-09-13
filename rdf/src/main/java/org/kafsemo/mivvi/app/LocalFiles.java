@@ -18,8 +18,6 @@
 
 package org.kafsemo.mivvi.app;
 
-import org.eclipse.rdf4j.common.iteration.Iterations;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,22 +28,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.kafsemo.mivvi.rdf.HashUris;
-import org.kafsemo.mivvi.rdf.IdentifierMappings;
-import org.kafsemo.mivvi.rdf.Mivvi;
-import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
-import org.kafsemo.mivvi.sesame.RelativeRDFXMLWriter;
+import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.Graph;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.model.impl.StatementImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -54,10 +46,16 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
-import org.eclipse.rdf4j.rio.helpers.RDFHandlerBase;
+import org.eclipse.rdf4j.rio.helpers.AbstractRDFHandler;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLParser;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.kafsemo.mivvi.rdf.HashUris;
+import org.kafsemo.mivvi.rdf.IdentifierMappings;
+import org.kafsemo.mivvi.rdf.Mivvi;
+import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
+import org.kafsemo.mivvi.sesame.RelativeRDFXMLWriter;
 
 /**
  * A standalone, thread-safe repository for information about files stored on the local
@@ -67,6 +65,8 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
  */
 public class LocalFiles
 {
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
     private RepositoryConnection localFiles;
 
     public void initLocalFiles() throws IOException, RepositoryException
@@ -129,17 +129,17 @@ public class LocalFiles
         }
     }
 
-    public synchronized boolean hasEpisodeForFile(URI file) throws RepositoryException
+    public synchronized boolean hasEpisodeForFile(IRI file) throws RepositoryException
     {
         return localFiles.hasStatement(file, RdfUtil.Mvi.episode, null, true);
     }
 
     public synchronized void addFileEpisode(String uri, Resource episode) throws RepositoryException
     {
-        addFileEpisode(new URIImpl(FileUtil.fixupUri(uri)), episode);
+        addFileEpisode(VF.createIRI(FileUtil.fixupUri(uri)), episode);
     }
 
-    public synchronized void addFileEpisode(URI file, Resource episode) throws RepositoryException
+    public synchronized void addFileEpisode(IRI file, Resource episode) throws RepositoryException
     {
         localFiles.add(file, RdfUtil.Mvi.episode, episode);
     }
@@ -283,7 +283,7 @@ public class LocalFiles
             final Model g = new LinkedHashModel();
 
             RDFXMLParser rxp = new JarRDFXMLParser();
-            rxp.setRDFHandler(new RDFHandlerBase() {
+            rxp.setRDFHandler(new AbstractRDFHandler() {
                 @Override
                 public void handleStatement(Statement stmt)
                 {
@@ -293,7 +293,7 @@ public class LocalFiles
 
                         /* Check for mappings */
                         if (im != null && stmt.getPredicate().equals(RdfUtil.Mvi.episode)) {
-                            URI uri = RdfUtil.asUri(obj);
+                            IRI uri = RdfUtil.asUri(obj);
                             if (uri != null) {
                                 uri = im.getUriFor(uri);
                                 if (uri != null) {
@@ -371,8 +371,8 @@ public class LocalFiles
                 s = si2.next();
 
                 Resource idRes = RdfUtil.asResource(s.getObject());
-                if (idRes instanceof URI) {
-                    URI uri = (URI)idRes;
+                if (idRes instanceof IRI) {
+                    IRI uri = (IRI)idRes;
                     if (HashUris.isHashUri(uri.toString())) {
                         g.add(uri, RdfUtil.Mvi.episode, episode);
                     }
@@ -424,12 +424,12 @@ public class LocalFiles
         RepositoryResult<Statement> si = localFiles.getStatements(null, RdfUtil.Mvi.episode, null, false);
         while (si.hasNext()) {
             Statement s = si.next();
-            URI uri = RdfUtil.asUri(s.getObject());
+            IRI uri = RdfUtil.asUri(s.getObject());
             if (uri != null) {
-                URI newUri = im.getUriFor(uri);
+                IRI newUri = im.getUriFor(uri);
                 if (newUri != null) {
                     toRemove.add(s);
-                    replacements.add(new StatementImpl(s.getSubject(), s.getPredicate(), newUri));
+                    replacements.add(VF.createStatement(s.getSubject(), s.getPredicate(), newUri));
                 }
             }
         }

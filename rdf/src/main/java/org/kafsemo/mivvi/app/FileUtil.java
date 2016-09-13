@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
@@ -105,8 +104,8 @@ public class FileUtil
      */
     public static File fileFrom(Value v)
     {
-        if (v instanceof URI) {
-            String s = ((URI) v).toString();
+        if (v instanceof IRI) {
+            String s = ((IRI) v).toString();
             try {
                 java.net.URI u = new java.net.URI(s);
                 return fileFrom(u);

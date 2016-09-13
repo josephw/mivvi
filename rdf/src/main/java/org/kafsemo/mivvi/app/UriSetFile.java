@@ -25,10 +25,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.kafsemo.mivvi.rdf.IdentifierMappings;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.kafsemo.mivvi.rdf.IdentifierMappings;
 
 public class UriSetFile extends TokenFile
 {
@@ -47,23 +47,23 @@ public class UriSetFile extends TokenFile
 
     void loadedToken(String t)
     {
-        identifiers.add(new URIImpl(t));
+        identifiers.add(SimpleValueFactory.getInstance().createIRI(t));
     }
 
     Collection<String> getTokens()
     {
         ArrayList<String> al = new ArrayList<String>(identifiers.size());
-        
+
         Iterator<Resource> i = identifiers.iterator();
         while (i.hasNext()) {
             Resource r = i.next();
-            if (r instanceof URI) {
-                al.add(((URI)r).toString());
+            if (r instanceof IRI) {
+                al.add(((IRI)r).toString());
             } else {
                 // Blank node.
             }
         }
-        
+
         return al;
     }
 
@@ -85,7 +85,7 @@ public class UriSetFile extends TokenFile
     {
         return identifiers.remove(uri);
     }
-    
+
     public synchronized void addAll(Collection<Resource> resources)
     {
         Iterator<Resource> i = resources.iterator();
@@ -102,26 +102,26 @@ public class UriSetFile extends TokenFile
     /**
      * Update all URIs with a new mapping to use that newer mapping, leaving
      * all other identifiers unaffected.
-     * 
+     *
      * @param im
      */
     public synchronized void update(IdentifierMappings im)
     {
-        Collection<URI> allNewUris = new ArrayList<URI>();
+        Collection<IRI> allNewUris = new ArrayList<IRI>();
 
         Iterator<Resource> i = identifiers.iterator();
         while (i.hasNext()) {
             Resource r = i.next();
-            
-            if (r instanceof URI) {
-                URI newUri = im.getUriFor((URI)r);
+
+            if (r instanceof IRI) {
+                IRI newUri = im.getUriFor((IRI)r);
                 if (newUri != null) {
                     allNewUris.add(newUri);
                     i.remove();
                 }
             }
         }
-        
+
         identifiers.addAll(allNewUris);
     }
 }

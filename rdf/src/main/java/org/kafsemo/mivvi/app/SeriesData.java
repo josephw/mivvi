@@ -40,9 +40,8 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -216,9 +215,9 @@ public class SeriesData
         }
     }
 
-    public static final URI ROOT_IDENTIFIER = new URIImpl("http://en.wikipedia.org/wiki/Television");
+    public static final IRI ROOT_IDENTIFIER = SimpleValueFactory.getInstance().createIRI("http://en.wikipedia.org/wiki/Television");
 
-    public static URI getRootIdentifier()
+    public static IRI getRootIdentifier()
     {
         return ROOT_IDENTIFIER;
     }
@@ -228,7 +227,7 @@ public class SeriesData
         return presentation.getFilenameFor(res);
     }
 
-    public synchronized List<String> getStringList(Resource res, URI pred) throws RepositoryException
+    public synchronized List<String> getStringList(Resource res, IRI pred) throws RepositoryException
     {
         List<String> l = new ArrayList<String>();
 
@@ -635,7 +634,7 @@ public class SeriesData
         }
     }
 
-    public synchronized boolean hasType(URI res, URI type) throws RepositoryException
+    public synchronized boolean hasType(IRI res, IRI type) throws RepositoryException
     {
         return mviRepCn.hasStatement(res, RdfUtil.Rdf.type, type, false);
     }

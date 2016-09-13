@@ -34,7 +34,6 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.impl.URIImpl;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
@@ -98,7 +97,7 @@ public class TestSeriesData
         /* ...and that type has an icon */
         g.add(RdfUtil.Mvi.Series,
                 RdfMiscVocabulary.smIcon,
-                new URIImpl("file:///generic-series-icon.png"));
+                VF.createIRI("file:///generic-series-icon.png"));
 
         SeriesData sd = fromGraph(g);
 

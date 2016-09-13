@@ -27,17 +27,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.kafsemo.mivvi.rdf.Presentation;
 import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.kafsemo.mivvi.recognise.FilenameMatch;
 import org.kafsemo.mivvi.recognise.SeriesDataException;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.model.impl.URIImpl;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.rio.RDFHandlerException;
 
 public class RecogniseServlet extends MivviBaseServlet
 {
@@ -84,7 +85,9 @@ public class RecogniseServlet extends MivviBaseServlet
                 return;
             }
 
-            URI myself = new URIImpl(req.getRequestURL().toString());
+            ValueFactory vf = SimpleValueFactory.getInstance();
+
+            IRI myself = vf.createIRI(req.getRequestURL().toString());
 
             /* Generate output */
             Model g = new LinkedHashModel();
@@ -99,7 +102,7 @@ public class RecogniseServlet extends MivviBaseServlet
 
             String seeAlso = seeAlsoUrl(aboutServletBase, fnm.episode.toString());
 
-            g.add(myself, RdfUtil.Rdfs.seeAlso, new URIImpl(seeAlso));
+            g.add(myself, RdfUtil.Rdfs.seeAlso, vf.createIRI(seeAlso));
 
             writeGraphAsRdfXml(g, resp);
         } catch (SeriesDataException sde) {

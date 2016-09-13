@@ -25,16 +25,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.kafsemo.mivvi.rdf.Presentation;
 import org.kafsemo.mivvi.rdf.Presentation.Details;
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.rio.RDFHandlerException;
 
 public class AboutServlet extends MivviBaseServlet
 {
@@ -63,8 +63,10 @@ public class AboutServlet extends MivviBaseServlet
             return;
         }
 
+        ValueFactory vf = SimpleValueFactory.getInstance();
+
         try {
-            URI uri = new URIImpl(subject);
+            IRI uri = vf.createIRI(subject);
 
             /* Generate output */
             Model g = new LinkedHashModel();
@@ -76,9 +78,9 @@ public class AboutServlet extends MivviBaseServlet
                 myself.append(q);
             }
 
-            g.add(new URIImpl(myself.toString()),
+            g.add(vf.createIRI(myself.toString()),
                     RdfUtil.Dc.title,
-                    new LiteralImpl("Mivvi data about " + subject));
+                    vf.createLiteral("Mivvi data about " + subject));
 
             /* Is it an episode? */
             if (sd.hasType(uri, RdfUtil.Mvi.Episode)) {

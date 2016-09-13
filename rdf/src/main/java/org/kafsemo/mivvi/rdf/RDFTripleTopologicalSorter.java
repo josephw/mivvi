@@ -14,7 +14,6 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 
@@ -144,9 +143,9 @@ public class RDFTripleTopologicalSorter
     /**
      * rdf:type sorts first, indexes sort numerically.
      */
-    static final Comparator<URI> PREDICATE_ORDER = new Comparator<URI>()
+    static final Comparator<IRI> PREDICATE_ORDER = new Comparator<IRI>()
     {
-        public int compare(URI o1, URI o2)
+        public int compare(IRI o1, IRI o2)
         {
             CompBuilder cb = new CompBuilder();
 
@@ -169,10 +168,10 @@ public class RDFTripleTopologicalSorter
         }
     };
 
-    private static final Comparator<URI> URI_ORDER = new Comparator<URI>()
+    private static final Comparator<IRI> URI_ORDER = new Comparator<IRI>()
     {
         @Override
-        public int compare(URI o1, URI o2)
+        public int compare(IRI o1, IRI o2)
         {
             return o1.toString().compareTo(o2.toString());
         }
@@ -192,8 +191,8 @@ public class RDFTripleTopologicalSorter
      * <code>firstComparator</code> to sort those instances and the <code>secondComparator</code> to sort the others.
      * </p>
      * <p>
-     * This is for cases where instances can be divided by type, such as sorting all {@link URI}s ahead of {@link BNode}
-     * s, and then using different {@link Comparator}s to sort within those categories.
+     * This is for cases where instances can be divided by type, such as sorting all {@link IRI}s ahead of {@link BNode}s,
+     * and then using different {@link Comparator}s to sort within those categories.
      * </p>
      */
     @SuppressWarnings("unchecked")
@@ -231,11 +230,11 @@ public class RDFTripleTopologicalSorter
     {
         public int compare(Resource o1, Resource o2)
         {
-            return compareByType(URI.class, URI_ORDER, BNODE_ORDER, o1, o2);
+            return compareByType(IRI.class, URI_ORDER, BNODE_ORDER, o1, o2);
         }
     };
 
-    private static String index(URI u)
+    private static String index(IRI u)
     {
         String s = u.stringValue();
         if (s.startsWith(RDF.NAMESPACE))
@@ -299,7 +298,7 @@ public class RDFTripleTopologicalSorter
             }
         }
 
-        void compareIndexUris(URI o1, URI o2)
+        void compareIndexUris(IRI o1, IRI o2)
         {
             if (result != 0)
             {
