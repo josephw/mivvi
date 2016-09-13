@@ -1,6 +1,6 @@
 /*
  * Mivvi - Metadata, organisation and identification for television programs
- * Copyright © 2004-2014 Joseph Walton
+ * Copyright © 2004-2016 Joseph Walton
  *
  * This library is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,7 @@ public class About
         JOptionPane.showMessageDialog(parent,
                 new Object[] {
                 LinkLabel.create(desktop, "https://mivvi.net/", "Mivvi"),
-                    "Copyright © 2004-2014 Joseph Walton.",
+                    "Copyright © 2004-2016 Joseph Walton.",
                     "",
                     Box.createVerticalStrut(10),
                     "This program is free software: you can redistribute it and/or modify",
