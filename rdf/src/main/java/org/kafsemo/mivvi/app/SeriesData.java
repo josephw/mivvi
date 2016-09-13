@@ -35,9 +35,9 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.eclipse.rdf4j.model.Graph;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
@@ -356,7 +356,7 @@ public class SeriesData
      * @param episode
      * @throws RepositoryException
      */
-    public synchronized void exportRelevantStatements(Graph g, Resource episode) throws RepositoryException
+    public synchronized void exportRelevantStatements(Model g, Resource episode) throws RepositoryException
     {
         RepositoryResult<Statement> si;
 
@@ -618,7 +618,7 @@ public class SeriesData
      * @param res
      * @throws RepositoryException
      */
-    public void exportStatementsAbout(Graph g, Resource res) throws RepositoryException
+    public void exportStatementsAbout(Model g, Resource res) throws RepositoryException
     {
         RepositoryResult<Statement> si;
 

@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
-import org.eclipse.rdf4j.model.Graph;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
@@ -352,7 +351,7 @@ public class LocalFiles
      * @param episode
      * @throws RepositoryException
      */
-    public synchronized void exportRelevantStatements(Graph g, Resource episode)
+    public synchronized void exportRelevantStatements(Model g, Resource episode)
             throws RepositoryException
     {
         RepositoryResult<Statement> si = localFiles.getStatements(null, RdfUtil.Mvi.episode, episode, true);

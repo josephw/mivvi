@@ -28,11 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
-import org.kafsemo.mivvi.app.FileUtil;
-import org.kafsemo.mivvi.app.SeriesData;
-import org.kafsemo.mivvi.rdf.Mivvi;
-import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.eclipse.rdf4j.model.Graph;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
@@ -41,6 +37,10 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.eclipse.rdf4j.sail.SailException;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.kafsemo.mivvi.app.FileUtil;
+import org.kafsemo.mivvi.app.SeriesData;
+import org.kafsemo.mivvi.rdf.Mivvi;
+import org.kafsemo.mivvi.rdf.RdfUtil;
 
 public class MivviBaseServlet extends HttpServlet
 {
@@ -80,7 +80,7 @@ public class MivviBaseServlet extends HttpServlet
         }
     }
 
-    void writeGraphAsRdfXml(Graph g, HttpServletResponse resp)
+    void writeGraphAsRdfXml(Model g, HttpServletResponse resp)
         throws IOException, RDFHandlerException
     {
         resp.setContentType("application/rdf+xml");

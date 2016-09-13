@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.rdf4j.model.Graph;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
@@ -47,7 +46,7 @@ public class TestSeriesData
 {
     private static final ValueFactory VF = SimpleValueFactory.getInstance();
 
-    public static SeriesData fromGraph(Graph g) throws RDFParseException, RepositoryException, IOException, RDFHandlerException
+    public static SeriesData fromGraph(Model g) throws RDFParseException, RepositoryException, IOException, RDFHandlerException
     {
         MemoryStore ms = new MemoryStore();
         SailRepository sr = new SailRepository(ms);
