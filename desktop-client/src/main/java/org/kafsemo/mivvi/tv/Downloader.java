@@ -47,7 +47,7 @@ import org.kafsemo.mivvi.rss.HttpCookieUtil;
 /**
  * A <code>Downloader</code> enforces a download policy, supplying fresh local copies
  * of remote files.
- * 
+ *
  * @author Joseph Walton
  */
 public class Downloader
@@ -70,26 +70,26 @@ public class Downloader
                 throw new IOException("Unable to create web cache directory " + cacheDir);
         }
         this.cacheDir = cacheDir;
-        
+
         indexFile = new File(this.cacheDir, "index.xml");
-        
+
         if (indexFile.isFile()) {
             InputStream in = new FileInputStream(indexFile);
             loadState(in);
             in.close();
         }
     }
-    
+
     public synchronized void save() throws IOException
     {
         File tf = new File(indexFile.getParentFile(), indexFile.getName() + ".tmp");
         OutputStream out = new FileOutputStream(tf);
         saveState(out);
         out.close();
-        
+
         if (indexFile.exists())
             indexFile.delete();
-        
+
         if (!tf.renameTo(indexFile))
             throw new IOException("Unable to rename temporary file '" + tf + "' into place");
     }
@@ -108,15 +108,15 @@ public class Downloader
         Iterator<Entry<String, InstanceDetails>> i = details.entrySet().iterator();
         while (i.hasNext()) {
             Entry<String, InstanceDetails> e = i.next();
-            
+
             sa[c][0] = e.getKey(); //((URL)e.getKey()).toString();
             sa[c][1] = e.getValue().lastModified;
             sa[c][2] = e.getValue().eTag;
             sa[c][3] = Long.toString(e.getValue().stamp);
-            
+
             c++;
         }
-        
+
         return sa;
     }
 
@@ -127,14 +127,14 @@ public class Downloader
             d = null;
             details.remove(url);
         }
-        
+
         return d;
     }
 
     public synchronized boolean isFresh(String url, File df, long maxAge)
     {
         InstanceDetails d = getInstanceDetails(url, df);
-        
+
         return ((d != null) && (System.currentTimeMillis() - maxAge < d.stamp));
     }
 
@@ -156,9 +156,9 @@ public class Downloader
         InstanceDetails d = getInstanceDetails(url.toString(), df);
 
         URLConnection uc = url.openConnection();
-        
+
         uc.addRequestProperty("User-Agent", USER_AGENT);
-        
+
         uc.addRequestProperty("Accept-Encoding", "gzip");
 
         if (cookies != null) {
@@ -168,26 +168,26 @@ public class Downloader
         if (d != null) {
             if (d.lastModified != null)
                 uc.addRequestProperty("If-Modified-Since", d.lastModified);
-            
+
             if (d.eTag != null)
                 uc.addRequestProperty("If-None-Match", d.eTag);
         }
-        
+
         if (uc instanceof HttpURLConnection) {
             HttpURLConnection huc = (HttpURLConnection)uc;
 
             if (huc.getResponseCode() == HttpURLConnection.HTTP_NOT_MODIFIED) {
                 // XXX This duplicates code below
                 d = new InstanceDetails(System.currentTimeMillis());
-                
+
                 d.lastModified = uc.getHeaderField("Last-Modified");
                 d.eTag = uc.getHeaderField("ETag");
-                
+
                 details.put(url.toString(), d);
 
                 return false;
             }
-            
+
             if (huc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 details.remove(url.toString());
                 df.delete();
@@ -205,7 +205,7 @@ public class Downloader
             df.delete();
             return true;
         }
-        
+
         if (ps != null) {
             String cl = uc.getHeaderField("Content-Length");
             if (cl != null) {
@@ -221,30 +221,30 @@ public class Downloader
         if ("gzip".equalsIgnoreCase(enc)) {
             in = new GZIPInputStream(in);
         }
-        
+
         File tf = TokenFile.mktmp(df);
 
         OutputStream out = new FileOutputStream(tf);
-        
+
         copy(in, out);
         out.close();
         in.close();
-        
+
         d = new InstanceDetails(System.currentTimeMillis());
-        
+
         d.lastModified = uc.getHeaderField("Last-Modified");
         d.eTag = uc.getHeaderField("ETag");
 
         TokenFile.installAs(df, tf);
 
         details.put(url.toString(), d);
-        
+
         return true;
     }
 
     /**
      * Make sure a local file is an up-to-date copy of a web resource.
-     * 
+     *
      * @param url
      * @param f
      * @param maxAge
@@ -268,7 +268,7 @@ public class Downloader
             return true;
         }
     }
-    
+
     private final byte[] ba = new byte[65536];
     private long copy(InputStream in, OutputStream out) throws IOException
     {
@@ -279,16 +279,16 @@ public class Downloader
             out.write(ba, 0, l);
             count += l;
         }
-        
+
         return count;
     }
-    
+
     private static class InstanceDetails
     {
         String lastModified;
         String eTag;
         final long stamp;
-        
+
         InstanceDetails(long stamp)
         {
             this.stamp = stamp;
@@ -298,26 +298,27 @@ public class Downloader
     public synchronized void saveState(OutputStream os)
     {
         XMLEncoder xe = new XMLEncoder(os);
-        
+
         xe.writeObject(getStringArray());
         xe.close();
     }
-    
+
     public synchronized void loadState(InputStream in) throws MalformedURLException
     {
         details.clear();
 
-        XMLDecoder xd = new XMLDecoder(in);
-        
-        Object o = xd.readObject();
-        if (o instanceof String[][]) {
-            String[][] sa = (String[][])o;
-            for (int i = 0 ; i < sa.length ; i++) {
-                InstanceDetails d = new InstanceDetails(Long.parseLong(sa[i][3]));
-                d.lastModified = sa[i][1];
-                d.eTag = sa[i][2];
-                
-                details.put(sa[i][0], d);
+        try (XMLDecoder xd = new XMLDecoder(in))
+        {
+            Object o = xd.readObject();
+            if (o instanceof String[][]) {
+                String[][] sa = (String[][])o;
+                for (int i = 0 ; i < sa.length ; i++) {
+                    InstanceDetails d = new InstanceDetails(Long.parseLong(sa[i][3]));
+                    d.lastModified = sa[i][1];
+                    d.eTag = sa[i][2];
+
+                    details.put(sa[i][0], d);
+                }
             }
         }
     }

@@ -66,7 +66,7 @@ public class ChannelConfigurationFrame extends JDialog
 
         JScrollPane jsp;
 
-        final JList jl = new JList(csm);
+        final JList<String> jl = new JList<String>(csm);
 
         jl.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e)
@@ -79,19 +79,19 @@ public class ChannelConfigurationFrame extends JDialog
             }
         });
 
-        jl.setCellRenderer(new ListCellRenderer(){
+        jl.setCellRenderer(new ListCellRenderer<String>(){
             JCheckBox jcb = new JCheckBox();
 
             Border noFocusBorder =
                 BorderFactory.createEmptyBorder(1, 1, 1, 1);
 
-            public Component getListCellRendererComponent(JList list,
-                    Object value, int index, boolean isSelected,
+            public Component getListCellRendererComponent(JList<? extends String> list,
+                    String value, int index, boolean isSelected,
                     boolean cellHasFocus)
             {
-                jcb.setText((String)value);
+                jcb.setText(value);
 
-                jcb.setSelected(csm.isSelected((String)value));
+                jcb.setSelected(csm.isSelected(value));
 
                  jcb.setBackground(isSelected ?
                          jl.getSelectionBackground() : jl.getBackground());
@@ -104,7 +104,7 @@ public class ChannelConfigurationFrame extends JDialog
                  jcb.setBorder(isSelected ?
                   UIManager.getBorder(
                    "List.focusCellHighlightBorder") : noFocusBorder);
-                 
+
                 return jcb;
             }
         });
@@ -116,7 +116,7 @@ public class ChannelConfigurationFrame extends JDialog
 
         Box b2 = Box.createHorizontalBox();
         b2.add(Box.createHorizontalGlue());
-        
+
         JButton cfgButton = new JButton("Available...");
         cfgButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e)
@@ -126,7 +126,7 @@ public class ChannelConfigurationFrame extends JDialog
         });
         b2.add(cfgButton);
         b2.add(Box.createHorizontalStrut(10));
-        
+
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
@@ -137,7 +137,7 @@ public class ChannelConfigurationFrame extends JDialog
         });
         b2.add(okButton);
         b2.add(Box.createHorizontalStrut(10));
-        
+
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e)
@@ -178,9 +178,9 @@ public class ChannelConfigurationFrame extends JDialog
     }
 
     private String okString;
-    JList ojl;
+    JList<ChannelSetter> ojl;
     private JOptionPane configurationOptionPane;
-    
+
     private JOptionPane getConfigurationOptionPane()
     {
         if (configurationOptionPane == null) {
@@ -188,31 +188,31 @@ public class ChannelConfigurationFrame extends JDialog
             for (int j = 0 ; j < ca.ccl.size() ; j++) {
                 sa[j] = new ChannelSetter(ca.ccl.get(j));
             }
-            
+
             sa[sa.length - 1] = new ChannelSetter(null);
-    
-            ojl = new JList(sa);
+
+            ojl = new JList<ChannelSetter>(sa);
             ojl.setSelectedIndex(0);
             ojl.setBorder(BorderFactory.createEtchedBorder());
-    
+
             okString = UIManager.getString("OptionPane.okButtonText");
-    
+
             configurationOptionPane = new JOptionPane(new JComponent[]{ojl}, JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
                     new String[]{okString, UIManager.getString("OptionPane.cancelButtonText")}, null);
         }
-        
+
         return configurationOptionPane;
     }
 
     boolean showConfigurationDialog(Component parent)
     {
         JOptionPane optionPane = getConfigurationOptionPane();
-        
+
         optionPane.createDialog(parent, "Available Television").setVisible(true);
-        
+
         if (okString.equals(optionPane.getValue())) {
 //            System.err.println(csm.selected);
-            ChannelSetter cs = (ChannelSetter)ojl.getSelectedValue();
+            ChannelSetter cs = ojl.getSelectedValue();
             boolean needsConfiguration = cs.applyTo(csm.selected, csm.allChannels);
             csm.updated();
  //           System.err.println("Applied " + cs);
@@ -232,7 +232,7 @@ public class ChannelConfigurationFrame extends JDialog
         {
             this.cc = cc;
         }
-        
+
         boolean applyTo(Set<String> s, Set<String> all)
         {
             if (cc != null) {
@@ -243,14 +243,14 @@ public class ChannelConfigurationFrame extends JDialog
                 return true;
             }
         }
-        
+
         public String toString()
         {
             return (cc != null) ? cc.name : "I'll pick channels myself";
         }
     }
-    
-    static class ChannelSelectionModel extends DefaultListModel
+
+    static class ChannelSelectionModel extends DefaultListModel<String>
     {
         final Set<String> allChannels;
 //        private final TokenSetFile selected;
@@ -284,16 +284,16 @@ public class ChannelConfigurationFrame extends JDialog
 
         public void toggle(int i)
         {
-            String channel = (String)get(i);
+            String channel = get(i);
 
             if (selected.contains(channel))
                 selected.remove(channel);
             else
                 selected.add(channel);
-            
+
             fireContentsChanged(this, i, i);
         }
-        
+
         void updated()
         {
             fireContentsChanged(this, 0, size());

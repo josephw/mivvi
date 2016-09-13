@@ -121,7 +121,7 @@ public class EpisodeDetailsFrame extends JFrame
         }
     }
 
-    private final DefaultListModel lm;
+    private final DefaultListModel<ResourceItem> lm;
     private JButton updateHashesButton;
 
     private final Runnable refreshRunnable = new Runnable(){
@@ -272,10 +272,10 @@ public class EpisodeDetailsFrame extends JFrame
 
         getContentPane().add(topPanel, BorderLayout.PAGE_START);
 
-        this.lm = new DefaultListModel();
+        this.lm = new DefaultListModel<ResourceItem>();
 
         refreshEpisodeResources();
-        final JList jl = new JList(lm) {
+        final JList<ResourceItem> jl = new JList<ResourceItem>(lm) {
             public String getToolTipText(MouseEvent evt)
             {
                 int index = locationToIndex(evt.getPoint());
@@ -286,7 +286,7 @@ public class EpisodeDetailsFrame extends JFrame
                 }
 
                 if (index >= 0) {
-                    ResourceItem ri = (ResourceItem)getModel().getElementAt(index);
+                    ResourceItem ri = getModel().getElementAt(index);
                     if (ri == null) {
                         return null;
                     } else {
@@ -329,7 +329,7 @@ public class EpisodeDetailsFrame extends JFrame
                     if (idx >= 0) {
                         jl.setSelectedIndex(idx);
 
-                        ResourceItem ri = (ResourceItem)jl.getModel().getElementAt(idx);
+                        ResourceItem ri = jl.getModel().getElementAt(idx);
                         popupResource = ri.droppableResource;
                         dropItem.setEnabled(popupResource != null);
                         pop.show(jl, e.getX(), e.getY());
@@ -360,7 +360,7 @@ public class EpisodeDetailsFrame extends JFrame
                                 return;
                             }
 
-                            ResourceItem ri = (ResourceItem)jl.getModel().getElementAt(idx);
+                            ResourceItem ri = jl.getModel().getElementAt(idx);
                             try {
                                 if (ri.item instanceof File) {
                                     d.open((File)ri.item);
@@ -686,7 +686,7 @@ public class EpisodeDetailsFrame extends JFrame
 
     static class ResourceCellRenderer extends DefaultListCellRenderer
     {
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
         {
             Component c = super.getListCellRendererComponent(list, value, index, isSelected,
                     cellHasFocus);
