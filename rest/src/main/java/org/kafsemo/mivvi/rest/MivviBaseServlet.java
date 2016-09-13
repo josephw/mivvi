@@ -32,15 +32,15 @@ import org.kafsemo.mivvi.app.FileUtil;
 import org.kafsemo.mivvi.app.SeriesData;
 import org.kafsemo.mivvi.rdf.Mivvi;
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.openrdf.model.Graph;
-import org.openrdf.model.Statement;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
-import org.openrdf.sail.SailException;
-import org.openrdf.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.model.Graph;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.rio.rdfxml.util.RDFXMLPrettyWriter;
+import org.eclipse.rdf4j.sail.SailException;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class MivviBaseServlet extends HttpServlet
 {

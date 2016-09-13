@@ -2,7 +2,7 @@ package org.kafsemo.mivvi.sesame.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import info.aduna.net.ParsedURI;
+import org.eclipse.rdf4j.common.net.ParsedURI;
 
 import org.junit.Assert;
 import org.junit.Test;

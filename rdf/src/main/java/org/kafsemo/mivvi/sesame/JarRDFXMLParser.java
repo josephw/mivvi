@@ -18,15 +18,15 @@
 
 package org.kafsemo.mivvi.sesame;
 
-import info.aduna.net.ParsedURI;
+import org.eclipse.rdf4j.common.net.ParsedURI;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.openrdf.model.IRI;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.rdfxml.RDFXMLParser;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.rio.rdfxml.RDFXMLParser;
 
 /**
  * A wrapper for {@link RDFXMLParser} that knows how relative jar: URIs work.

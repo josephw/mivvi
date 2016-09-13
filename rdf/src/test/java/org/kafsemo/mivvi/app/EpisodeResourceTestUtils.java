@@ -23,12 +23,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.StatementImpl;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
 public class EpisodeResourceTestUtils
 {

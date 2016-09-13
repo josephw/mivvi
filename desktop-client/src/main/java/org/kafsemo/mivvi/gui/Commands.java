@@ -38,8 +38,8 @@ import javax.swing.Timer;
 
 import org.kafsemo.mivvi.app.FileUtil;
 import org.kafsemo.mivvi.desktop.AppState;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFHandlerException;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
 
 /**
  * @author joe

@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public abstract class EpisodeResource
 {

@@ -40,8 +40,8 @@ import org.kafsemo.mivvi.app.Progress;
 import org.kafsemo.mivvi.app.SeriesData;
 import org.kafsemo.mivvi.app.Startup;
 import org.kafsemo.mivvi.desktop.AppState;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFParseException;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFParseException;
 
 /**
  * @author joe

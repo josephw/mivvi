@@ -41,9 +41,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
 import org.kafsemo.mivvi.desktop.MetaData;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 /**
  * An RDF icon that, when dragged, provides representative RDF. Abstract,

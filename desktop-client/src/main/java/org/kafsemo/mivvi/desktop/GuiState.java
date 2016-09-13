@@ -34,7 +34,7 @@ import org.kafsemo.mivvi.app.TokenSetFile;
 import org.kafsemo.mivvi.gui.SeriesTreeFrame;
 import org.kafsemo.mivvi.rss.AvailableDownloadGui;
 import org.kafsemo.mivvi.tv.UpcomingBroadcastGui;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class GuiState
 {

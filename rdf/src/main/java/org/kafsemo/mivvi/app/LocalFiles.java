@@ -18,7 +18,7 @@
 
 package org.kafsemo.mivvi.app;
 
-import info.aduna.iteration.Iterations;
+import org.eclipse.rdf4j.common.iteration.Iterations;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,27 +36,27 @@ import org.kafsemo.mivvi.rdf.Mivvi;
 import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
 import org.kafsemo.mivvi.sesame.RelativeRDFXMLWriter;
-import org.openrdf.model.Graph;
-import org.openrdf.model.Model;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.LinkedHashModel;
-import org.openrdf.model.impl.StatementImpl;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.helpers.RDFHandlerBase;
-import org.openrdf.rio.rdfxml.RDFXMLParser;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
-import org.openrdf.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.model.Graph;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.model.impl.StatementImpl;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.rio.helpers.RDFHandlerBase;
+import org.eclipse.rdf4j.rio.rdfxml.RDFXMLParser;
+import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 /**
  * A standalone, thread-safe repository for information about files stored on the local

@@ -25,8 +25,8 @@ import java.util.Map;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.kafsemo.mivvi.desktop.AppState;
-import org.openrdf.model.Resource;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class EpisodeTreeRoot extends EpisodeTreeNode.AddableEpisodeTreeNode
 {

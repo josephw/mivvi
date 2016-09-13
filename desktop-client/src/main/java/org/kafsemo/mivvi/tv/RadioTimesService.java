@@ -42,8 +42,8 @@ import java.util.regex.Pattern;
 import org.kafsemo.mivvi.app.Progress;
 import org.kafsemo.mivvi.app.SeriesData;
 import org.kafsemo.mivvi.recognise.SeriesDataException;
-import org.openrdf.model.Resource;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class RadioTimesService
 {

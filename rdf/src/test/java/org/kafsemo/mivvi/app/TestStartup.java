@@ -3,7 +3,7 @@ package org.kafsemo.mivvi.app;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFFormat;
 
 public class TestStartup
 {

@@ -19,9 +19,9 @@
 package org.kafsemo.mivvi.app;
 
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.openrdf.model.URI;
-import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class WebEpisodeResource extends EpisodeResource
 {

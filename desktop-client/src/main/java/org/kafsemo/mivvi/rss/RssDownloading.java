@@ -56,7 +56,7 @@ import org.kafsemo.mivvi.desktop.BackgroundRefreshable;
 import org.kafsemo.mivvi.desktop.ProgressStatus;
 import org.kafsemo.mivvi.recognise.SeriesDataException;
 import org.kafsemo.mivvi.tv.Downloader;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
