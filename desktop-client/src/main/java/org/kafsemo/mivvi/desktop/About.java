@@ -44,7 +44,7 @@ public class About
     {
         JOptionPane.showMessageDialog(parent,
                 new Object[] {
-                LinkLabel.create(desktop, "http://mivvi.net/", "Mivvi"),
+                LinkLabel.create(desktop, "https://mivvi.net/", "Mivvi"),
                     "Copyright © 2004-2014 Joseph Walton.",
                     "",
                     Box.createVerticalStrut(10),
@@ -65,8 +65,8 @@ public class About
                     LinkLabel.create(desktop, "http://www.gnu.org/licenses/"),
                     Box.createVerticalStrut(10),
                     "Incorporates:",
-                    LinkLabel.create(desktop, "http://www.openrdf.org/", "Sesame"),
-                    "Copyright Aduna (http://www.aduna-software.com/) 2001-2013",
+                    LinkLabel.create(desktop, "http://rdf4j.org/", "RDF4J"),
+                    "Copyright © 2016 Eclipse RDF4J contributors, Aduna, and others.",
                     "All rights reserved."
         }, "Mivvi Copyright Notice", JOptionPane.PLAIN_MESSAGE);
     }
