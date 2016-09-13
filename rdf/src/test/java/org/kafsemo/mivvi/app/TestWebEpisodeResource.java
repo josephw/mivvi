@@ -23,28 +23,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.kafsemo.mivvi.app.EpisodeResource;
-import org.kafsemo.mivvi.app.SeriesData;
-import org.kafsemo.mivvi.app.WebEpisodeResource;
-import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.kafsemo.mivvi.rdf.RdfUtil;
+
+import junit.framework.TestCase;
 
 public class TestWebEpisodeResource extends TestCase
 {
-    static final Resource EPISODE = new URIImpl("http://www.example.com/episode");
-    
+    private static ValueFactory VF = SimpleValueFactory.getInstance();
+
+    static final Resource EPISODE = VF.createIRI("http://www.example.com/episode");
+
     private Repository rep;
     private RepositoryConnection cn;
-    
+
     SeriesData sd;
 
     public void setUp() throws IOException, RepositoryException
@@ -56,7 +55,7 @@ public class TestWebEpisodeResource extends TestCase
         sd = new SeriesData();
         sd.initMviRepository(rep);
     }
-    
+
     public void tearDown() throws RepositoryException
     {
         sd.closeMviRepository();
@@ -75,62 +74,62 @@ public class TestWebEpisodeResource extends TestCase
                 "http:///resource-with-empty-authority",
                 "file://even-with-a-hostname/file-is-not-the-web"
         };
-        
+
         for (int i = 0 ; i < nonWebResources.length ; i++) {
-            cn.add(new URIImpl(nonWebResources[i]), RdfUtil.Mvi.episode, EPISODE);
+            cn.add(VF.createIRI(nonWebResources[i]), RdfUtil.Mvi.episode, EPISODE);
         }
-        
+
         Collection<EpisodeResource> c = new ArrayList<EpisodeResource>();
-        
+
         EpisodeResource.extractWebEpisodeResources(EPISODE, c, sd);
-        
+
         assertEquals(0, c.size());
     }
 
     public void testPageDiscovered() throws RepositoryException
     {
-        cn.add(new URIImpl("http://www.example.com/"), RdfUtil.Mvi.episode, EPISODE);
-        
+        cn.add(VF.createIRI("http://www.example.com/"), RdfUtil.Mvi.episode, EPISODE);
+
         List<WebEpisodeResource> c = new ArrayList<WebEpisodeResource>();
-        
+
         EpisodeResource.extractWebEpisodeResources(EPISODE, c, sd);
-        
+
         assertEquals(1, c.size());
-        
+
         WebEpisodeResource wr = c.get(0);
-        assertEquals(new URIImpl("http://www.example.com/"), wr.getActionUri(sd));
+        assertEquals(VF.createIRI("http://www.example.com/"), wr.getActionUri(sd));
         assertNull(wr.getDescription(sd));
         assertNull(wr.getLabel(sd));
     }
-    
+
     public void testPageWithTitleDiscovered() throws RepositoryException
     {
-        cn.add(new URIImpl("http://www.example.com/"), RdfUtil.Mvi.episode, EPISODE);
-        cn.add(new URIImpl("http://www.example.com/"), RdfUtil.Dc.title, new LiteralImpl("Title of page"));
-        cn.add(new URIImpl("http://www.example.com/"), RdfUtil.Dc.description, new LiteralImpl("Description of page"));
-        
+        cn.add(VF.createIRI("http://www.example.com/"), RdfUtil.Mvi.episode, EPISODE);
+        cn.add(VF.createIRI("http://www.example.com/"), RdfUtil.Dc.title, VF.createLiteral("Title of page"));
+        cn.add(VF.createIRI("http://www.example.com/"), RdfUtil.Dc.description, VF.createLiteral("Description of page"));
+
         List<WebEpisodeResource> c = new ArrayList<WebEpisodeResource>();
-        
+
         EpisodeResource.extractWebEpisodeResources(EPISODE, c, sd);
-        
+
         assertEquals(1, c.size());
-        
+
         WebEpisodeResource wr = c.get(0);
-        assertEquals(new URIImpl("http://www.example.com/"), wr.getActionUri(sd));
+        assertEquals(VF.createIRI("http://www.example.com/"), wr.getActionUri(sd));
         assertEquals("Title of page", wr.getLabel(sd));
         assertEquals("Description of page", wr.getDescription(sd));
     }
-    
+
     public void testDiscoverMultipleWebEpisodeResources() throws RepositoryException
     {
-        cn.add(new URIImpl("http://www.example.com/1"), RdfUtil.Mvi.episode, EPISODE);
-        cn.add(new URIImpl("http://www.example.com/2"), RdfUtil.Mvi.episode, EPISODE);
-        cn.add(new URIImpl("http://www.example.com/3"), RdfUtil.Mvi.episode, EPISODE);
-        
+        cn.add(VF.createIRI("http://www.example.com/1"), RdfUtil.Mvi.episode, EPISODE);
+        cn.add(VF.createIRI("http://www.example.com/2"), RdfUtil.Mvi.episode, EPISODE);
+        cn.add(VF.createIRI("http://www.example.com/3"), RdfUtil.Mvi.episode, EPISODE);
+
         List<WebEpisodeResource> c = new ArrayList<WebEpisodeResource>();
-        
+
         EpisodeResource.extractWebEpisodeResources(EPISODE, c, sd);
-        
+
         assertEquals(3, c.size());
     }
 }

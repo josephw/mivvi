@@ -26,7 +26,7 @@ import org.kafsemo.mivvi.app.LocalFiles;
 import org.kafsemo.mivvi.app.SeriesData;
 import org.kafsemo.mivvi.gui.EpisodeDetailsFrame;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFParser;
@@ -47,11 +47,11 @@ public class TestEpisodeDetailsFrame extends TestCase
                 "Saturday, 1 January 2000",
                 EpisodeDetailsFrame.formatDate("2000-01-01T00:00:00.000Z"));
     }
-    
+
     /**
      * Make sure that a valid, empty RDF document is created when
      * info is dragged and dropped.
-     * 
+     *
      * @throws Exception
      */
     public void testDetailsRdfWidgetCreateNoStatementInputStream()
@@ -59,22 +59,22 @@ public class TestEpisodeDetailsFrame extends TestCase
     {
         Repository rep = new SailRepository(new MemoryStore());
         rep.initialize();
-        
+
         LocalFiles lf = new LocalFiles();
         lf.initLocalFiles(rep.getConnection());
-        
+
         SeriesData sd = new SeriesData();
         sd.initMviRepository(rep);
-        
-        Resource res = new URIImpl("http://www.example.com/#");
-        
+
+        Resource res = SimpleValueFactory.getInstance().createIRI("http://www.example.com/#");
+
         InputStream in = EpisodeDetailsFrame.createInputStream(lf, sd, res);
         assertNotNull(in);
 
         RDFParser parser = new RDFXMLParserFactory().getParser();
         StatementCollector sc = new StatementCollector();
         parser.setRDFHandler(sc);
-        
+
         parser.parse(in, "file:///");
 
         assertEquals("There are no actual statements in the document",

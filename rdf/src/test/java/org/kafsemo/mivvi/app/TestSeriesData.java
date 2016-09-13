@@ -18,7 +18,8 @@
 
 package org.kafsemo.mivvi.app;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,13 +27,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.eclipse.rdf4j.model.Graph;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.impl.URIImpl;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -40,9 +41,13 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.junit.Test;
+import org.kafsemo.mivvi.rdf.RdfUtil;
 
 public class TestSeriesData
 {
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
     public static SeriesData fromGraph(Graph g) throws RDFParseException, RepositoryException, IOException, RDFHandlerException
     {
         MemoryStore ms = new MemoryStore();
@@ -66,16 +71,16 @@ public class TestSeriesData
         Model g = new LinkedHashModel();
 
         /* A directly defined icon */
-        g.add(new URIImpl("http://www.example.com/#"),
+        g.add(VF.createIRI("http://www.example.com/#"),
                 RdfMiscVocabulary.smIcon,
-                new URIImpl("file:///example-icon.png"));
+                VF.createIRI("file:///example-icon.png"));
 
         SeriesData sd = fromGraph(g);
 
-        List<? extends URI> expected = Arrays.asList(
-                new URIImpl("file:///example-icon.png"));
+        List<? extends IRI> expected = Arrays.asList(
+                VF.createIRI("file:///example-icon.png"));
 
-        List<URI> icons = sd.getResourceIcons(new URIImpl("http://www.example.com/#"));
+        List<IRI> icons = sd.getResourceIcons(VF.createIRI("http://www.example.com/#"));
 
         assertEquals(expected, icons);
     }
@@ -86,7 +91,7 @@ public class TestSeriesData
         Model g = new LinkedHashModel();
 
         /* It has a type... */
-        g.add(new URIImpl("http://www.example.com/#"),
+        g.add(VF.createIRI("http://www.example.com/#"),
                 RdfUtil.Rdf.type,
                 RdfUtil.Mvi.Series);
 
@@ -97,10 +102,10 @@ public class TestSeriesData
 
         SeriesData sd = fromGraph(g);
 
-        List<? extends URI> expected = Arrays.asList(
-                new URIImpl("file:///generic-series-icon.png"));
+        List<? extends IRI> expected = Arrays.asList(
+                VF.createIRI("file:///generic-series-icon.png"));
 
-        List<URI> icons = sd.getResourceIcons(new URIImpl("http://www.example.com/#"));
+        List<IRI> icons = sd.getResourceIcons(VF.createIRI("http://www.example.com/#"));
 
         assertEquals(expected, icons);
     }
@@ -111,7 +116,7 @@ public class TestSeriesData
         Model g = new LinkedHashModel();
 
         /* It has a type... */
-        g.add(new URIImpl("http://www.example.com/#"),
+        g.add(VF.createIRI("http://www.example.com/#"),
                 RdfUtil.Rdf.type,
                 RdfUtil.Mvi.Series);
 
@@ -119,7 +124,7 @@ public class TestSeriesData
 
         SeriesData sd = fromGraph(g);
 
-        List<URI> icons = sd.getResourceIcons(new URIImpl("http://www.example.com/#"));
+        List<IRI> icons = sd.getResourceIcons(VF.createIRI("http://www.example.com/#"));
 
         assertEquals(Collections.emptyList(), icons);
     }
@@ -135,7 +140,7 @@ public class TestSeriesData
 
         sd.importMivvi(data.toString());
 
-        assertEquals(Collections.singletonList(new URIImpl("http://www.example.com/#")),
+        assertEquals(Collections.singletonList(VF.createIRI("http://www.example.com/#")),
                 Arrays.asList(sd.getAllSeries()));
     }
 
@@ -150,7 +155,7 @@ public class TestSeriesData
 
         sd.importMivvi(data.toString());
 
-        assertEquals(Collections.singletonList(new URIImpl("http://www.example.com/#")),
+        assertEquals(Collections.singletonList(VF.createIRI("http://www.example.com/#")),
                 Arrays.asList(sd.getAllSeries()));
     }
 
@@ -165,7 +170,7 @@ public class TestSeriesData
 
         sd.importMivvi(data.toString());
 
-        assertEquals(Collections.singletonList(new URIImpl("http://www.example.com/#")),
+        assertEquals(Collections.singletonList(VF.createIRI("http://www.example.com/#")),
                 Arrays.asList(sd.getAllSeries()));
     }
 }

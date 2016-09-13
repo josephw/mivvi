@@ -21,34 +21,36 @@ package org.kafsemo.mivvi.app;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
-import org.kafsemo.mivvi.app.UriSetFile;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.kafsemo.mivvi.rdf.IdentifierMappings;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+
+import junit.framework.TestCase;
 
 public class TestUriSetFile extends TestCase
 {
     /**
      * Test updating a <code>UriSetFile</code> according to an <code>IdentifierMappings</code>.
-     * 
+     *
      * @throws IOException
      */
     public void testMapIdentifiers() throws IOException
     {
-        URI orig = new URIImpl("http://www.example.com/orig-episode-uri"),
-            newUri = new URIImpl("http://www.example.com/new-episode-uri"),
-            other = new URIImpl("http://www.example.com/other-episode-uri");
-        
+        ValueFactory vf = SimpleValueFactory.getInstance();
+
+        IRI orig = vf.createIRI("http://www.example.com/orig-episode-uri"),
+            newUri = vf.createIRI("http://www.example.com/new-episode-uri"),
+            other = vf.createIRI("http://www.example.com/other-episode-uri");
+
         IdentifierMappings im = new IdentifierMappings();
         im.put(orig, newUri);
-        
+
         File f = File.createTempFile(getClass().getName(), "uris");
         f.deleteOnExit();
-        
+
         UriSetFile usf = new UriSetFile(f);
-        
+
         usf.add(orig);
         usf.add(other);
 

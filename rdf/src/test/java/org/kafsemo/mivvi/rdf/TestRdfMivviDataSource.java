@@ -32,6 +32,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.sail.SailException;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,21 +49,13 @@ import org.kafsemo.mivvi.recognise.EpisodeTitleDetails;
 import org.kafsemo.mivvi.recognise.Item;
 import org.kafsemo.mivvi.recognise.SeriesDataException;
 import org.kafsemo.mivvi.recognise.SeriesDetails;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.sail.SailException;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class TestRdfMivviDataSource
 {
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
     private RepositoryConnection cn;
-    
+
     @Before
     public void establishRepository() throws RepositoryException, SailException
     {
@@ -63,21 +65,21 @@ public class TestRdfMivviDataSource
 
         cn = sr.getConnection();
     }
-    
+
     @After
     public void shutdownRepository() throws RepositoryException
     {
         cn.close();
         // Assume repository and store will be cleaned up on collection
     }
-    
+
     @Test
     public void extractEmptyKeywords() throws Exception
     {
         RdfMivviDataSource ds = new RdfMivviDataSource(cn);
-        
+
         Collection<String> allKeywords = new ArrayList<String>();
-        
+
         for(String kw : ds.getKeywords()) {
             allKeywords.add(kw);
         }
@@ -88,31 +90,31 @@ public class TestRdfMivviDataSource
     @Test
     public void extractDefinedKeywords() throws Exception
     {
-        URI res = new URIImpl("http://www.example.com/");
-        URI kw = new URIImpl("tag:kafsemo.org,2004:mivvi#keyword");
-        
-        cn.add(res, kw, new LiteralImpl("hr.hdtv"));
-        cn.add(res, kw, new LiteralImpl("ac3.5.1"));
-      
-        
+        IRI res = VF.createIRI("http://www.example.com/");
+        IRI kw = VF.createIRI("tag:kafsemo.org,2004:mivvi#keyword");
+
+        cn.add(res, kw, VF.createLiteral("hr.hdtv"));
+        cn.add(res, kw, VF.createLiteral("ac3.5.1"));
+
+
         RdfMivviDataSource ds = new RdfMivviDataSource(cn);
-        
+
         Collection<String> allKeywords = new HashSet<String>();
-        
+
         for(String k : ds.getKeywords()) {
             allKeywords.add(k);
         }
 
         Set<String> expected = new HashSet<String>(Arrays.asList("hr.hdtv", "ac3.5.1"));
-        
+
         assertEquals(expected, allKeywords);
     }
-    
+
     @Test
     public void emptySeriesTitles() throws Exception
     {
         RdfMivviDataSource ds = new RdfMivviDataSource(cn);
-        
+
         assertEquals(0, ds.getSeriesTitles().size());
         assertEquals(0, ds.getSeriesDescriptions().size());
     }
@@ -120,60 +122,60 @@ public class TestRdfMivviDataSource
     @Test
     public void seriesTitlesAndDescriptions() throws Exception
     {
-        URI uri = new URIImpl("http://www.example.com/#");
-        
+        IRI uri = VF.createIRI("http://www.example.com/#");
+
         cn.add(uri, RdfUtil.Rdf.type, RdfUtil.Mvi.Series);
-        cn.add(uri, RdfUtil.Dc.title, new LiteralImpl("Sample Series"));
-        cn.add(uri, RdfUtil.Dc.description, new LiteralImpl("Sample Series: Alternate Name"));
+        cn.add(uri, RdfUtil.Dc.title, VF.createLiteral("Sample Series"));
+        cn.add(uri, RdfUtil.Dc.description, VF.createLiteral("Sample Series: Alternate Name"));
 
         RdfMivviDataSource ds = new RdfMivviDataSource(cn);
-        
-        Set<Item<URI>> expectedTitles = Collections.singleton(
-                new Item<URI>("Sample Series", uri));
-        Set<Item<URI>> expectedDescriptions = Collections.singleton(
-                new Item<URI>("Sample Series: Alternate Name", uri));
-        
+
+        Set<Item<IRI>> expectedTitles = Collections.singleton(
+                new Item<IRI>("Sample Series", uri));
+        Set<Item<IRI>> expectedDescriptions = Collections.singleton(
+                new Item<IRI>("Sample Series: Alternate Name", uri));
+
         assertEquals(expectedTitles, new HashSet<Item<Resource>>(ds.getSeriesTitles()));
         assertEquals(expectedDescriptions, new HashSet<Item<Resource>>(ds.getSeriesDescriptions()));
     }
-    
+
     @Test(expected = SeriesDataException.class)
     public void askingForUnknownSeriesDetailsCausesException() throws Exception
     {
-        URI uri = new URIImpl("http://www.example.com/#");
+        IRI uri = VF.createIRI("http://www.example.com/#");
         RdfMivviDataSource ds = new RdfMivviDataSource(cn);
-        
+
         ds.getSeriesDetails(uri);
     }
-    
+
     @Test
     public void episodesArePresentInSeriesDetailsFromRdf() throws Exception
     {
         InputStream in = getClass().getResourceAsStream("TestRdfMivviDataSource-episodesArePresentInSeriesDetailsFromRdf.rdf");
         assertNotNull(in);
-        
+
         cn.add(in, "http://www.example.com/", RDFFormat.RDFXML);
-        
-        URI uri = new URIImpl("http://www.example.com/#");
+
+        IRI uri = VF.createIRI("http://www.example.com/#");
         RdfMivviDataSource ds = new RdfMivviDataSource(cn);
-        
+
         SeriesDetails<Resource> d = ds.getSeriesDetails(uri);
 
-        Map<String, URI> expectedEpisodesByNumber = new HashMap<String, URI>();
-        expectedEpisodesByNumber.put("1", new URIImpl("http://www.example.com/1x1#"));
-        expectedEpisodesByNumber.put("2", new URIImpl("http://www.example.com/1x2#"));
-        expectedEpisodesByNumber.put("3", new URIImpl("http://www.example.com/2x1#"));
-        expectedEpisodesByNumber.put("1x1", new URIImpl("http://www.example.com/1x1#"));
-        expectedEpisodesByNumber.put("1x2", new URIImpl("http://www.example.com/1x2#"));
-        expectedEpisodesByNumber.put("2x1", new URIImpl("http://www.example.com/2x1#"));
+        Map<String, IRI> expectedEpisodesByNumber = new HashMap<String, IRI>();
+        expectedEpisodesByNumber.put("1", VF.createIRI("http://www.example.com/1x1#"));
+        expectedEpisodesByNumber.put("2", VF.createIRI("http://www.example.com/1x2#"));
+        expectedEpisodesByNumber.put("3", VF.createIRI("http://www.example.com/2x1#"));
+        expectedEpisodesByNumber.put("1x1", VF.createIRI("http://www.example.com/1x1#"));
+        expectedEpisodesByNumber.put("1x2", VF.createIRI("http://www.example.com/1x2#"));
+        expectedEpisodesByNumber.put("2x1", VF.createIRI("http://www.example.com/2x1#"));
 
         assertEquals(expectedEpisodesByNumber, d.episodesByNumber);
 
         List<EpisodeTitleDetails<Resource>> expectedEpisodeTitleDetails =
             new ArrayList<EpisodeTitleDetails<Resource>>();
-        expectedEpisodeTitleDetails.add(new EpisodeTitleDetails<Resource>(new URIImpl("http://www.example.com/1x1#"), "First Episode", true));
-        expectedEpisodeTitleDetails.add(new EpisodeTitleDetails<Resource>(new URIImpl("http://www.example.com/1x2#"), "Second Episode", true));
-        expectedEpisodeTitleDetails.add(new EpisodeTitleDetails<Resource>(new URIImpl("http://www.example.com/2x1#"), "Third Episode", true));
+        expectedEpisodeTitleDetails.add(new EpisodeTitleDetails<Resource>(VF.createIRI("http://www.example.com/1x1#"), "First Episode", true));
+        expectedEpisodeTitleDetails.add(new EpisodeTitleDetails<Resource>(VF.createIRI("http://www.example.com/1x2#"), "Second Episode", true));
+        expectedEpisodeTitleDetails.add(new EpisodeTitleDetails<Resource>(VF.createIRI("http://www.example.com/2x1#"), "Third Episode", true));
 
         assertEquals(expectedEpisodeTitleDetails, d.episodeTitlesAndDescriptions);
     }

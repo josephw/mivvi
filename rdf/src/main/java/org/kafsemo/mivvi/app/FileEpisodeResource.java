@@ -26,46 +26,46 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.kafsemo.mivvi.rdf.RdfUtil;
 
 /**
  * An <code>EpisodeResource</code> consisting of a file, identified by a combination
  * of URLs and hashes. The file may or may not be available locally.
- * 
+ *
  * @author Joseph Walton
  */
 public class FileEpisodeResource extends EpisodeResource
 {
-    URI location;
+    IRI location;
 
     /**
      * A URI at which this file is locally available.
-     * 
+     *
      * @return
      */
-    public URI getLocation()
+    public IRI getLocation()
     {
         return location;
     }
-    
-    Set<URI> hashUris = new HashSet<URI>();
-    
-    public Collection<URI> getHashUris()
+
+    Set<IRI> hashUris = new HashSet<IRI>();
+
+    public Collection<IRI> getHashUris()
     {
         return hashUris;
     }
-    
-    URI source;
+
+    IRI source;
 
     public Resource getSource()
     {
         return source;
     }
-    
+
     public String toString()
     {
         return "(" + location + "," + hashUris + "," + source + ")@" + Integer.toHexString(System.identityHashCode(this));
@@ -77,7 +77,7 @@ public class FileEpisodeResource extends EpisodeResource
      *  If no source, show magnet URI
      *   In either case, opening launches magnet URI
      */
-    
+
     public String getLabel(SeriesData sd) throws RepositoryException
     {
         /* Is there a valid location? */
@@ -105,10 +105,10 @@ public class FileEpisodeResource extends EpisodeResource
                 return hashUris.toString();
             }
         }
-        
+
         return "(No details)";
     }
-    
+
     private String getSourceTitle(SeriesData sd) throws RepositoryException
     {
         if (source != null) {
@@ -121,7 +121,7 @@ public class FileEpisodeResource extends EpisodeResource
         }
     }
 
-    public URI getActionUri(SeriesData sd)
+    public IRI getActionUri(SeriesData sd)
     {
         if (location != null) {
             return location;
@@ -132,16 +132,16 @@ public class FileEpisodeResource extends EpisodeResource
         }
     }
 
-    public URI getMagnetUri(SeriesData sd)
+    public IRI getMagnetUri(SeriesData sd)
     {
         List<String> uris = new ArrayList<String>(hashUris.size());
-        for (URI u : hashUris) {
+        for (IRI u : hashUris) {
             uris.add(u.toString());
         }
         Collections.sort(uris);
-        
+
         StringBuffer sb = new StringBuffer("magnet:");
-        
+
         if (uris.size() == 1) {
             sb.append("?xt=" + uris.get(0));
         } else {
@@ -153,9 +153,9 @@ public class FileEpisodeResource extends EpisodeResource
                 sb.append("xt." + (i + 1) + "=" + uris.get(i));
             }
         }
-        return new URIImpl(sb.toString());
+        return SimpleValueFactory.getInstance().createIRI(sb.toString());
     }
-    
+
     public String getDescription(SeriesData sd) throws RepositoryException
     {
         String sourceTitle = getSourceTitle(sd);

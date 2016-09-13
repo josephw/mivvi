@@ -26,10 +26,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.kafsemo.mivvi.rdf.RdfUtil;
 
 public abstract class EpisodeResource
 {
@@ -54,7 +55,7 @@ public abstract class EpisodeResource
     {
         Collection<FileEpisodeResource> fers = new ArrayList<FileEpisodeResource>();
         Set<Resource> coveredHashes = new HashSet<Resource>();
-        Map<URI, FileEpisodeResource> fersByLocation = new HashMap<URI, FileEpisodeResource>();
+        Map<IRI, FileEpisodeResource> fersByLocation = new HashMap<IRI, FileEpisodeResource>();
 
         /*
          * Create a new FER for each local resource.
@@ -63,14 +64,14 @@ public abstract class EpisodeResource
         Collection<Resource> localResources = new ArrayList<Resource>();
 
         lf.getResourcesFor(episode, localResources);
-        
+
         Iterator<Resource> i;
-        
+
         i = localResources.iterator();
         while (i.hasNext()) {
             Resource r = i.next();
-            
-            URI u = RdfUtil.asUri(r);
+
+            IRI u = RdfUtil.asUri(r);
             if (u == null)
                 continue;
 
@@ -81,7 +82,7 @@ public abstract class EpisodeResource
             coveredHashes.addAll(fer.hashUris);
 
             fers.add(fer);
-            
+
             fersByLocation.put(u, fer);
         }
 
@@ -90,24 +91,24 @@ public abstract class EpisodeResource
          *  drop any that are already present in a FER
          *  Maintain a map hash -> source
          */
-        
+
         // XXX
-        Collection<URI> episodeHashes = new ArrayList<URI>();
+        Collection<IRI> episodeHashes = new ArrayList<IRI>();
 
         sd.exportAllIdentifiedHashes(episode, episodeHashes);
-        
-        Iterator<URI> i2 = episodeHashes.iterator();
-        while (i2.hasNext()) {
-            URI r = i2.next();
 
-            URI hash = RdfUtil.asUri(r);
+        Iterator<IRI> i2 = episodeHashes.iterator();
+        while (i2.hasNext()) {
+            IRI r = i2.next();
+
+            IRI hash = RdfUtil.asUri(r);
             if (hash == null)
                 continue;
-            
+
             if (coveredHashes.contains(hash))
                 continue;
 
-            URI location = lf.getResourceByHash(hash);
+            IRI location = lf.getResourceByHash(hash);
 
             FileEpisodeResource fer;
 
@@ -124,10 +125,10 @@ public abstract class EpisodeResource
             fer.hashUris.add(r);
             fer.source = sd.getSource(hash);
         }
-        
+
         /* Search for any indirect hashes */
         for (FileEpisodeResource fer : fers) {
-            sd.exportHashSynonyms(new ArrayList<URI>(fer.hashUris), fer.hashUris);
+            sd.exportHashSynonyms(new ArrayList<IRI>(fer.hashUris), fer.hashUris);
         }
 
         /*
@@ -136,24 +137,24 @@ public abstract class EpisodeResource
          *   Otherwise, create (f, h, s) FER
          *   If no file, create (null, h, s) FER
          */
-        
-        
+
+
         /*
          * NB: Check for statements-about-hashes in either graph
          */
-        
+
         c.addAll(fers);
     }
-    
+
     private static void findSource(FileEpisodeResource fer, SeriesData sd)
         throws RepositoryException
     {
-        Iterator<URI> hi = fer.hashUris.iterator();
+        Iterator<IRI> hi = fer.hashUris.iterator();
         while (fer.source == null && hi.hasNext()) {
             fer.source = sd.getSource(hi.next());
         }
     }
-    
+
     public static void extractSkuEpisodeResources(
             Resource episode, Collection<? super SkuEpisodeResource> c, SeriesData sd)
         throws RepositoryException
@@ -174,7 +175,7 @@ public abstract class EpisodeResource
      * is available.
      */
     public abstract String getLabel(SeriesData sd) throws RepositoryException;
-    
+
     /**
      * A URI, most probably a URL, that can be used to access this resource, or
      * <code>null</code> if none is available.

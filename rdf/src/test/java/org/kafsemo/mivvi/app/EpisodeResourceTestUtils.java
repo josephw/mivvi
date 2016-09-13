@@ -23,18 +23,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.StatementImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
 public class EpisodeResourceTestUtils
 {
+    private static final ValueFactory VALUE_FACTORY = SimpleValueFactory.getInstance();
+
     /**
      * A utility class for creating temporary test files full of RDF.
-     * 
+     *
      * @author Joseph Walton
      */
     static class TempRdfFile
@@ -42,28 +45,28 @@ public class EpisodeResourceTestUtils
         private final File f;
         private final Writer w;
         private RDFXMLWriter rxw;
-        
+
         TempRdfFile() throws IOException
         {
             f = File.createTempFile("mivvi-test-temp", ".rdf");
             f.deleteOnExit();
-            
+
             w = new FileWriter(f);
             rxw = new RDFXMLWriter(w);
             rxw.startRDF();
         }
-        
+
         File endRxw() throws IOException, RDFHandlerException
         {
             rxw.endRDF();
             w.close();
             return f;
         }
-        
-        void writeStatement(Resource subject, URI predicate, Value object)
+
+        void writeStatement(Resource subject, IRI predicate, Value object)
             throws IOException, RDFHandlerException
         {
-            rxw.handleStatement(new StatementImpl(subject, predicate, object));
+            rxw.handleStatement(VALUE_FACTORY.createStatement(subject, predicate, object));
         }
     }
 }

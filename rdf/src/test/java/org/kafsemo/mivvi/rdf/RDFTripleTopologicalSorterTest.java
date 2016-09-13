@@ -9,26 +9,25 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.hamcrest.Matchers;
-import org.junit.Test;
 import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.BNodeImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.StatementImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.DC;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 public class RDFTripleTopologicalSorterTest
 {
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
 
     private static Model asModel(Collection<? extends Statement> statements)
     {
@@ -61,7 +60,7 @@ public class RDFTripleTopologicalSorterTest
         List<Statement> statements = new ArrayList<Statement>();
         for (Resource rsrc : subjects)
         {
-            statements.add(new StatementImpl(rsrc, DC.TITLE, new BNodeImpl("a")));
+            statements.add(VF.createStatement(rsrc, DC.TITLE, VF.createBNode("a")));
         }
         return statements;
     }
@@ -69,10 +68,10 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void rootStatementsAreReturnedInSubjectOrderForUris()
     {
-        List<URI> subjects = new ArrayList<URI>();
+        List<IRI> subjects = new ArrayList<IRI>();
         for (int i = 0; i <= 9; i++)
         {
-            subjects.add(new URIImpl(String.format("http://test/%02d", i)));
+            subjects.add(VF.createIRI(String.format("http://test/%02d", i)));
         }
 
         List<Statement> statements = statementsWithSubjects(subjects);
@@ -88,7 +87,7 @@ public class RDFTripleTopologicalSorterTest
         List<BNode> subjects = new ArrayList<BNode>();
         for (int i = 0; i <= 9; i++)
         {
-            subjects.add(new BNodeImpl(String.format("%02d", i)));
+            subjects.add(VF.createBNode(String.format("%02d", i)));
         }
 
         List<Statement> statements = statementsWithSubjects(subjects);
@@ -105,12 +104,12 @@ public class RDFTripleTopologicalSorterTest
 
         for (int i = 0; i <= 9; i++)
         {
-            subjects.add(new URIImpl(String.format("http://test/%02d", i)));
+            subjects.add(VF.createIRI(String.format("http://test/%02d", i)));
         }
 
         for (int i = 0; i <= 9; i++)
         {
-            subjects.add(new BNodeImpl(String.format("%02d", i)));
+            subjects.add(VF.createBNode(String.format("%02d", i)));
         }
 
         List<Resource> list = shuffled(subjects);
@@ -126,24 +125,24 @@ public class RDFTripleTopologicalSorterTest
 
         assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)), Matchers.emptyIterable());
 
-        statements.add(new StatementImpl(new URIImpl("http://test/"), DC.TITLE, new LiteralImpl("test")));
+        statements.add(VF.createStatement(VF.createIRI("http://test/"), DC.TITLE, VF.createLiteral("test")));
 
         assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)),
-                Matchers.<Resource> contains(new URIImpl("http://test/")));
+                Matchers.<Resource> contains(VF.createIRI("http://test/")));
     }
 
-    private static final URI POINTS_TO = new URIImpl("http://test/#points-to");
+    private static final IRI POINTS_TO = SimpleValueFactory.getInstance().createIRI("http://test/#points-to");
 
     @Test
     public void onlyUsedAsSubjectsDoesNotReturnResourcesUsedAsObjects()
     {
         List<Statement> statements = new ArrayList<Statement>();
 
-        statements.add(new StatementImpl(new URIImpl("http://test/"), DC.TITLE, new LiteralImpl("test")));
-        statements.add(new StatementImpl(new URIImpl("http://example.test/"), POINTS_TO, new URIImpl("http://test/")));
+        statements.add(VF.createStatement(VF.createIRI("http://test/"), DC.TITLE, VF.createLiteral("test")));
+        statements.add(VF.createStatement(VF.createIRI("http://example.test/"), POINTS_TO, VF.createIRI("http://test/")));
 
         assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)),
-                Matchers.<Resource> contains(new URIImpl("http://example.test/")));
+                Matchers.<Resource> contains(VF.createIRI("http://example.test/")));
     }
 
     @Test
@@ -151,7 +150,7 @@ public class RDFTripleTopologicalSorterTest
     {
         List<Statement> statements = new ArrayList<Statement>();
 
-        statements.add(new StatementImpl(new URIImpl("http://test/"), DC.TITLE, new URIImpl("http://test/")));
+        statements.add(VF.createStatement(VF.createIRI("http://test/"), DC.TITLE, VF.createIRI("http://test/")));
 
         assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)), Matchers.emptyIterable());
 
@@ -167,10 +166,10 @@ public class RDFTripleTopologicalSorterTest
 
         for (int i = 0; i < 10; i++)
         {
-            Resource subject = new URIImpl(String.format("http://test/%02d", i));
+            Resource subject = VF.createIRI(String.format("http://test/%02d", i));
 
-            statements.add(new StatementImpl(subject, new URIImpl("http://test/#p1"), subject));
-            statements.add(new StatementImpl(subject, new URIImpl("http://test/#p2"), subject));
+            statements.add(VF.createStatement(subject, VF.createIRI("http://test/#p1"), subject));
+            statements.add(VF.createStatement(subject, VF.createIRI("http://test/#p2"), subject));
         }
 
         List<Statement> list = shuffled(statements);
@@ -183,14 +182,14 @@ public class RDFTripleTopologicalSorterTest
     {
         List<Statement> statements = new ArrayList<Statement>();
 
-        Resource subject = new BNodeImpl("a");
+        Resource subject = VF.createBNode("a");
 
         for (int i = 0; i <= 9; i++)
         {
             // Random so they don't sort lexically, trailing index to help visual
             // examination
-            Resource object = new BNodeImpl(Double.toString(Math.random()) + "-" + i);
-            statements.add(new StatementImpl(subject, POINTS_TO, object));
+            Resource object = SimpleValueFactory.getInstance().createBNode(Double.toString(Math.random()) + "-" + i);
+            statements.add(SimpleValueFactory.getInstance().createStatement(subject, POINTS_TO, object));
             subject = object;
         }
 
@@ -204,19 +203,19 @@ public class RDFTripleTopologicalSorterTest
     {
         List<Statement> statements = new ArrayList<Statement>();
 
-        Resource subject = new BNodeImpl("a");
+        Resource subject = VF.createBNode("a");
 
         for (int i = 0; i <= 9; i++)
         {
             // Random so they don't sort lexically, trailing index to help visual
             // examination
-            Resource object = new BNodeImpl("b" + Double.toString(Math.random()) + "-" + i);
-            statements.add(new StatementImpl(subject, POINTS_TO, object));
+            Resource object = VF.createBNode("b" + Double.toString(Math.random()) + "-" + i);
+            statements.add(VF.createStatement(subject, POINTS_TO, object));
             subject = object;
         }
 
         /* Form a loop */
-        statements.add(new StatementImpl(subject, POINTS_TO, new BNodeImpl("a")));
+        statements.add(VF.createStatement(subject, POINTS_TO, VF.createBNode("a")));
 
         List<Statement> list = shuffled(statements);
 
@@ -226,12 +225,12 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void rdfTypeStatementsSortFirst()
     {
-        List<URI> predicates = new ArrayList<URI>();
+        List<IRI> predicates = new ArrayList<IRI>();
 
         predicates.add(RDF.TYPE);
         predicates.add(DC.TITLE);
 
-        List<URI> list = new ArrayList<URI>(predicates);
+        List<IRI> list = new ArrayList<IRI>(predicates);
         Collections.reverse(list);
 
         assertEquals(predicates, sortedBy(list, RDFTripleTopologicalSorter.PREDICATE_ORDER));
@@ -244,12 +243,12 @@ public class RDFTripleTopologicalSorterTest
 
         for (int i = 0; i <= 9; i++)
         {
-            Resource subject = new BNodeImpl(String.format("a%02d", i));
+            Resource subject = VF.createBNode(String.format("a%02d", i));
 
-            statements.add(new StatementImpl(subject, new URIImpl("http://test/z"), new LiteralImpl("Title 1")));
-            statements.add(new StatementImpl(subject, new URIImpl("http://test/z"), new LiteralImpl("Title 2")));
-            statements.add(new StatementImpl(subject, new URIImpl("http://test/a"), new URIImpl("http://test/#a")));
-            statements.add(new StatementImpl(subject, new URIImpl("http://test/a"), new URIImpl("http://test/#b")));
+            statements.add(VF.createStatement(subject, VF.createIRI("http://test/z"), VF.createLiteral("Title 1")));
+            statements.add(VF.createStatement(subject, VF.createIRI("http://test/z"), VF.createLiteral("Title 2")));
+            statements.add(VF.createStatement(subject, VF.createIRI("http://test/a"), VF.createIRI("http://test/#a")));
+            statements.add(VF.createStatement(subject, VF.createIRI("http://test/a"), VF.createIRI("http://test/#b")));
         }
 
         List<Statement> list = shuffled(statements);
@@ -260,14 +259,14 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void predicatesSortLexicallyByUri()
     {
-        List<URI> predicates = new ArrayList<URI>();
+        List<IRI> predicates = new ArrayList<IRI>();
 
         for (int i = 0; i <= 9; i++)
         {
-            predicates.add(new URIImpl(String.format("http://example.com/#rel-%02d", i)));
+            predicates.add(VF.createIRI(String.format("http://example.com/#rel-%02d", i)));
         }
 
-        List<URI> list = shuffled(predicates);
+        List<IRI> list = shuffled(predicates);
 
         assertEquals(predicates, sortedBy(list, RDFTripleTopologicalSorter.PREDICATE_ORDER));
     }
@@ -275,17 +274,17 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void listIndexPredicatesSortNumerically()
     {
-        List<URI> predicates = new ArrayList<URI>();
+        List<IRI> predicates = new ArrayList<IRI>();
 
         /*
          * Intentionally include one and two digit numbers so a lexical sort would be incorrect.
          */
         for (int i = 5; i <= 15; i++)
         {
-            predicates.add(new URIImpl(RDF.NAMESPACE + "_" + i));
+            predicates.add(VF.createIRI(RDF.NAMESPACE + "_" + i));
         }
 
-        List<URI> list = shuffled(predicates);
+        List<IRI> list = shuffled(predicates);
 
         assertEquals(predicates, sortedBy(list, RDFTripleTopologicalSorter.PREDICATE_ORDER));
     }
@@ -293,14 +292,14 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void listIndexPredicatesTreatsLeadingZeroesAsSignificant()
     {
-        List<URI> predicates = new ArrayList<URI>();
+        List<IRI> predicates = new ArrayList<IRI>();
 
-        predicates.add(new URIImpl(RDF.NAMESPACE + "_1"));
-        predicates.add(new URIImpl(RDF.NAMESPACE + "_9"));
-        predicates.add(new URIImpl(RDF.NAMESPACE + "_01"));
-        predicates.add(new URIImpl(RDF.NAMESPACE + "_99"));
+        predicates.add(VF.createIRI(RDF.NAMESPACE + "_1"));
+        predicates.add(VF.createIRI(RDF.NAMESPACE + "_9"));
+        predicates.add(VF.createIRI(RDF.NAMESPACE + "_01"));
+        predicates.add(VF.createIRI(RDF.NAMESPACE + "_99"));
 
-        List<URI> list = shuffled(predicates);
+        List<IRI> list = shuffled(predicates);
 
         assertEquals(predicates, sortedBy(list, RDFTripleTopologicalSorter.PREDICATE_ORDER));
     }
@@ -308,14 +307,14 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void listIndexPredicatesSortMutuallyWithOtherPredicates()
     {
-        List<URI> predicates = new ArrayList<URI>();
+        List<IRI> predicates = new ArrayList<IRI>();
 
-        predicates.add(new URIImpl("http://a.test/"));
-        predicates.add(new URIImpl(RDF.NAMESPACE + "_9"));
-        predicates.add(new URIImpl(RDF.NAMESPACE + "_10"));
-        predicates.add(new URIImpl("http://z.test/"));
+        predicates.add(VF.createIRI("http://a.test/"));
+        predicates.add(VF.createIRI(RDF.NAMESPACE + "_9"));
+        predicates.add(VF.createIRI(RDF.NAMESPACE + "_10"));
+        predicates.add(VF.createIRI("http://z.test/"));
 
-        List<URI> list = shuffled(predicates);
+        List<IRI> list = shuffled(predicates);
 
         assertEquals(predicates, sortedBy(list, RDFTripleTopologicalSorter.PREDICATE_ORDER));
     }
@@ -327,7 +326,7 @@ public class RDFTripleTopologicalSorterTest
 
         for (int i = 0; i <= 10; i++)
         {
-            literals.add(new LiteralImpl(String.format("Title %02d", i)));
+            literals.add(VF.createLiteral(String.format("Title %02d", i)));
         }
 
         List<Literal> list = shuffled(literals);
@@ -342,12 +341,12 @@ public class RDFTripleTopologicalSorterTest
 
         for (int i = 0; i <= 10; i++)
         {
-            values.add(new URIImpl(String.format("http://test/#a%02d", i)));
+            values.add(VF.createIRI(String.format("http://test/#a%02d", i)));
         }
 
         for (int i = 0; i <= 10; i++)
         {
-            values.add(new BNodeImpl(String.format("Title %02d", i)));
+            values.add(VF.createBNode(String.format("Title %02d", i)));
         }
 
         List<Value> list = shuffled(values);
@@ -367,21 +366,21 @@ public class RDFTripleTopologicalSorterTest
             /* Sort ahead of language-tagged */
             for (int datatype = 0; datatype < 5; datatype++)
             {
-                literals.add(new LiteralImpl(label, new URIImpl("http://a.test/" + datatype)));
-                literals.add(new LiteralImpl(label, new URIImpl("http://a.test/" + datatype)));
+                literals.add(VF.createLiteral(label, VF.createIRI("http://a.test/" + datatype)));
+                literals.add(VF.createLiteral(label, VF.createIRI("http://a.test/" + datatype)));
             }
 
             /* Language-tagged strings */
             for (int lang = 0; lang < 5; lang++)
             {
-                literals.add(new LiteralImpl(label, "xx-xx-" + lang));
+                literals.add(VF.createLiteral(label, "xx-xx-" + lang));
             }
 
             /* Sort after language-tagged */
             for (int datatype = 0; datatype < 5; datatype++)
             {
-                literals.add(new LiteralImpl(label, new URIImpl("http://z.test/" + datatype)));
-                literals.add(new LiteralImpl(label, new URIImpl("http://z.test/" + datatype)));
+                literals.add(VF.createLiteral(label, VF.createIRI("http://z.test/" + datatype)));
+                literals.add(VF.createLiteral(label, VF.createIRI("http://z.test/" + datatype)));
             }
         }
 
@@ -393,7 +392,7 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void literalWithTheSameLabelAndNoSpecificDatatypeCanBeCompared()
     {
-        Literal a = new LiteralImpl("a");
+        Literal a = VF.createLiteral("a");
         assertEquals(XMLSchema.STRING, a.getDatatype());
 
         assertEquals(0, RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a, a));
@@ -402,8 +401,8 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void aLiteralWithNoSpecificDatatypeSortsDifferentlyFromOneWith()
     {
-        Literal a1 = new LiteralImpl("a"),
-                a2 = new LiteralImpl("a", new URIImpl("http://test/#type"));
+        Literal a1 = VF.createLiteral("a"),
+                a2 = VF.createLiteral("a", VF.createIRI("http://test/#type"));
 
         assertThat(RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a1, a2), Matchers.not(0));
     }

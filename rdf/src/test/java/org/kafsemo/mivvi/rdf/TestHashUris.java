@@ -31,25 +31,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
-import org.kafsemo.mivvi.rdf.HashUris;
-import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
+import junit.framework.TestCase;
+
 
 public class TestHashUris extends TestCase
 {
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
     private static String asString(Collection<?> a)
     {
         List<String> l = new ArrayList<String>(a.size());
@@ -57,7 +57,7 @@ public class TestHashUris extends TestCase
             l.add(o.toString());
         }
         Collections.sort(l);
-        
+
         return l.toString();
     }
 
@@ -70,27 +70,27 @@ public class TestHashUris extends TestCase
     {
         return Channels.newChannel(new ByteArrayInputStream(ba));
     }
-    
+
     /**
      * Verify that the expected hashes are produced for the empty file.
-     * 
+     *
      * @throws IOException
      */
     public void testHashEmptyFile() throws IOException
     {
         File tf = File.createTempFile("hash", "tmp");
         tf.deleteOnExit();
-        
-        Collection<URI> c = HashUris.digest(tf);
+
+        Collection<IRI> c = HashUris.digest(tf);
         assertNotNull(c);
-        
+
         Set<Resource> expected = new HashSet<Resource>(Arrays.asList(new Resource[]{
-                new URIImpl("urn:md5:2QOYZWMPACZAJ2MABGMOZ6CCPY"),
-                new URIImpl("urn:sha1:3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ")
+                VF.createIRI("urn:md5:2QOYZWMPACZAJ2MABGMOZ6CCPY"),
+                VF.createIRI("urn:sha1:3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ")
         }));
-        
+
         assertEquals(expected, new HashSet<Resource>(c));
-        
+
         c = HashUris.digestStream(wrap(new byte[0]));
         assertNotNull(c);
         assertEquals(expected, new HashSet<Resource>(c));
@@ -98,59 +98,59 @@ public class TestHashUris extends TestCase
 
     /**
      * Verify that the expected hashes are produced for a file with contents.
-     * 
+     *
      * @throws IOException
      */
     public void testHashNonEmptyFile() throws IOException
     {
         byte[] ba = new byte[196609]; // Three 64k blocks + 1
-        
+
         for (int i = 0 ; i < ba.length ; i++) {
             ba[i] = (byte) (i % 0x100);
         }
-        
-        Collection<URI> c = HashUris.digestStream(wrap(ba));
+
+        Collection<IRI> c = HashUris.digestStream(wrap(ba));
         assertNotNull(c);
-        
-        Set<URI> expected = new HashSet<URI>(Arrays.asList(new URI[]{
-                new URIImpl("urn:md5:27JYG2USBLM33O6WE5W7M5ZESA"),
-                new URIImpl("urn:sha1:GNRFWBAU42M5CELITECKMR6UZBZJH2SU")
+
+        Set<IRI> expected = new HashSet<IRI>(Arrays.asList(new IRI[]{
+                VF.createIRI("urn:md5:27JYG2USBLM33O6WE5W7M5ZESA"),
+                VF.createIRI("urn:sha1:GNRFWBAU42M5CELITECKMR6UZBZJH2SU")
         }));
-        
-        assertEquals(expected, new HashSet<URI>(c));
+
+        assertEquals(expected, new HashSet<IRI>(c));
     }
-    
+
     public void testIsHashUri()
     {
         assertTrue(HashUris.isHashUri("urn:sha1:"));
         assertTrue(HashUris.isHashUri("urn:md5:"));
-        
+
         assertFalse(HashUris.isHashUri("urn:sha1"));
         assertFalse(HashUris.isHashUri("urn:md5"));
         assertFalse(HashUris.isHashUri("http://www.example.com/"));
-        
+
         assertFalse(HashUris.isHashUri((Value) null));
     }
-    
+
     public void testReplaceHashUris() throws RepositoryException
     {
-        Resource f1 = new URIImpl("file:///file1"),
-            f2 = new URIImpl("file:///file2");
+        Resource f1 = VF.createIRI("file:///file1"),
+            f2 = VF.createIRI("file:///file2");
 
         Repository rep = new SailRepository(new MemoryStore());
         rep.initialize();
-        
+
         RepositoryConnection cn = rep.getConnection();
-        
-        Resource m1 = new URIImpl("urn:md5:2QOYZWMPACZAJ2MABGMOZ6CCPY"),
-            s1 = new URIImpl("urn:sha1:3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ"),
-            m2 = new URIImpl("urn:md5:27JYG2USBLM33O6WE5W7M5ZESA"),
-            s2 = new URIImpl("urn:sha1:GNRFWBAU42M5CELITECKMR6UZBZJH2SU"),
-            
-            asin = new URIImpl("urn:x-asin:");
-        
-        Literal lit = new LiteralImpl("The Title");
-            
+
+        Resource m1 = VF.createIRI("urn:md5:2QOYZWMPACZAJ2MABGMOZ6CCPY"),
+            s1 = VF.createIRI("urn:sha1:3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ"),
+            m2 = VF.createIRI("urn:md5:27JYG2USBLM33O6WE5W7M5ZESA"),
+            s2 = VF.createIRI("urn:sha1:GNRFWBAU42M5CELITECKMR6UZBZJH2SU"),
+
+            asin = VF.createIRI("urn:x-asin:");
+
+        Literal lit = VF.createLiteral("The Title");
+
         // Initially, we have partial statements about two separate files
         cn.add(f1, RdfUtil.Dc.identifier, m1);
         cn.add(f2, RdfUtil.Dc.identifier, s1);
@@ -161,16 +161,16 @@ public class TestHashUris extends TestCase
         assertTrue(cn.hasStatement(f2, RdfUtil.Dc.identifier, s1, false));
         assertTrue(cn.hasStatement(f1, RdfUtil.Dc.title, lit, false));
         assertTrue(cn.hasStatement(f1, RdfUtil.Dc.identifier, asin, false));
-        
+
         Collection<Resource> newHashes = Arrays.asList(new Resource[]{m2, s2});
-        
+
         HashUris.replaceHashUris(cn, f1, newHashes);
-        
+
         assertFalse(cn.hasStatement(f1, RdfUtil.Dc.identifier, m1, false));
         assertTrue(cn.hasStatement(f2, RdfUtil.Dc.identifier, s1, false));
         assertTrue(cn.hasStatement(f1, RdfUtil.Dc.title, lit, false));
         assertTrue(cn.hasStatement(f1, RdfUtil.Dc.identifier, asin, false));
-        
+
         assertTrue(cn.hasStatement(f1, RdfUtil.Dc.identifier, m2, false));
         assertTrue(cn.hasStatement(f1, RdfUtil.Dc.identifier, s2, false));
     }

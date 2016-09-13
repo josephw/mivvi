@@ -24,11 +24,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.kafsemo.mivvi.app.TokenSetFile;
-import org.kafsemo.mivvi.app.UriSetFile;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.impl.BNodeImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import junit.framework.TestCase;
 
@@ -93,9 +91,11 @@ public class TestTokenSetFile extends TestCase
     {
         UriSetFile usf = new UriSetFile(tf);
 
-        Resource a = new URIImpl("http://www.example.com/"),
-            b = new BNodeImpl("blank-identifier"),
-            c = new URIImpl("uri:null");
+        ValueFactory vf = SimpleValueFactory.getInstance();
+
+        Resource a = vf.createIRI("http://www.example.com/"),
+            b = vf.createBNode("blank-identifier"),
+            c = vf.createIRI("uri:null");
 
         usf.add(a);
         usf.add(b);

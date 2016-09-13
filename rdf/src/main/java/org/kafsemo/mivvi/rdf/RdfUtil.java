@@ -19,17 +19,17 @@
 /*
  * Mivvi - Metadata, organisation and identification for television programs
  * Copyright © 2004-2014 Joseph Walton
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
@@ -43,7 +43,9 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -55,6 +57,8 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
  */
 public class RdfUtil
 {
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
     private static String SEQ_PREFIX = "http://www.w3.org/1999/02/22-rdf-syntax-ns#_";
 
     public static final String DC_URI = "http://purl.org/dc/elements/1.1/";
@@ -63,12 +67,12 @@ public class RdfUtil
     {
         return DC_URI + n;
     }
-    
+
     public static final String MVI(String n)
     {
         return Mivvi.URI + n;
     }
-    
+
     public static int index(URI u)
     {
         String s = u.toString();
@@ -79,68 +83,66 @@ public class RdfUtil
                 // Fall through
             }
         }
-        
+
         return -1;
     }
- 
+
     public static class Dc
     {
-        public static final URI title = new URIImpl(DC("title")),
-            description = new URIImpl(DC("description"));
-        public static final URI contributor = new URIImpl(DC("contributor")),
-            date = new URIImpl(DC("date"));
-        public static final URI identifier = new URIImpl(DC("identifier"));
-        public static final URI source = new URIImpl(DC("source"));
+        public static final IRI title = VF.createIRI(DC("title")),
+            description = VF.createIRI(DC("description"));
+        public static final IRI contributor = VF.createIRI(DC("contributor")),
+            date = VF.createIRI(DC("date"));
+        public static final IRI identifier = VF.createIRI(DC("identifier"));
+        public static final IRI source = VF.createIRI(DC("source"));
     }
-    
+
     public static class Mvi
     {
-        public static final URI Series = new URIImpl(MVI("Series"));
-        public static final URI Season = new URIImpl(MVI("Season"));
-        public static final URI Episode = new URIImpl(MVI("Episode"));
+        public static final IRI Series = VF.createIRI(MVI("Series"));
+        public static final IRI Season = VF.createIRI(MVI("Season"));
+        public static final IRI Episode = VF.createIRI(MVI("Episode"));
 
-        public static final URI seasonNumber = new URIImpl(MVI("seasonNumber"));
-        public static final URI episodes = new URIImpl(MVI("episodes"));
-        public static final URI episodeNumber = new URIImpl(MVI("episodeNumber"));
-        public static final URI seasons = new URIImpl(MVI("seasons"));
-        public static final IRI episode = new URIImpl(MVI("episode"));
+        public static final IRI seasonNumber = VF.createIRI(MVI("seasonNumber"));
+        public static final IRI episodes = VF.createIRI(MVI("episodes"));
+        public static final IRI episodeNumber = VF.createIRI(MVI("episodeNumber"));
+        public static final IRI seasons = VF.createIRI(MVI("seasons"));
+        public static final IRI episode = VF.createIRI(MVI("episode"));
 
-        public static final URI productionCode = new URIImpl(MVI("productionCode"));
+        public static final IRI productionCode = VF.createIRI(MVI("productionCode"));
 
 // These two predicates indicate that a resource "is" a particular season or series
 //  (for example, a DVD). They also indicate the season and series an episode belongs
 //        to.
-        public static final URI season = new URIImpl(MVI("season"));
-        public static final URI series = new URIImpl(MVI("series"));
+        public static final IRI season = VF.createIRI(MVI("season"));
+        public static final IRI series = VF.createIRI(MVI("series"));
     }
-    
+
     public static class Rdf
     {
-        public static final URI type = RDF.TYPE;
+        public static final IRI type = RDF.TYPE;
     }
-    
+
     public static class Rdfs
     {
-        public static final URI seeAlso = RDFS.SEEALSO;
+        public static final IRI seeAlso = RDFS.SEEALSO;
     }
-    
+
     public static class Doap
     {
         public static final String BASE = "http://usefulinc.com/ns/doap#";
-        
-        public static final URI downloadPage = new URIImpl(BASE + "download-page");
 
-        public static final URI release = new URIImpl(BASE + "release");
-        public static final URI revision = new URIImpl(BASE + "revision");
+        public static final IRI downloadPage = VF.createIRI(BASE + "download-page");
+
+        public static final IRI release = VF.createIRI(BASE + "release");
+        public static final IRI revision = VF.createIRI(BASE + "revision");
     }
 
     public static class Owl
     {
-        public static final String BASE = "http://www.w3.org/2002/07/owl#";
-        
-        public static final URI sameAs = new URIImpl(BASE + "sameAs");
+        public static final IRI sameAs = OWL.SAMEAS;
     }
-    
+
     public static Resource asResource(Value v)
     {
         if (v instanceof Resource) {
@@ -149,11 +151,11 @@ public class RdfUtil
             return null;
         }
     }
-    
-    public static URI asUri(Value v)
+
+    public static IRI asUri(Value v)
     {
-        if (v instanceof URI) {
-            return (URI)v;
+        if (v instanceof IRI) {
+            return (IRI)v;
         } else {
             return null;
         }

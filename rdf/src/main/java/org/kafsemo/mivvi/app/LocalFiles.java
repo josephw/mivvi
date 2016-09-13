@@ -37,6 +37,7 @@ import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
 import org.kafsemo.mivvi.sesame.RelativeRDFXMLWriter;
 import org.eclipse.rdf4j.model.Graph;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -380,25 +381,25 @@ public class LocalFiles
         }
     }
 
-    public synchronized void replaceHashes(Resource r, Collection<URI> newHashes) throws RepositoryException
+    public synchronized void replaceHashes(Resource r, Collection<IRI> newHashes) throws RepositoryException
     {
         HashUris.replaceHashUris(localFiles, r, newHashes);
     }
 
-    synchronized void exportResourceHashes(Resource r, Collection<URI> hashUris) throws RepositoryException
+    synchronized void exportResourceHashes(Resource r, Collection<IRI> hashUris) throws RepositoryException
     {
         RepositoryResult<Statement> si = localFiles.getStatements(r, RdfUtil.Dc.identifier, null, true);
 
         while (si.hasNext()) {
             Value v = si.next().getObject();
             if (HashUris.isHashUri(v)) {
-                hashUris.add((URI) v);
+                hashUris.add((IRI) v);
             }
         }
     }
 
     // XXX Return multiple files with the same hash?
-    synchronized URI getResourceByHash(URI hash) throws RepositoryException
+    synchronized IRI getResourceByHash(IRI hash) throws RepositoryException
     {
         RepositoryResult<Statement> si = localFiles.getStatements(null, RdfUtil.Dc.identifier, hash, true);
 

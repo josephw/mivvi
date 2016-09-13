@@ -67,6 +67,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.tree.DefaultTreeModel;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.impl.LinkedHashModel;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 import org.kafsemo.mivvi.app.EpisodeResource;
 import org.kafsemo.mivvi.app.FileUtil;
 import org.kafsemo.mivvi.app.LocalFiles;
@@ -76,14 +85,6 @@ import org.kafsemo.mivvi.desktop.MetaData;
 import org.kafsemo.mivvi.rdf.HashUris;
 import org.kafsemo.mivvi.rdf.Mivvi;
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.rio.RDFHandlerException;
-import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
 /**
  * @author joe
@@ -458,7 +459,7 @@ public class EpisodeDetailsFrame extends JFrame
 
                                 File f = FileUtil.fileFrom(r);
                                 if (f != null) {
-                                    Collection<URI> newHashes;
+                                    Collection<IRI> newHashes;
 
                                     try {
                                         newHashes = HashUris.digest(f);

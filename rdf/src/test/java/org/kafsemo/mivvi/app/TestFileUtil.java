@@ -20,10 +20,9 @@ package org.kafsemo.mivvi.app;
 
 import java.io.File;
 
-import org.kafsemo.mivvi.app.FileUtil;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import junit.framework.TestCase;
 
@@ -43,7 +42,7 @@ public class TestFileUtil extends TestCase
             else
                 sb.append(ca[i]);
         }
-        
+
         return sb.toString();
     }
 
@@ -72,18 +71,20 @@ public class TestFileUtil extends TestCase
         assertTrue(contains("a/", "a/b/c"));
         assertTrue(contains("a/b", "a/b/c"));
     }
-    
+
     public void testFileFrom()
     {
-        Value v = new LiteralImpl("Just a string");
+        ValueFactory vf = SimpleValueFactory.getInstance();
+
+        Value v = vf.createLiteral("Just a string");
         assertNull(FileUtil.fileFrom(v));
-        
-        v = new URIImpl("http://www.example.com/");
+
+        v = vf.createIRI("http://www.example.com/");
         assertNull(FileUtil.fileFrom(v));
-        
+
         File d = new File("").getAbsoluteFile();
-        
-        v = new URIImpl(d.toURI().toString());
+
+        v = vf.createIRI(d.toURI().toString());
         assertEquals(d, FileUtil.fileFrom(v));
     }
 }

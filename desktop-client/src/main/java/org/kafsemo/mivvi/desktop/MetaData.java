@@ -31,17 +31,18 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.kafsemo.mivvi.app.RdfMiscVocabulary;
-import org.kafsemo.mivvi.app.SeriesData;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.impl.URIImpl;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.kafsemo.mivvi.app.RdfMiscVocabulary;
+import org.kafsemo.mivvi.app.SeriesData;
 
 public class MetaData
 {
     private final SeriesData seriesData;
-    
+
     public MetaData(SeriesData seriesData)
     {
         this.seriesData = seriesData;
@@ -58,12 +59,12 @@ public class MetaData
 
     public Icon getIcon(Resource res) throws RepositoryException
     {
-        List<URI> icons = seriesData.getResourceIcons(res);
-        
-        for (URI uri : icons) {
+        List<IRI> icons = seriesData.getResourceIcons(res);
+
+        for (IRI uri : icons) {
             String u = uri.toString();
             String ul = u.toLowerCase();
-            
+
             if (ul.startsWith("file:") || ul.startsWith("jar:file:")) {
                 try {
                     return new ImageIcon(new URL(u));
@@ -72,7 +73,7 @@ public class MetaData
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -85,7 +86,7 @@ public class MetaData
         } catch (UnsupportedEncodingException ue) {
             throw new RuntimeException("UTF-8 not supported", ue);
         }
-        
+
 //        seriesData.mviRepCn.add(r, RdfUtil.Rdf.type, RdfMiscVocabulary.kafsemoMivviCategory);
 
         return r;

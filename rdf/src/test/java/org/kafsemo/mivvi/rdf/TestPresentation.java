@@ -20,11 +20,8 @@ package org.kafsemo.mivvi.rdf;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
-import org.kafsemo.mivvi.rdf.Presentation;
-import org.kafsemo.mivvi.rdf.Presentation.Details;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -32,12 +29,17 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.kafsemo.mivvi.rdf.Presentation.Details;
+
+import junit.framework.TestCase;
 
 /**
  * @author joe
  */
 public class TestPresentation extends TestCase
 {
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
     Presentation getPresentation(String... resources)
         throws IOException, RepositoryException, RDFParseException
     {
@@ -50,7 +52,7 @@ public class TestPresentation extends TestCase
                     getClass().getResourceAsStream(res),
                     "file:///", RDFFormat.RDFXML);
         }
-        
+
         Presentation p = new Presentation(cn);
         return p;
     }
@@ -58,39 +60,39 @@ public class TestPresentation extends TestCase
     public void testGetFilenameFor() throws Exception
     {
         Presentation p = getPresentation("example-show.rdf");
-        String f = p.getFilenameFor(new URIImpl("http://www.example.com/1/1#"));
-        
+        String f = p.getFilenameFor(VF.createIRI("http://www.example.com/1/1#"));
+
         assertEquals("Example Show - 1x01 - Named Episode", f);
     }
-    
+
     /**
      * The returned details should indicate the position
      * of the episode within its season, rather than
      * overall in the series.
-     * 
+     *
      * @throws Exception
      */
     public void testEpisodeNumberInSeason() throws Exception
     {
         Presentation p = getPresentation("example-show.rdf");
-        Details d = p.getDetailsFor(new URIImpl("http://www.example.com/2/2#"));
+        Details d = p.getDetailsFor(VF.createIRI("http://www.example.com/2/2#"));
 
         assertEquals("2", d.seasonNumber);
         assertEquals(2, d.episodeNumber);
     }
-    
+
     public void testQueryForUnknownResource() throws Exception
     {
         Presentation p = getPresentation("example-show.rdf");
-        Details details = p.getDetailsFor(new URIImpl("http://www.example.com/no-such-resource#"));
+        Details details = p.getDetailsFor(VF.createIRI("http://www.example.com/no-such-resource#"));
         assertNull("No details for unknown resource", details);
     }
-    
+
     public void testQueryAgainstEmptyPresentation() throws Exception
     {
         Presentation emptyPres = getPresentation();
-        
-        Details details = emptyPres.getDetailsFor(new URIImpl("http://www.example.com/1/1#"));
+
+        Details details = emptyPres.getDetailsFor(VF.createIRI("http://www.example.com/1/1#"));
         assertNull("Any query against an empty repository should give null", details);
     }
 }

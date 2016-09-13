@@ -30,23 +30,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 
 /**
  * Methods to deal with <code>uri:{sha1,md5}:</code> URIs.
- * 
+ *
  * @author Joseph Walton
  */
 public class HashUris
 {
-    public static Collection<URI> digest(File f) throws IOException
+    public static Collection<IRI> digest(File f) throws IOException
     {
         FileInputStream fis = new FileInputStream(f);
         try {
@@ -60,18 +61,18 @@ public class HashUris
             fis.close();
         }
     }
-    
-    public static Collection<URI> digestStream(ReadableByteChannel fc) throws IOException
+
+    public static Collection<IRI> digestStream(ReadableByteChannel fc) throws IOException
     {
         try {
             MessageDigest mdSha1 = MessageDigest.getInstance("SHA1"),
                 mdMd5 = MessageDigest.getInstance("MD5");
-    
+
             byte[] ba = new byte[65536];
             ByteBuffer bb = ByteBuffer.wrap(ba);
-            
+
             int l;
-            
+
             while ((l = fc.read(bb)) >= 0) {
                 bb.flip();
 
@@ -81,12 +82,13 @@ public class HashUris
                 mdMd5.update(ba, 0, l);
                 bb.rewind();
             }
-            
+
             fc.close();
-            
-            Collection<URI> uris = Arrays.asList(new URI[]{
-                    new URIImpl("urn:sha1:" + encode(mdSha1.digest())),
-                    new URIImpl("urn:md5:" + encode(mdMd5.digest()))
+
+            ValueFactory vf = SimpleValueFactory.getInstance();
+            Collection<IRI> uris = Arrays.asList(new IRI[]{
+                    vf.createIRI("urn:sha1:" + encode(mdSha1.digest())),
+                    vf.createIRI("urn:md5:" + encode(mdMd5.digest()))
             });
 
             return uris;
@@ -110,14 +112,14 @@ public class HashUris
             buff = buff << 8;
             buff |= b;
             pres += 8;
-            
+
             while (pres >= 5) {
                 int t = (buff >> (pres - 5)) & 0x1F;
                 sb.append(ALPHABET.charAt(t));
                 pres -= 5;
             }
         }
-        
+
         if (pres > 0) {
             int t = (buff << (5 - pres)) & 0x1F;
             sb.append(ALPHABET.charAt(t));
@@ -131,7 +133,7 @@ public class HashUris
         String l = uri.toLowerCase();
         return (l.startsWith("urn:sha1:") || l.startsWith("urn:md5:"));
     }
-    
+
     public static boolean isHashUri(Value v)
     {
         String uri = RdfUtil.resourceUri(v);
@@ -151,16 +153,16 @@ public class HashUris
         RepositoryResult<Statement> si = cn.getStatements(r, RdfUtil.Dc.identifier, null, false);
         while (si.hasNext()) {
             Statement s = si.next();
-            
+
             String uri = RdfUtil.resourceUri(s.getObject());
             if (uri != null && isHashUri(uri))
                 pendingRemoval.add(s);
         }
-        
+
         for (Statement s : pendingRemoval) {
             cn.remove(s);
         }
-        
+
         for (Resource nh : newHashes) {
             cn.add(r, RdfUtil.Dc.identifier, nh);
         }

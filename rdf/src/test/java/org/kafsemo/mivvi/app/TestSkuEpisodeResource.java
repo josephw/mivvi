@@ -23,32 +23,31 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.kafsemo.mivvi.app.EpisodeResource;
-import org.kafsemo.mivvi.app.SeriesData;
-import org.kafsemo.mivvi.app.SkuEpisodeResource;
-import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.kafsemo.mivvi.rdf.RdfUtil;
+
+import junit.framework.TestCase;
 
 /**
  * Make sure that {@link SkuEpisodeResource}s are extracted from RDF.
- * 
+ *
  * @author Joseph Walton
  */
 public class TestSkuEpisodeResource extends TestCase
 {
-    static final Resource EPISODE = new URIImpl("http://www.example.com/episode"),
-        ISBN = new URIImpl("urn:isbn:not-a-real-isbn"),
-        ASIN = new URIImpl("urn:x-asin:not-a-real-asin");
+    private static ValueFactory VF = SimpleValueFactory.getInstance();
+
+    static final Resource EPISODE = VF.createIRI("http://www.example.com/episode"),
+        ISBN = VF.createIRI("urn:isbn:not-a-real-isbn"),
+        ASIN = VF.createIRI("urn:x-asin:not-a-real-asin");
 
     EpisodeResourceTestUtils.TempRdfFile trf;
 
@@ -61,7 +60,7 @@ public class TestSkuEpisodeResource extends TestCase
     {
         Repository rep = new SailRepository(new MemoryStore());
         rep.initialize();
-        
+
         SeriesData sd = new SeriesData();
         sd.initMviRepository(rep);
         sd.importMivvi(trf.endRxw());
@@ -74,14 +73,14 @@ public class TestSkuEpisodeResource extends TestCase
         initRxw();
         trf.writeStatement(ISBN, RdfUtil.Mvi.episode, EPISODE);
         sd = endRxw();
-        
-        
+
+
         List<SkuEpisodeResource> c = new ArrayList<SkuEpisodeResource>();
-        
+
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
 
         assertEquals(1, c.size());
-        
+
         SkuEpisodeResource ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertNull(ser.getAsin());
@@ -93,14 +92,14 @@ public class TestSkuEpisodeResource extends TestCase
         initRxw();
         trf.writeStatement(ASIN, RdfUtil.Mvi.episode, EPISODE);
         sd = endRxw();
-        
-        
+
+
         List<SkuEpisodeResource> c = new ArrayList<SkuEpisodeResource>();
-        
+
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
 
         assertEquals(1, c.size());
-        
+
         SkuEpisodeResource ser = c.get(0);
         assertNull(ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());
@@ -113,17 +112,17 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ISBN, RdfUtil.Mvi.episode, EPISODE);
         trf.writeStatement(ASIN, RdfUtil.Mvi.episode, EPISODE);
         sd = endRxw();
-        
-        
+
+
         List<SkuEpisodeResource> c = new ArrayList<SkuEpisodeResource>();
-        
+
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
 
         assertEquals(2, c.size());
-        
+
         SkuEpisodeResource a = c.get(0),
             b = c.get(1);
-        
+
         if (a.getIsbn() == null) {
             assertNull(a.getIsbn());
             assertEquals(ASIN, a.getAsin());
@@ -145,14 +144,14 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ISBN, RdfUtil.Mvi.episode, EPISODE);
         trf.writeStatement(ASIN, RdfUtil.Owl.sameAs, ISBN);
         sd = endRxw();
-        
-        
+
+
         List<SkuEpisodeResource> c = new ArrayList<SkuEpisodeResource>();
-        
+
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
 
         assertEquals(1, c.size());
-        
+
         SkuEpisodeResource ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());
@@ -165,14 +164,14 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ASIN, RdfUtil.Mvi.episode, EPISODE);
         trf.writeStatement(ASIN, RdfUtil.Owl.sameAs, ISBN);
         sd = endRxw();
-        
-        
+
+
         List<SkuEpisodeResource> c = new ArrayList<SkuEpisodeResource>();
-        
+
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
 
         assertEquals(1, c.size());
-        
+
         SkuEpisodeResource ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());
@@ -185,14 +184,14 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ISBN, RdfUtil.Mvi.episode, EPISODE);
         trf.writeStatement(ASIN, RdfUtil.Owl.sameAs, ISBN);
         sd = endRxw();
-        
-        
+
+
         List<SkuEpisodeResource> c = new ArrayList<SkuEpisodeResource>();
-        
+
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
 
         assertEquals(1, c.size());
-        
+
         SkuEpisodeResource ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());
@@ -217,11 +216,11 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ISBN, RdfUtil.Owl.sameAs, ISBN);
         trf.writeStatement(ASIN, RdfUtil.Owl.sameAs, ASIN);
         sd = endRxw();
-        
+
         c.clear();
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
         assertEquals(1, c.size());
-        
+
         ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());
@@ -242,19 +241,19 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ISBN, RdfUtil.Owl.sameAs, ASIN);
         trf.writeStatement(ISBN, RdfUtil.Owl.sameAs, ISBN);
         trf.writeStatement(ASIN, RdfUtil.Owl.sameAs, ASIN);
-        
-        trf.writeStatement(ISBN, RdfUtil.Dc.title, new LiteralImpl("ISBN Title"));
+
+        trf.writeStatement(ISBN, RdfUtil.Dc.title, VF.createLiteral("ISBN Title"));
         sd = endRxw();
-        
+
         c.clear();
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
         assertEquals(1, c.size());
-        
+
         ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());
         assertEquals("ISBN Title", ser.getTitle());
-        
+
         // ASIN title only
         initRxw();
         trf.writeStatement(ISBN, RdfUtil.Mvi.episode, EPISODE);
@@ -263,19 +262,19 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ISBN, RdfUtil.Owl.sameAs, ASIN);
         trf.writeStatement(ISBN, RdfUtil.Owl.sameAs, ISBN);
         trf.writeStatement(ASIN, RdfUtil.Owl.sameAs, ASIN);
-        
-        trf.writeStatement(ASIN, RdfUtil.Dc.title, new LiteralImpl("ASIN Title"));
+
+        trf.writeStatement(ASIN, RdfUtil.Dc.title, VF.createLiteral("ASIN Title"));
         sd = endRxw();
-        
+
         c.clear();
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
         assertEquals(1, c.size());
-        
+
         ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());
         assertEquals("ASIN Title", ser.getTitle());
-        
+
         // Both, with ISBN preferred
         initRxw();
         trf.writeStatement(ISBN, RdfUtil.Mvi.episode, EPISODE);
@@ -284,15 +283,15 @@ public class TestSkuEpisodeResource extends TestCase
         trf.writeStatement(ISBN, RdfUtil.Owl.sameAs, ASIN);
         trf.writeStatement(ISBN, RdfUtil.Owl.sameAs, ISBN);
         trf.writeStatement(ASIN, RdfUtil.Owl.sameAs, ASIN);
-        
-        trf.writeStatement(ISBN, RdfUtil.Dc.title, new LiteralImpl("ISBN Title"));
-        trf.writeStatement(ASIN, RdfUtil.Dc.title, new LiteralImpl("ASIN Title"));
+
+        trf.writeStatement(ISBN, RdfUtil.Dc.title, VF.createLiteral("ISBN Title"));
+        trf.writeStatement(ASIN, RdfUtil.Dc.title, VF.createLiteral("ASIN Title"));
         sd = endRxw();
-        
+
         c.clear();
         EpisodeResource.extractSkuEpisodeResources(EPISODE, c, sd);
         assertEquals(1, c.size());
-        
+
         ser = c.get(0);
         assertEquals(ISBN, ser.getIsbn());
         assertEquals(ASIN, ser.getAsin());

@@ -35,18 +35,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.kafsemo.mivvi.rdf.HashUris;
-import org.kafsemo.mivvi.rdf.IdentifierMappings;
-import org.kafsemo.mivvi.rdf.Presentation;
-import org.kafsemo.mivvi.rdf.Presentation.Details;
-import org.kafsemo.mivvi.rdf.RdfMivviDataSource;
-import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.kafsemo.mivvi.recognise.FilenameMatch;
-import org.kafsemo.mivvi.recognise.FilenameProcessor;
-import org.kafsemo.mivvi.recognise.SeriesDataException;
-import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
-import org.kafsemo.mivvi.sesame.JarTurtleParser;
 import org.eclipse.rdf4j.model.Graph;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -66,6 +56,17 @@ import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.ntriples.NTriplesParser;
 import org.eclipse.rdf4j.sail.Sail;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.kafsemo.mivvi.rdf.HashUris;
+import org.kafsemo.mivvi.rdf.IdentifierMappings;
+import org.kafsemo.mivvi.rdf.Presentation;
+import org.kafsemo.mivvi.rdf.Presentation.Details;
+import org.kafsemo.mivvi.rdf.RdfMivviDataSource;
+import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.kafsemo.mivvi.recognise.FilenameMatch;
+import org.kafsemo.mivvi.recognise.FilenameProcessor;
+import org.kafsemo.mivvi.recognise.SeriesDataException;
+import org.kafsemo.mivvi.sesame.JarRDFXMLParser;
+import org.kafsemo.mivvi.sesame.JarTurtleParser;
 
 public class SeriesData
 {
@@ -521,7 +522,7 @@ public class SeriesData
      * @param c
      * @throws RepositoryException
      */
-    synchronized void exportAllIdentifiedHashes(Resource episode, Collection<URI> c) throws RepositoryException
+    synchronized void exportAllIdentifiedHashes(Resource episode, Collection<IRI> c) throws RepositoryException
     {
         RepositoryResult<Statement> si =
             mviRepCn.getStatements(null, RdfUtil.Mvi.episode, episode, true);
@@ -529,7 +530,7 @@ public class SeriesData
         while (si.hasNext()) {
             Resource r = si.next().getSubject();
             if (HashUris.isHashUri(r)) {
-                c.add((URI) r);
+                c.add((IRI) r);
             }
         }
     }
@@ -543,23 +544,23 @@ public class SeriesData
      * @param c
      * @throws RepositoryException
      */
-    synchronized void exportHashSynonyms(Collection<URI> origHashes, Set<URI> c) throws RepositoryException
+    synchronized void exportHashSynonyms(Collection<IRI> origHashes, Set<IRI> c) throws RepositoryException
     {
         RepositoryResult<Statement> si;
-        Iterator<URI> i;
+        Iterator<IRI> i;
 
         /* Go to two degrees:
          *  Get all hashes that are identifiers for this hash.
          */
         i = origHashes.iterator();
         while (i.hasNext()) {
-            URI uri = i.next();
+            IRI uri = i.next();
             si = mviRepCn.getStatements(uri, RdfUtil.Owl.sameAs, null, true);
 
             while (si.hasNext()) {
                 Value v = si.next().getObject();
                 if (HashUris.isHashUri(v)) {
-                    c.add((URI) v);
+                    c.add((IRI) v);
                 }
             }
         }
@@ -569,19 +570,19 @@ public class SeriesData
          */
         i = origHashes.iterator();
         while (i.hasNext()) {
-            URI uri = i.next();
+            IRI uri = i.next();
             si = mviRepCn.getStatements(null, RdfUtil.Owl.sameAs, uri, true);
 
             while (si.hasNext()) {
                 Resource r = si.next().getSubject();
                 if (HashUris.isHashUri(r)) {
-                    c.add((URI) r);
+                    c.add((IRI) r);
                 }
             }
         }
     }
 
-    synchronized URI getSource(URI hash) throws RepositoryException
+    synchronized IRI getSource(IRI hash) throws RepositoryException
     {
         return RdfUtil.asUri(RdfUtil.getResProperty(mviRepCn, hash, RdfUtil.Dc.source));
     }
@@ -639,9 +640,9 @@ public class SeriesData
         return mviRepCn.hasStatement(res, RdfUtil.Rdf.type, type, false);
     }
 
-    public synchronized List<URI> getResourceIcons(Resource res) throws RepositoryException
+    public synchronized List<IRI> getResourceIcons(Resource res) throws RepositoryException
     {
-        List<URI> icons = new ArrayList<URI>();
+        List<IRI> icons = new ArrayList<IRI>();
 
         /* A specific icon */
         icons.addAll(getSpecificIcons(res));
@@ -658,15 +659,15 @@ public class SeriesData
         return icons;
     }
 
-    public synchronized List<URI> getSpecificIcons(Resource res) throws RepositoryException
+    public synchronized List<IRI> getSpecificIcons(Resource res) throws RepositoryException
     {
-        List<URI> icons = new ArrayList<URI>();
+        List<IRI> icons = new ArrayList<IRI>();
 
         RepositoryResult<Statement> si = mviRepCn.getStatements(res, RdfMiscVocabulary.smIcon, null, true);
         while (si.hasNext()) {
             Value o = si.next().getObject();
-            if (o instanceof URI) {
-                icons.add((URI) o);
+            if (o instanceof IRI) {
+                icons.add((IRI) o);
             }
         }
 

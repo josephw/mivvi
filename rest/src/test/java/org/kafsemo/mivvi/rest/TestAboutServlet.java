@@ -18,14 +18,14 @@
 
 package org.kafsemo.mivvi.rest;
 
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.junit.Test;
-import org.eclipse.rdf4j.model.impl.URIImpl;
 
 public class TestAboutServlet
 {
     @Test(expected = IllegalArgumentException.class)
     public void parseBadUri()
     {
-        new URIImpl("a bad URI");
+        SimpleValueFactory.getInstance().createIRI("a bad URI");
     }
 }

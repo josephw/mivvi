@@ -19,41 +19,40 @@
 package org.kafsemo.mivvi.app;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.kafsemo.mivvi.app.EpisodeResource;
-import org.kafsemo.mivvi.app.FileEpisodeResource;
-import org.kafsemo.mivvi.app.LocalFiles;
-import org.kafsemo.mivvi.app.SeriesData;
-import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.kafsemo.mivvi.rdf.RdfUtil;
+
+import junit.framework.TestCase;
 
 /**
  * Test the extraction of information about file episode resources from the
  * statement graphs. That is, that hashes are associated with files and identifiers
  * and, where possible, unified.
- * 
+ *
  * @author Joseph Walton
  */
 public class TestFileEpisodeResource extends TestCase
 {
-    static final Resource EPISODE = new URIImpl("http://www.example.com/episode"),
-        FILE = new URIImpl("file:///some-file.type"),
-        FILE2 = new URIImpl("file:///some-other-file.type"),
-        HASH = new URIImpl("urn:sha1:3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ"),
-        HASH2 = new URIImpl("urn:md5:2QOYZWMPACZAJ2MABGMOZ6CCPY"),
-        SOURCE = new URIImpl("http://www.example.org/archive");
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
+    static final Resource EPISODE = VF.createIRI("http://www.example.com/episode"),
+        FILE = VF.createIRI("file:///some-file.type"),
+        FILE2 = VF.createIRI("file:///some-other-file.type"),
+        HASH = VF.createIRI("urn:sha1:3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ"),
+        HASH2 = VF.createIRI("urn:md5:2QOYZWMPACZAJ2MABGMOZ6CCPY"),
+        SOURCE = VF.createIRI("http://www.example.org/archive");
 
     private RepositoryConnection repcn;
     private SeriesData sd;
@@ -73,7 +72,7 @@ public class TestFileEpisodeResource extends TestCase
         lf = new LocalFiles();
         lf.initLocalFiles(repcn = lrep.getConnection());
     }
-    
+
     public void tearDown() throws RepositoryException
     {
         lf.close();
@@ -96,45 +95,45 @@ public class TestFileEpisodeResource extends TestCase
 
         // A single file with an unrelated statement
         clear();
-        repcn.add(FILE, RdfUtil.Dc.title, new LiteralImpl("File Title"));
-        
+        repcn.add(FILE, RdfUtil.Dc.title, VF.createLiteral("File Title"));
+
         resources.clear();
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(0, resources.size());
-        
+
         // A single hash with an unrelated statement
         clear();
-        repcn.add(HASH, RdfUtil.Dc.title, new LiteralImpl("The Empty File"));
-        
+        repcn.add(HASH, RdfUtil.Dc.title, VF.createLiteral("The Empty File"));
+
         resources.clear();
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(0, resources.size());
     }
-    
+
     public void testSingleIdentifiedFile() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertEquals(FILE, fer.getLocation());
         assertNull(fer.getSource());
         assertEquals(0, fer.getHashUris().size());
     }
-    
+
     public void testSingleIdentifiedHash() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertNull(fer.getLocation());
         assertNull(fer.getSource());
@@ -151,12 +150,12 @@ public class TestFileEpisodeResource extends TestCase
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
 
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         srepcn.add(HASH2, RdfUtil.Owl.sameAs, HASH);
 
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertNull(fer.getLocation());
         assertNull(fer.getSource());
@@ -174,12 +173,12 @@ public class TestFileEpisodeResource extends TestCase
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
 
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         srepcn.add(HASH, RdfUtil.Owl.sameAs, HASH2);
 
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertNull(fer.getLocation());
         assertNull(fer.getSource());
@@ -193,13 +192,13 @@ public class TestFileEpisodeResource extends TestCase
     public void testSingleIdentifiedHashInBothGraphs() throws Exception
     {
         List resources = new ArrayList();
-        
+
         lrepGraph.add(HASH, RdfUtil.Mvi.episode, EPISODE);
         sdGraph.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = (FileEpisodeResource)resources.get(0);
         assertNull(fer.getLocation());
         assertNull(fer.getSource());
@@ -210,21 +209,21 @@ public class TestFileEpisodeResource extends TestCase
     public void testSeparateIdentifiedHashAndFile() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(2, resources.size());
-        
+
         boolean hadFile = false, hadHash = false;
-        
+
         Iterator<FileEpisodeResource> i = resources.iterator();
         while (i.hasNext()) {
             FileEpisodeResource fer = i.next();
-            
+
             assertNull(fer.getSource());
-            
+
             if (fer.getLocation() != null) {
                 assertEquals(FILE, fer.getLocation());
                 assertEquals(0, fer.getHashUris().size());
@@ -236,74 +235,74 @@ public class TestFileEpisodeResource extends TestCase
                 hadHash = true;
             }
         }
-        
+
         assertTrue(hadFile);
         assertTrue(hadHash);
     }
-    
+
     public void testIdentifiedFileAndAssociatedHash() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertEquals(FILE, fer.getLocation());
         assertNull(fer.getSource());
         assertEquals(1, fer.getHashUris().size());
         assertTrue(fer.getHashUris().contains(HASH));
     }
-    
+
     public void testIdentifiedFileAndAssociatedIdentifiedHash() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertEquals(FILE, fer.getLocation());
         assertNull(fer.getSource());
         assertEquals(1, fer.getHashUris().size());
         assertTrue(fer.getHashUris().contains(HASH));
     }
-    
+
     public void testFileAndAssociatedIdentifiedHash() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertEquals(FILE, fer.getLocation());
         assertNull(fer.getSource());
         assertEquals(1, fer.getHashUris().size());
         assertTrue(fer.getHashUris().contains(HASH));
     }
-    
+
     public void testFileWithTwoHashesOnlyOneIdentified() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH2);
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertEquals(FILE, fer.getLocation());
         assertNull(fer.getSource());
@@ -311,17 +310,17 @@ public class TestFileEpisodeResource extends TestCase
         assertTrue(fer.getHashUris().contains(HASH));
         assertTrue(fer.getHashUris().contains(HASH2));
     }
-    
+
     public void testIdentifiedHashWithSource() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
         srepcn.add(HASH, RdfUtil.Dc.source, SOURCE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertNull(fer.getLocation());
         assertEquals(SOURCE, fer.getSource());
@@ -332,33 +331,33 @@ public class TestFileEpisodeResource extends TestCase
     public void testIdentifiedFileWithAssociatedHashWithSource() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
         srepcn.add(HASH, RdfUtil.Dc.source, SOURCE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertEquals(FILE, fer.getLocation());
         assertEquals(SOURCE, fer.getSource());
         assertEquals(1, fer.getHashUris().size());
         assertTrue(fer.getHashUris().contains(HASH));
     }
-    
+
     public void testFileWithTwoIdentifiedAndAssociatedHashes() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH2);
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
         srepcn.add(HASH2, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
         assertEquals(FILE, fer.getLocation());
         assertNull(fer.getSource());
@@ -366,27 +365,27 @@ public class TestFileEpisodeResource extends TestCase
         assertTrue(fer.getHashUris().contains(HASH));
         assertTrue(fer.getHashUris().contains(HASH2));
     }
-    
+
     public void testIdentifiedFileWithTwoIdentifiedUnassociatedHashes() throws Exception
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
         srepcn.add(HASH2, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
-        
+
         assertEquals(3, resources.size());
-        
+
         boolean hadFile = false, hadHash = false, hadHash2 = false;
-        
+
         Iterator<FileEpisodeResource> i = resources.iterator();
         while (i.hasNext()) {
             FileEpisodeResource fer = i.next();
-            
+
             assertNull(fer.getSource());
-            
+
             if (fer.getLocation() != null) {
                 assertEquals(FILE, fer.getLocation());
                 assertEquals(0, fer.getHashUris().size());
@@ -403,7 +402,7 @@ public class TestFileEpisodeResource extends TestCase
                 }
             }
         }
-        
+
         assertTrue(hadFile);
         assertTrue(hadHash);
         assertTrue(hadHash2);
@@ -411,28 +410,28 @@ public class TestFileEpisodeResource extends TestCase
 
     /**
      * Two completely separate files, both identified.
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public void testTwoIdentifiedFiles() throws RepositoryException
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE2, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(2, resources.size());
-        
+
         boolean hadFile = false, hadFile2 = false;
-        
+
         Iterator<FileEpisodeResource> i = resources.iterator();
         while (i.hasNext()) {
             FileEpisodeResource fer = i.next();
-            
+
             assertNull(fer.getSource());
 
             assertNotNull(fer.getLocation());
-            
+
             if (fer.getLocation().equals(FILE)) {
                 hadFile = true;
             } else if (fer.getLocation().equals(FILE2)) {
@@ -442,7 +441,7 @@ public class TestFileEpisodeResource extends TestCase
             }
             assertEquals(0, fer.getHashUris().size());
         }
-        
+
         assertTrue(hadFile);
         assertTrue(hadFile2);
     }
@@ -451,30 +450,30 @@ public class TestFileEpisodeResource extends TestCase
      * If we have two local files apparently containing the exact same data, we
      * should still consider them as separate files and provide the same additional
      * data for each of them.
-     * @throws RepositoryException 
+     * @throws RepositoryException
      */
     public void testTwoIdentifiedFilesSameHash() throws RepositoryException
     {
         List<FileEpisodeResource> resources = new ArrayList<FileEpisodeResource>();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
         repcn.add(FILE2, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE2, RdfUtil.Dc.identifier, HASH);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
         assertEquals(2, resources.size());
-        
+
         boolean hadFile = false, hadFile2 = false;
-        
+
         Iterator<FileEpisodeResource> i = resources.iterator();
         while (i.hasNext()) {
             FileEpisodeResource fer = i.next();
-            
+
             assertNull(fer.getSource());
 
             assertNotNull(fer.getLocation());
-            
+
             if (fer.getLocation().equals(FILE)) {
                 hadFile = true;
             } else if (fer.getLocation().equals(FILE2)) {
@@ -485,7 +484,7 @@ public class TestFileEpisodeResource extends TestCase
             assertEquals(1, fer.getHashUris().size());
             assertTrue(fer.getHashUris().contains(HASH));
         }
-        
+
         assertTrue(hadFile);
         assertTrue(hadFile2);
     }
@@ -498,25 +497,25 @@ public class TestFileEpisodeResource extends TestCase
 /*    public void testTwoFilesSameAssociatedHash()
     {
         List resources = new ArrayList();
-        
+
         lrepGraph.add(FILE, RdfUtil.Dc.identifier, HASH);
         lrepGraph.add(FILE2, RdfUtil.Dc.identifier, HASH);
         sdGraph.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractResources(EPISODE, resources, sd, lf);
         System.err.println(resources);
         assertEquals(2, resources.size());
-        
+
         boolean hadFile = false, hadFile2 = false;
-        
+
         Iterator i = resources.iterator();
         while (i.hasNext()) {
             FileEpisodeResource fer = (FileEpisodeResource)i.next();
-            
+
             assertNull(fer.getSource());
 
             assertNotNull(fer.getLocation());
-            
+
             if (fer.getLocation().equals(FILE)) {
                 hadFile = true;
             } else if (fer.getLocation().equals(FILE2)) {
@@ -527,7 +526,7 @@ public class TestFileEpisodeResource extends TestCase
             assertEquals(1, fer.getHashUris().size());
             assertTrue(fer.getHashUris().contains(HASH));
         }
-        
+
         assertTrue(hadFile);
         assertTrue(hadFile2);
     }
@@ -535,12 +534,12 @@ public class TestFileEpisodeResource extends TestCase
 
     // TODO:
     //  Verify that only URLs are permitted as locations?
-    
+
     /**
      * A <code>FileEpisodeResource</code> with hashes, but no known location,
      * should give a magnet URI to try and discover it.
-     * @throws AccessDeniedException 
-     * @throws IOException 
+     * @throws AccessDeniedException
+     * @throws IOException
      */
     public void testHashBasedUri() throws Exception
     {
@@ -548,31 +547,31 @@ public class TestFileEpisodeResource extends TestCase
 
         /* A single hash */
         srepcn.add(HASH, RdfUtil.Mvi.episode, EPISODE);
-        
+
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
-        
+
         assertEquals(1, resources.size());
-        
+
         FileEpisodeResource fer = resources.get(0);
-        
+
         assertNull(fer.getLocation());
-        
+
         assertEquals("magnet:?xt=" + HASH, fer.getActionUri(sd).toString());
 
         /* Two hashes for the same file */
         resources.clear();
-        
+
         repcn.add(FILE, RdfUtil.Mvi.episode, EPISODE);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH);
         repcn.add(FILE, RdfUtil.Dc.identifier, HASH2);
         EpisodeResource.extractFileResources(EPISODE, resources, sd, lf);
-        
+
         assertEquals(1, resources.size());
         fer = resources.get(0);
-        
+
         assertEquals("magnet:?xt.1=" + HASH2 + "&xt.2=" + HASH, fer.getMagnetUri(sd).toString());
     }
-    
+
     // XXX Adding hash statements to ldgraph causes hashes to
     //  be treated as files
 }

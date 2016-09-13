@@ -24,9 +24,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
  * @author joe
@@ -132,9 +133,9 @@ public class FileUtil
         return null;
     }
 
-    public static URI createFileURI(File f)
+    public static IRI createFileURI(File f)
     {
-        return new URIImpl(FileUtil.fixupUri(f.toURI().toString()));
+        return SimpleValueFactory.getInstance().createIRI(FileUtil.fixupUri(f.toURI().toString()));
     }
 
     /**
