@@ -49,8 +49,8 @@ import org.kafsemo.mivvi.app.FileUtil;
 import org.kafsemo.mivvi.app.SeriesData;
 import org.kafsemo.mivvi.desktop.AppState;
 import org.kafsemo.mivvi.desktop.ManagedJFrame;
-import org.openrdf.model.Resource;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class SeriesTreeFrame extends ManagedJFrame
 {

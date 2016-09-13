@@ -35,8 +35,8 @@ import org.kafsemo.mivvi.desktop.BackgroundRefreshable;
 import org.kafsemo.mivvi.desktop.ProgressStatus;
 import org.kafsemo.mivvi.rdf.Presentation;
 import org.kafsemo.mivvi.recognise.SeriesDataException;
-import org.openrdf.model.Resource;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class BackgroundThreadTasks extends BackgroundRefreshable
 {

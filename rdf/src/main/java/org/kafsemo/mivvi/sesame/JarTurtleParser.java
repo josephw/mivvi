@@ -1,8 +1,8 @@
 package org.kafsemo.mivvi.sesame;
 
-import info.aduna.net.ParsedURI;
+import org.eclipse.rdf4j.common.net.ParsedURI;
 
-import org.openrdf.rio.turtle.TurtleParser;
+import org.eclipse.rdf4j.rio.turtle.TurtleParser;
 
 public class JarTurtleParser extends TurtleParser
 {

@@ -21,9 +21,9 @@ package org.kafsemo.mivvi.gui;
 import java.util.Arrays;
 
 import org.kafsemo.mivvi.desktop.AppState;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class SeriesTreeNode extends EpisodeTreeNode.OrganisationalTreeNode
 {

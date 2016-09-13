@@ -34,8 +34,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import org.kafsemo.mivvi.app.Versioning;
 import org.kafsemo.mivvi.desktop.platform.LaunchProfile;
 import org.kafsemo.mivvi.gui.Gui;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFParseException;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFParseException;
 
 public class Launch
 {

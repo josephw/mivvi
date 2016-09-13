@@ -2,7 +2,7 @@ package org.kafsemo.mivvi.sesame;
 
 import java.util.Locale;
 
-import info.aduna.net.ParsedURI;
+import org.eclipse.rdf4j.common.net.ParsedURI;
 
 public class JarAwareParsedURI extends ParsedURI
 {

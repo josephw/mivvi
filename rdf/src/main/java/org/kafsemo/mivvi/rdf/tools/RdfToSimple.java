@@ -30,10 +30,10 @@ import org.kafsemo.mivvi.rdf.RdfMivviDataSource;
 import org.kafsemo.mivvi.rdf.RdfUtil;
 import org.kafsemo.mivvi.recognise.Item;
 import org.kafsemo.mivvi.recognise.SeriesDetails;
-import org.openrdf.model.Resource;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.repository.sail.SailRepositoryConnection;
-import org.openrdf.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class RdfToSimple
 {

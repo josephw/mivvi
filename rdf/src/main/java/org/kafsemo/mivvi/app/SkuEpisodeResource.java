@@ -19,9 +19,9 @@
 package org.kafsemo.mivvi.app;
 
 import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.impl.URIImpl;
 
 /**
  * An <code>EpisodeResource</code> of a physical, buyable item.

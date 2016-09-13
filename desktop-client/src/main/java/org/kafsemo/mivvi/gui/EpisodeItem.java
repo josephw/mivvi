@@ -19,7 +19,7 @@
 package org.kafsemo.mivvi.gui;
 
 import org.kafsemo.mivvi.rdf.Presentation;
-import org.openrdf.model.Resource;
+import org.eclipse.rdf4j.model.Resource;
 
 /**
  * An item that concerns a single program, with common details included.

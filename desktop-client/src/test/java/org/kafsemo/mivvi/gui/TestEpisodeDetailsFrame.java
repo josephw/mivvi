@@ -25,14 +25,14 @@ import junit.framework.TestCase;
 import org.kafsemo.mivvi.app.LocalFiles;
 import org.kafsemo.mivvi.app.SeriesData;
 import org.kafsemo.mivvi.gui.EpisodeDetailsFrame;
-import org.openrdf.model.Resource;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.helpers.StatementCollector;
-import org.openrdf.rio.rdfxml.RDFXMLParserFactory;
-import org.openrdf.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFParser;
+import org.eclipse.rdf4j.rio.helpers.StatementCollector;
+import org.eclipse.rdf4j.rio.rdfxml.RDFXMLParserFactory;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class TestEpisodeDetailsFrame extends TestCase
 {

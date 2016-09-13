@@ -29,7 +29,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.kafsemo.mivvi.desktop.AppState;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class SelectionListener extends MouseAdapter
 {

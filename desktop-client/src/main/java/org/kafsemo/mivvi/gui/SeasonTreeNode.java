@@ -19,8 +19,8 @@
 package org.kafsemo.mivvi.gui;
 
 import org.kafsemo.mivvi.desktop.AppState;
-import org.openrdf.model.Resource;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class SeasonTreeNode extends EpisodeTreeNode implements Comparable<SeasonTreeNode>
 {

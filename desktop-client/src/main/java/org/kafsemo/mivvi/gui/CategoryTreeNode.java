@@ -19,7 +19,7 @@
 package org.kafsemo.mivvi.gui;
 
 import org.kafsemo.mivvi.desktop.AppState;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 
 /**

@@ -21,9 +21,9 @@ package org.kafsemo.mivvi.app;
 import java.io.File;
 
 import org.kafsemo.mivvi.app.FileUtil;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.LiteralImpl;
+import org.eclipse.rdf4j.model.impl.URIImpl;
 
 import junit.framework.TestCase;
 

@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.kafsemo.mivvi.gui.EpisodeItem;
 import org.kafsemo.mivvi.rdf.Presentation;
-import org.openrdf.model.Resource;
+import org.eclipse.rdf4j.model.Resource;
 
 /**
  * @author Joseph Walton

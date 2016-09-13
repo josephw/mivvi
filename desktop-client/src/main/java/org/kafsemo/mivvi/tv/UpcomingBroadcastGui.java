@@ -55,8 +55,8 @@ import org.kafsemo.mivvi.desktop.ManagedJFrame;
 import org.kafsemo.mivvi.desktop.ProgressStatus;
 import org.kafsemo.mivvi.gui.HelpButton;
 import org.kafsemo.mivvi.gui.SeriesTreeFrame;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.URI;
 
 /**
  * @author Joseph Walton

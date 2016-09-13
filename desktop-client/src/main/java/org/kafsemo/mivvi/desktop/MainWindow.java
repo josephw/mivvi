@@ -39,7 +39,7 @@ import org.kafsemo.mivvi.app.Doap;
 import org.kafsemo.mivvi.app.Version;
 import org.kafsemo.mivvi.app.Versioning;
 import org.kafsemo.mivvi.gui.LinkLabel;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class MainWindow extends ManagedJFrame
 {

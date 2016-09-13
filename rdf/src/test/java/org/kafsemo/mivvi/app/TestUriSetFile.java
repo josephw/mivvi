@@ -25,8 +25,8 @@ import junit.framework.TestCase;
 
 import org.kafsemo.mivvi.app.UriSetFile;
 import org.kafsemo.mivvi.rdf.IdentifierMappings;
-import org.openrdf.model.URI;
-import org.openrdf.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.impl.URIImpl;
 
 public class TestUriSetFile extends TestCase
 {

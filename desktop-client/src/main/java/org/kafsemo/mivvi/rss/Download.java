@@ -20,7 +20,7 @@ package org.kafsemo.mivvi.rss;
 
 import org.kafsemo.mivvi.gui.EpisodeItem;
 import org.kafsemo.mivvi.rdf.Presentation;
-import org.openrdf.model.Resource;
+import org.eclipse.rdf4j.model.Resource;
 
 /**
  * A Download is a resource, available over the web, that contains an instance

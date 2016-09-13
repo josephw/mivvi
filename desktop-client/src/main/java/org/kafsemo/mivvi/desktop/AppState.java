@@ -41,13 +41,13 @@ import org.kafsemo.mivvi.recognise.SeriesDataException;
 import org.kafsemo.mivvi.rss.RssDownloading;
 import org.kafsemo.mivvi.tv.ChannelAvailability;
 import org.kafsemo.mivvi.tv.Downloader;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.rio.RDFParseException;
-import org.openrdf.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class AppState
 {

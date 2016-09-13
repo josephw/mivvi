@@ -26,9 +26,9 @@ import java.io.IOException;
 
 import org.kafsemo.mivvi.app.TokenSetFile;
 import org.kafsemo.mivvi.app.UriSetFile;
-import org.openrdf.model.Resource;
-import org.openrdf.model.impl.BNodeImpl;
-import org.openrdf.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.impl.BNodeImpl;
+import org.eclipse.rdf4j.model.impl.URIImpl;
 
 import junit.framework.TestCase;
 
