@@ -31,6 +31,13 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.kafsemo.mivvi.app.FileUtil;
 import org.kafsemo.mivvi.app.LocalFiles;
 import org.kafsemo.mivvi.app.SeriesData;
@@ -41,19 +48,12 @@ import org.kafsemo.mivvi.recognise.SeriesDataException;
 import org.kafsemo.mivvi.rss.RssDownloading;
 import org.kafsemo.mivvi.tv.ChannelAvailability;
 import org.kafsemo.mivvi.tv.Downloader;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.rio.RDFParseException;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 public class AppState
 {
-    public static final String LOCAL_RESOURCES_FILENAME = 
+    public static final String LOCAL_RESOURCES_FILENAME =
         "local-resources.rdf";
-    
+
     /*
      * Decisions the user has made, and directories and paths to use.
      */
@@ -70,9 +70,9 @@ public class AppState
     {
         return userState;
     }
-    
+
     final Decisions decisions;
-    
+
     public Decisions getDecisions()
     {
         return decisions;
@@ -89,16 +89,16 @@ public class AppState
     }
 
     final Repository sesameRep;
-    
+
     private final Desktop desktop;
-    
+
     public AppState(Config config) throws IOException, URISyntaxException,
             RepositoryException, ParserConfigurationException
     {
         this.cfg = config;
         this.decisions = new Decisions();
         this.userState = new UserState(cfg, this.decisions);
-        
+
         sesameRep = new SailRepository(new MemoryStore());
         sesameRep.initialize();
 
@@ -112,7 +112,7 @@ public class AppState
         } catch (RDFParseException rpe) {
             System.err.println("Failed to load information about local files: " + rpe);
         }
-        
+
         this.downloader = new Downloader(cfg.getWebcacheDirectory());
         channelAvailability = ChannelAvailability.getInstance();
 
@@ -123,10 +123,10 @@ public class AppState
         } else {
             this.desktop = null;
         }
-        
+
         gui = new GuiState(this);
     }
-    
+
     private final RssDownloading rssDownloadThread;
 
     public void close() throws TransformerConfigurationException,
@@ -169,7 +169,7 @@ public class AppState
         seriesData = new SeriesData();
         seriesData.initMviRepository(sesameRep);
         metaData = new MetaData(seriesData);
-        
+
         return Gui.loadMivviData(seriesData, dataUrls);
     }
 
@@ -205,21 +205,21 @@ public class AppState
      * All windows.
      */
     GuiState gui;
-    
-    
+
+
     /* Public methods */
     public boolean process(File f) throws RepositoryException, SeriesDataException
     {
-        URI fileUri = FileUtil.createFileURI(f);
+        IRI fileUri = FileUtil.createFileURI(f);
 
         if (localFiles.hasEpisodeForFile(fileUri))
             return false;
 
         FilenameMatch<Resource> fm = seriesData.process(f);
-        
+
         if (fm != null) {
             localFiles.addFileEpisode(fileUri, fm.episode);
-            
+
             return true;
         } else {
             return false;
@@ -227,7 +227,7 @@ public class AppState
     }
 
     private boolean guiRunning = false;
-    
+
     synchronized void setGUIRunning(boolean state)
     {
         this.guiRunning = state;
@@ -270,7 +270,7 @@ public class AppState
     /**
      * Extract any identifier mappings from the loaded series data and use it
      * to update the user state.
-     * @throws RepositoryException 
+     * @throws RepositoryException
      *
      */
     public void updateMappedUris() throws RepositoryException

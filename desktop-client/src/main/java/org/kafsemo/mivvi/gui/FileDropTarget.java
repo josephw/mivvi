@@ -77,6 +77,7 @@ public abstract class FileDropTarget extends DropTargetAdapter
             dtde.acceptDrop(DnDConstants.ACTION_LINK);
 
             try {
+                @SuppressWarnings("unchecked")
                 List<File> l = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
                 Collection<URI> uris = new ArrayList<URI>(l.size());
                 Iterator<File> i = l.iterator();

@@ -50,13 +50,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
 import org.kafsemo.mivvi.desktop.AppState;
 import org.kafsemo.mivvi.desktop.ManagedJFrame;
 import org.kafsemo.mivvi.desktop.ProgressStatus;
 import org.kafsemo.mivvi.gui.HelpButton;
 import org.kafsemo.mivvi.gui.SeriesTreeFrame;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
 
 /**
  * @author Joseph Walton
@@ -73,11 +73,11 @@ public class UpcomingBroadcastGui extends ManagedJFrame
     private final JButton configureButton;
     private final JLabel progressStatus;
     private final JProgressBar progressBar;
-    
+
     private final Thread backgroundThreadTasksThread;
 
     private final File icalFile;
-    
+
     static final String HELP_TEXT = "Upcoming television broadcasts are shown.\n"
         + "Double-click on episode titles to show program details in a web browser; double-click"
         + " on series titles to show series details.\n"
@@ -95,15 +95,15 @@ public class UpcomingBroadcastGui extends ManagedJFrame
         {
             if (f == null)
                 f = table.getFont();
-            
+
             if (fb == null)
                 fb = table.getFont().deriveFont(Font.BOLD);
-                
+
             Component c = super.getTableCellRendererComponent(table, value,
                     isSelected, hasFocus, row, column);
 
             c.setFont(model.get(row).isHighlighted() ? fb : f);
-            
+
             if (c instanceof JComponent) {
                 ((JComponent)c).setToolTipText((value == null) ? null : value.toString());
             }
@@ -114,7 +114,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
 
     public void browseResource(Resource res, Component parent)
     {
-        if (res instanceof URI) {
+        if (res instanceof IRI) {
             Desktop d = appState.getDesktop();
             if (d != null) {
                 try {
@@ -129,11 +129,11 @@ public class UpcomingBroadcastGui extends ManagedJFrame
             }
         }
     }
-    
+
     public UpcomingBroadcastGui(AppState state) throws IOException
     {
         super("broadcast", "Mivvi - Upcoming broadcasts");
-        
+
         this.appState = state;
 
         backgroundThreadTasks = new BackgroundThreadTasks(state, this);
@@ -154,13 +154,13 @@ public class UpcomingBroadcastGui extends ManagedJFrame
 
                     if (row >=0 && column >= 0) {
                         Broadcast b = model.get(row);
-                        
+
                         switch (column) {
                             case 2:
                                 // Series
                                 browseResource(b.getDetails().series, UpcomingBroadcastGui.this);
                                 break;
-                            
+
                             case 3:
                             case 4:
                                 // Episode
@@ -171,7 +171,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
                 }
             }
         });
-        
+
 //        table.setC
 //        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 //        for (int i = 0 ; i < 4 ; i++)
@@ -193,10 +193,10 @@ public class UpcomingBroadcastGui extends ManagedJFrame
                 }
                 setText((value == null) ? "" : formatter.format(value));
             }
-            
+
         });
         getContentPane().add(new JScrollPane(table));
-        
+
         configureButton = new JButton("Select channels...");
 
         configureButton.addActionListener(new ActionListener(){
@@ -205,9 +205,9 @@ public class UpcomingBroadcastGui extends ManagedJFrame
                 showConfigurationFrame(getChannelConfigurationFrame());
             }
         });
-        
+
         configureButton.setEnabled(false);
-        
+
         progressStatus = new JLabel();
         progressBar = new JProgressBar();
 
@@ -215,14 +215,14 @@ public class UpcomingBroadcastGui extends ManagedJFrame
         b.add(Box.createHorizontalStrut(10));
         b.add(configureButton);
         b.add(Box.createHorizontalStrut(10));
-        
+
         Container pc = new JPanel(new BorderLayout());
         pc.add(progressBar);
         pc.add(BorderLayout.PAGE_END, progressStatus);
         b.add(pc);
 
         b.add(Box.createHorizontalStrut(10));
-        
+
         b.add(new HelpButton(HELP_TEXT));
         b.add(Box.createHorizontalStrut(10));
 
@@ -237,13 +237,13 @@ public class UpcomingBroadcastGui extends ManagedJFrame
                     runlock.notify();
                 }
             }
-            
+
         });
-        
+
         pack();
         setSize(new Dimension(800, 400));
         setLocation(100, 200);
-        
+
         backgroundThreadTasksThread = new Thread(backgroundThreadTasks);
         backgroundThreadTasksThread.start();
     }
@@ -258,7 +258,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
     {
         model.removeAllForChannel(c);
     }
-    
+
     void removeMissingChannels()
     {
         model.removeMissingChannels(appState.getUserState().getChannels());
@@ -273,7 +273,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
             return running;
         }
     }
-    
+
     private List<String> channelList = null;
     private Thread fetchThread;
 
@@ -282,38 +282,38 @@ public class UpcomingBroadcastGui extends ManagedJFrame
         if (channelList == null) {
             if (fetchThread != null)
                 return;
-            
+
             fetchThread = new Thread(){
                 public void run()
                 {
                     backgroundThreadTasks.attemptProvideChannelList();
                 }
             };
-            
+
 //            progressStatus.setText("Downloading channel list");
 //            progressBar.setIndeterminate(true);
-            
+
             fetchThread.start();
         } else {
             initConfigurationFrame();
         }
     }
-    
+
     void completeFetching()
     {
         fetchThread = null;
 //        updateProgress();
     }
-    
+
     void setChannelList(List<String> l)
     {
         this.channelList = l;
         progressStatus.setText("OK");
         initConfigurationFrame();
-        
+
         backgroundThreadTasks.scheduleRefresh();
     }
-    
+
     void updateProgress(ProgressStatus ps)
     {
         synchronized (ps) {
@@ -325,7 +325,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
     }
 
     ChannelConfigurationFrame ccf;
-    
+
     private final ChannelConfigurationFrame getChannelConfigurationFrame()
     {
         if (ccf == null && channelList != null) {
@@ -337,7 +337,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
 
         return ccf;
     }
-    
+
     public void disposeAll()
     {
         backgroundThreadTasks.end();
@@ -346,7 +346,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
             ccf.dispose();
             ccf = null;
         }
-        
+
         try {
             backgroundThreadTasksThread.join();
         } catch (InterruptedException ie) {
@@ -366,7 +366,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
             getMDIGlue().close();
             return;
         }
-        
+
         checkChannelList();
     }
 
@@ -381,7 +381,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
                 appState.getUserState().getChannels().replace(ccf.csm.selected);
             }
         }
-        
+
         configureButton.setEnabled(true);
     }
 
@@ -400,7 +400,7 @@ public class UpcomingBroadcastGui extends ManagedJFrame
     {
         model.updatedSubscriptions();
     }
-    
+
     void writeICalSchedule()
     {
         model.writeICalSchedule(icalFile);

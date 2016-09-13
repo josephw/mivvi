@@ -51,7 +51,7 @@ public class EpisodeTreeExpandedState
                    if (uri != null)
                        s.add(uri);
                }
-            } 
+            }
         });
         return s;
     }
@@ -67,12 +67,12 @@ public class EpisodeTreeExpandedState
             }
         });
     }
-    
+
     interface EpisodeTreeNodeVisitor
     {
         void visit(TreePath path, EpisodeTreeNode node);
     }
-    
+
     void visitEpisodeTreeNodes(EpisodeTreeNodeVisitor v)
     {
         visitEpisodeTreeNodes(v, new TreePath(root));
@@ -81,12 +81,13 @@ public class EpisodeTreeExpandedState
     void visitEpisodeTreeNodes(EpisodeTreeNodeVisitor v, TreePath path)
     {
         TreeNode tn = (TreeNode)path.getLastPathComponent();
-        
+
         if (tn instanceof EpisodeTreeNode) {
             v.visit(path, (EpisodeTreeNode)tn);
         }
 
         if (tn.getAllowsChildren()) {
+            @SuppressWarnings("rawtypes")
             Enumeration en = tn.children();
             while (en.hasMoreElements()) {
                 visitEpisodeTreeNodes(v, path.pathByAddingChild(en.nextElement()));

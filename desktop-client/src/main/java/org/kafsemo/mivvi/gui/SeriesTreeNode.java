@@ -20,10 +20,10 @@ package org.kafsemo.mivvi.gui;
 
 import java.util.Arrays;
 
-import org.kafsemo.mivvi.desktop.AppState;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.kafsemo.mivvi.desktop.AppState;
 
 public class SeriesTreeNode extends EpisodeTreeNode.OrganisationalTreeNode
 {
@@ -31,13 +31,13 @@ public class SeriesTreeNode extends EpisodeTreeNode.OrganisationalTreeNode
     {
         super(state, p, s);
     }
-    
+
     Checkable[] createTreeNodes() throws RepositoryException
     {
         Resource[] ra = state.getSeriesData().getSeasons(resource);
 
         /* Check for the degenerate case: a single season with no URI. */
-        if (ra.length == 1 && !(ra[0] instanceof URI)) {
+        if (ra.length == 1 && !(ra[0] instanceof IRI)) {
             return SeasonTreeNode.createTreeNodes(state, this, ra[0]);
         }
 
@@ -46,7 +46,7 @@ public class SeriesTreeNode extends EpisodeTreeNode.OrganisationalTreeNode
             tna[i] = new SeasonTreeNode(state, this,  ra[i]);
         }
         Arrays.sort(tna);
-        
+
         return tna;
     }
 }

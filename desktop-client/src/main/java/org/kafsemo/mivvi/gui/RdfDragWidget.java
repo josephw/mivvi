@@ -40,20 +40,20 @@ import javax.swing.JOptionPane;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import org.kafsemo.mivvi.desktop.MetaData;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.kafsemo.mivvi.desktop.MetaData;
 
 /**
  * An RDF icon that, when dragged, provides representative RDF. Abstract,
  * so subclasses can be created for specific contexts.
- * 
+ *
  * @author Joseph Walton
  */
 public abstract class RdfDragWidget extends JLabel implements DragGestureListener, DragSourceListener
 {
-    public static final URI RDF_URI = new URIImpl("http://www.w3.org/RDF/");
+    public static final IRI RDF_URI = SimpleValueFactory.getInstance().createIRI("http://www.w3.org/RDF/");
 
     static final Border PADDING = BorderFactory.createEmptyBorder(5, 5, 5, 5);
 
@@ -65,27 +65,27 @@ public abstract class RdfDragWidget extends JLabel implements DragGestureListene
     public RdfDragWidget(MetaData md)
     {
         Icon icon;
-        
+
         try {
             icon = md.getIcon(RDF_URI);
         } catch (RepositoryException re) {
             // XXX Log
             icon = null;
         }
-        
+
         if (icon != null) {
             setIcon(icon);
         } else {
             setText("[RDF]");
         }
-        
+
         setToolTipText("Drag this episode onto another application as RDF");
         setBorder(REGULAR);
-        
+
         ds = new DragSource();
         ds.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY, this);
     }
-    
+
     /**
      * Create an input stream for the real content to be read from.
      * @return
@@ -97,7 +97,7 @@ public abstract class RdfDragWidget extends JLabel implements DragGestureListene
             new DataFlavor("application/xml", "XML Document"),
             new DataFlavor("text/xml", "XML Document")
     };
-    
+
     /**
      * Under Windows, data typing is fairly coarse. Claim text/xml and
      * text editors appear to accept it. We also accept the more specific
@@ -115,12 +115,12 @@ public abstract class RdfDragWidget extends JLabel implements DragGestureListene
                     throw new UnsupportedFlavorException(flavor);
                 }
             }
-            
+
             public DataFlavor[] getTransferDataFlavors()
             {
                 return flavors;
             }
-            
+
             public boolean isDataFlavorSupported(DataFlavor flavor)
             {
                 for (int i = 0 ; i < flavors.length ; i++) {
@@ -128,11 +128,11 @@ public abstract class RdfDragWidget extends JLabel implements DragGestureListene
                         return true;
                     }
                 }
-                
+
                 return false;
             }
         };
-        
+
         setBorder(ACTIVE);
         try {
             ds.startDrag(dge, null, t, this);
@@ -150,15 +150,15 @@ public abstract class RdfDragWidget extends JLabel implements DragGestureListene
             }
         }
     }
-    
+
     public void dragEnter(DragSourceDragEvent dsde)
     {
     }
-    
+
     public void dragOver(DragSourceDragEvent dsde)
     {
     }
-    
+
     public void dragExit(DragSourceEvent dse)
     {
     }
@@ -167,7 +167,7 @@ public abstract class RdfDragWidget extends JLabel implements DragGestureListene
     {
         setBorder(REGULAR);
     }
-    
+
     public void dropActionChanged(DragSourceDragEvent dsde)
     {
     }
