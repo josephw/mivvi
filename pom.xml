@@ -15,7 +15,7 @@
 
  <properties>
   <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
-  <sesameVersion>4.0.1</sesameVersion>
+  <sesameVersion>2.0.1</sesameVersion>
  </properties>
 
  <licenses>
@@ -38,23 +38,23 @@
  <dependencyManagement>
   <dependencies>
    <dependency>
-    <groupId>org.openrdf.sesame</groupId>
-    <artifactId>sesame-sail-memory</artifactId>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-sail-memory</artifactId>
     <version>${sesameVersion}</version>
    </dependency>
    <dependency>
-    <groupId>org.openrdf.sesame</groupId>
-    <artifactId>sesame-repository-sail</artifactId>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-sail</artifactId>
     <version>${sesameVersion}</version>
    </dependency>
    <dependency>
-    <groupId>org.openrdf.sesame</groupId>
-    <artifactId>sesame-rio-rdfxml</artifactId>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-rio-rdfxml</artifactId>
     <version>${sesameVersion}</version>
    </dependency>
    <dependency>
-    <groupId>org.openrdf.sesame</groupId>
-    <artifactId>sesame-util</artifactId>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-util</artifactId>
     <version>${sesameVersion}</version>
    </dependency>
    <dependency>
@@ -62,11 +62,6 @@
     <artifactId>slf4j-jdk14</artifactId>
     <version>1.7.6</version>
     <scope>runtime</scope>
-   </dependency>
-   <dependency>
-    <groupId>info.aduna.commons</groupId>
-    <artifactId>aduna-commons-text</artifactId>
-    <version>2.7.0</version>
    </dependency>
   </dependencies>
  </dependencyManagement>
