@@ -18,15 +18,18 @@
 
 package org.kafsemo.mivvi.app;
 
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 /**
  * @author joe
  */
 public class RdfMiscVocabulary
 {
-    public static final URI smIcon = new URIImpl("http://purl.org/net/rdf/papers/sitemap#icon");
-    public static final URI foafName = new URIImpl("http://xmlns.com/foaf/0.1/name");
-    public static final URI kafsemoMivviCategory = new URIImpl("tag:kafsemo.org,2004:mivvi#category");
+    private static final ValueFactory VF = SimpleValueFactory.getInstance();
+
+    public static final IRI smIcon = VF.createIRI("http://purl.org/net/rdf/papers/sitemap#icon");
+    public static final IRI foafName = VF.createIRI("http://xmlns.com/foaf/0.1/name");
+    public static final IRI kafsemoMivviCategory = VF.createIRI("tag:kafsemo.org,2004:mivvi#category");
 }

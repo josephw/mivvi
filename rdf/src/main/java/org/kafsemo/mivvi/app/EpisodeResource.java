@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.kafsemo.mivvi.rdf.RdfUtil;
 
@@ -180,7 +179,7 @@ public abstract class EpisodeResource
      * A URI, most probably a URL, that can be used to access this resource, or
      * <code>null</code> if none is available.
      */
-    public abstract URI getActionUri(SeriesData sd);
+    public abstract IRI getActionUri(SeriesData sd);
 
     /**
      * @return a description of this resource, suitable for a tooltip

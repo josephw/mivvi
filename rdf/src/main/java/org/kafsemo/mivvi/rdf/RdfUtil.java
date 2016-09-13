@@ -41,7 +41,6 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -73,7 +72,7 @@ public class RdfUtil
         return Mivvi.URI + n;
     }
 
-    public static int index(URI u)
+    public static int index(IRI u)
     {
         String s = u.toString();
         if (s.startsWith(SEQ_PREFIX)) {
@@ -172,14 +171,14 @@ public class RdfUtil
 
     public static String resourceUri(Value v)
     {
-        if (v instanceof URI) {
-            return ((URI) v).toString();
+        if (v instanceof IRI) {
+            return ((IRI) v).toString();
         } else {
             return null;
         }
     }
 
-    public static String getStringProperty(RepositoryConnection cn, Resource res, URI prop) throws RepositoryException
+    public static String getStringProperty(RepositoryConnection cn, Resource res, IRI prop) throws RepositoryException
     {
         RepositoryResult<Statement> si = cn.getStatements(res, prop, null, false);
         while (si.hasNext()) {
@@ -190,7 +189,7 @@ public class RdfUtil
         return null;
     }
 
-    public static Resource getResProperty(RepositoryConnection cn, Resource res, URI prop) throws RepositoryException
+    public static Resource getResProperty(RepositoryConnection cn, Resource res, IRI prop) throws RepositoryException
     {
         RepositoryResult<Statement> si = cn.getStatements(res, prop, null, false);
         while (si.hasNext()) {

@@ -140,7 +140,7 @@ public class SeriesData
         return al.toArray(RA);
     }
 
-    public synchronized Resource[] getCollectionIds(Resource uri, URI pred)
+    public synchronized Resource[] getCollectionIds(Resource uri, IRI pred)
         throws RepositoryException
     {
         RepositoryResult<Statement> si;
@@ -243,7 +243,7 @@ public class SeriesData
         return l;
     }
 
-    public synchronized String getStringProperty(Resource res, URI p) throws RepositoryException
+    public synchronized String getStringProperty(Resource res, IRI p) throws RepositoryException
     {
         return RdfUtil.getStringProperty(mviRepCn, res, p);
     }
@@ -469,7 +469,7 @@ public class SeriesData
         while (si.hasNext()) {
             Statement stmt = si.next();
 
-            URI uri = RdfUtil.asUri(stmt.getSubject());
+            IRI uri = RdfUtil.asUri(stmt.getSubject());
 
             if (WebEpisodeResource.isWebResource(uri)) {
                 WebEpisodeResource w = new WebEpisodeResource(uri, mviRepCn);

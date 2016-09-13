@@ -23,19 +23,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.kafsemo.mivvi.rdf.RdfUtil;
 
 public class Doap
 {
-    public static final URI MIVVI_DESKTOP_CLIENT = new URIImpl("http://mivvi.net/code/#desktop-client");
-    private static final URI DOWNLOAD_PAGE = new URIImpl("http://usefulinc.com/ns/doap#download-page");
+    public static final IRI MIVVI_DESKTOP_CLIENT = SimpleValueFactory.getInstance().createIRI("http://mivvi.net/code/#desktop-client");
+    private static final IRI DOWNLOAD_PAGE = SimpleValueFactory.getInstance().createIRI("http://usefulinc.com/ns/doap#download-page");
 
     private final Version latest;
     private final String downloadUrl;
@@ -69,10 +69,10 @@ public class Doap
         List<Version> allVersions = new ArrayList<Version>();
 
         RepositoryResult<Statement> res = cn.getStatements(MIVVI_DESKTOP_CLIENT, RdfUtil.Doap.release, null, false);
-        
+
         while (res.hasNext()) {
             Statement stmt = res.next();
-            
+
             Resource v = RdfUtil.asResource(stmt.getObject());
             if (v != null) {
                 String rev = RdfUtil.getStringProperty(cn, v, RdfUtil.Doap.revision);
@@ -85,21 +85,21 @@ public class Doap
                 }
             }
         }
-        
+
         Collections.sort(allVersions);
-        
+
         if (allVersions.size() > 0) {
             return allVersions.get(allVersions.size() - 1);
         } else {
             return null;
         }
     }
-    
+
     public static String getDownloadPage(RepositoryConnection cn) throws RepositoryException
     {
         Resource r = RdfUtil.getResProperty(cn, MIVVI_DESKTOP_CLIENT, DOWNLOAD_PAGE);
-        if (r instanceof URI) {
-            return ((URI)r).toString();
+        if (r instanceof IRI) {
+            return ((IRI)r).toString();
         } else {
             return null;
         }

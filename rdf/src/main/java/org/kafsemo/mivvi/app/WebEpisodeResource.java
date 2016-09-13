@@ -18,38 +18,38 @@
 
 package org.kafsemo.mivvi.app;
 
-import org.kafsemo.mivvi.rdf.RdfUtil;
-import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
+import org.kafsemo.mivvi.rdf.RdfUtil;
 
 public class WebEpisodeResource extends EpisodeResource
 {
-    private final URI resource;
+    private final IRI resource;
     private final String title;
     private final String description;
 
-    public WebEpisodeResource(URI uri, RepositoryConnection g)
+    public WebEpisodeResource(IRI uri, RepositoryConnection g)
         throws RepositoryException
     {
         this.resource = uri;
-        
+
         this.title = RdfUtil.getStringProperty(g, uri, RdfUtil.Dc.title);
         this.description = RdfUtil.getStringProperty(g, uri, RdfUtil.Dc.description);
     }
 
-    public WebEpisodeResource fromRepository(URI uri, RepositoryConnection rep)
+    public WebEpisodeResource fromRepository(IRI uri, RepositoryConnection rep)
         throws RepositoryException
     {
         return new WebEpisodeResource(uri, rep);
     }
-    
-    public URI getUri()
+
+    public IRI getUri()
     {
         return resource;
     }
-    
-    public URI getActionUri(SeriesData sd)
+
+    public IRI getActionUri(SeriesData sd)
     {
         return resource;
     }
@@ -58,7 +58,7 @@ public class WebEpisodeResource extends EpisodeResource
     {
         return description;
     }
-    
+
     public String getLabel(SeriesData sd)
     {
         return title;
@@ -66,11 +66,11 @@ public class WebEpisodeResource extends EpisodeResource
 
     /**
      * Is this a non-opaque, non-file: URI with a non-empty network path?
-     * 
+     *
      * @param uri
      * @return
      */
-    public static boolean isWebResource(URI uri)
+    public static boolean isWebResource(IRI uri)
     {
         String s = uri.toString();
 

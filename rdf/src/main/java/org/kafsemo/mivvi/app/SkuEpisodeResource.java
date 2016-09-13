@@ -18,14 +18,14 @@
 
 package org.kafsemo.mivvi.app;
 
-import org.kafsemo.mivvi.rdf.RdfUtil;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.kafsemo.mivvi.rdf.RdfUtil;
 
 /**
  * An <code>EpisodeResource</code> of a physical, buyable item.
- * 
+ *
  * @author Joseph Walton
  */
 public class SkuEpisodeResource extends EpisodeResource
@@ -36,7 +36,7 @@ public class SkuEpisodeResource extends EpisodeResource
     {
         return isbn;
     }
-    
+
     public Resource getAsin()
     {
         return asin;
@@ -74,20 +74,20 @@ public class SkuEpisodeResource extends EpisodeResource
         }
     }
 
-    public URI getActionUri(SeriesData sd)
+    public IRI getActionUri(SeriesData sd)
     {
         if (asin != null) {
             String s = asin.toString().substring(11);
-            
-            return new URIImpl("http://www.amazon.co.uk/exec/obidos/ASIN/" + s);
+
+            return SimpleValueFactory.getInstance().createIRI("https://www.amazon.co.uk/exec/obidos/ASIN/" + s);
         } else if (isbn != null) {
             String s = isbn.toString().substring(9);
-            return new URIImpl("http://en.wikipedia.org/wiki/Special:Booksources/" + s);
+            return SimpleValueFactory.getInstance().createIRI("https://en.wikipedia.org/wiki/Special:Booksources/" + s);
         } else {
             return null;
         }
     }
-    
+
     public String getDescription(SeriesData sd)
     {
         if (asin != null) {

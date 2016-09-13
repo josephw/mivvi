@@ -71,7 +71,6 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
@@ -159,7 +158,7 @@ public class EpisodeDetailsFrame extends JFrame
         JComponent details = new JPanel(gridBag);
 
         for (int i = 0 ; i < props.length ; i++) {
-            URI pred = (URI)props[i][0];
+            IRI pred = (IRI)props[i][0];
 
             if (RdfUtil.Dc.description.equals(pred)) {
                 List<String> akal = state.getSeriesData().getStringList(res, pred);
@@ -197,7 +196,7 @@ public class EpisodeDetailsFrame extends JFrame
                 JLabel l = new JLabel(props[i][1] + ":"),
                 t = new JLabel(s);
 
-                if (RdfUtil.Dc.title.equals(pred) && res instanceof URI
+                if (RdfUtil.Dc.title.equals(pred) && res instanceof IRI
                         && state.getDesktop() != null)
                 {
                     try {
@@ -365,8 +364,8 @@ public class EpisodeDetailsFrame extends JFrame
                             try {
                                 if (ri.item instanceof File) {
                                     d.open((File)ri.item);
-                                } else if (ri.item instanceof URI) {
-                                    URI u = (URI)ri.item;
+                                } else if (ri.item instanceof IRI) {
+                                    IRI u = (IRI)ri.item;
                                     d.browse(new java.net.URI(u.toString()));
                                 } else {
                                     System.err.println("Unknown resource item type: " + ri.item.getClass().getName() + " " + ri.item);
@@ -540,7 +539,7 @@ public class EpisodeDetailsFrame extends JFrame
 
         for (EpisodeResource er : episodeResources) {
 
-            URI actionUri = er.getActionUri(state.getSeriesData());
+            IRI actionUri = er.getActionUri(state.getSeriesData());
             String label = er.getLabel(state.getSeriesData());
             String tooltip = er.getDescription(state.getSeriesData());
 
