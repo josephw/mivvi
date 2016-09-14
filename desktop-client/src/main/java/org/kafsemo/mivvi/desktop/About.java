@@ -33,7 +33,7 @@ public class About
     {
         Object[] message = {
                 "Metadata for Video Initiative",
-                LinkLabel.create(desktop, "http://mivvi.net/"),
+                LinkLabel.create(desktop, "https://mivvi.net/"),
                 "Mivvi " + v
         };
 

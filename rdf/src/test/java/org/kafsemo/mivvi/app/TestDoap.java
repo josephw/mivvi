@@ -99,6 +99,6 @@ public class TestDoap extends TestCase
         Doap d = Doap.check(cn);
 
         assertEquals(Version.parse("0.2.1"), d.getLatestAvailableVersion());
-        assertEquals("http://mivvi.net/code/", d.getDownloadPage());
+        assertEquals("https://mivvi.net/code/", d.getDownloadPage());
     }
 }

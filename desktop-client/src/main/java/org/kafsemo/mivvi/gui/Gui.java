@@ -253,7 +253,7 @@ public class Gui extends JFrame
                 jmi = new JMenuItem("About...");
                 jmi.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e) {
-                        JOptionPane.showMessageDialog(jf, "Metadata for Video Initiative\nhttp://mivvi.net/", "Mivvi", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(jf, "Metadata for Video Initiative\nhttps://mivvi.net/", "Mivvi", JOptionPane.INFORMATION_MESSAGE);
                     }
                 });
                 jm.add(jmi);
