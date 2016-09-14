@@ -13,7 +13,7 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * License along with this library.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package org.kafsemo.mivvi.desktop;
@@ -62,7 +62,7 @@ public class About
                     Box.createVerticalStrut(10),
                     "You should have received a copy of the GNU General Public License",
                     "along with this program.  If not, see",
-                    LinkLabel.create(desktop, "http://www.gnu.org/licenses/"),
+                    LinkLabel.create(desktop, "https://www.gnu.org/licenses/"),
                     Box.createVerticalStrut(10),
                     "Incorporates:",
                     LinkLabel.create(desktop, "http://rdf4j.org/", "RDF4J"),
