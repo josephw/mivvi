@@ -84,12 +84,4 @@ public class TestJarAwareParsedURI
         assertFalse(uri.isRelative());
         assertFalse(uri.isOpaque());
     }
-
-    @Test
-    public void x()
-    {
-        ParsedURI uri = new JarAwareParsedURI("jar:file:/Users/joe/Documents/source/mivvi/rdf/target/test-classes/org/kafsemo/mivvi/sesame/test/sample-data.zip!:/index.rdf");
-// jar:file:/Users/joe/Documents/source/mivvi/rdf/target/test-classes/org/kafsemo/mivvi/sesame/test/sample-data.zip!:/empty-file.txt
-        System.out.println(uri.toString());
-    }
 }
