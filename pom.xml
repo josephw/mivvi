@@ -4,7 +4,7 @@
  <artifactId>mivvi-parent</artifactId>
  <name>Mivvi parent POM</name>
  <packaging>pom</packaging>
- <version>0.3.0-SNAPSHOT</version>
+ <version>0.4-SNAPSHOT</version>
 
  <modules>
   <module>recognise</module>
