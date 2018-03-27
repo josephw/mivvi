@@ -1,7 +1,7 @@
 package org.kafsemo.mivvi.rdf;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +22,6 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.DC;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class RDFTripleTopologicalSorterTest
@@ -123,12 +122,12 @@ public class RDFTripleTopologicalSorterTest
     {
         List<Statement> statements = new ArrayList<Statement>();
 
-        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)), Matchers.emptyIterable());
+        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements))).isEmpty();
 
         statements.add(VF.createStatement(VF.createIRI("http://test/"), DC.TITLE, VF.createLiteral("test")));
 
-        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)),
-                Matchers.<Resource> contains(VF.createIRI("http://test/")));
+        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)))
+                .containsExactly(VF.createIRI("http://test/"));
     }
 
     private static final IRI POINTS_TO = SimpleValueFactory.getInstance().createIRI("http://test/#points-to");
@@ -139,10 +138,11 @@ public class RDFTripleTopologicalSorterTest
         List<Statement> statements = new ArrayList<Statement>();
 
         statements.add(VF.createStatement(VF.createIRI("http://test/"), DC.TITLE, VF.createLiteral("test")));
-        statements.add(VF.createStatement(VF.createIRI("http://example.test/"), POINTS_TO, VF.createIRI("http://test/")));
+        statements
+                .add(VF.createStatement(VF.createIRI("http://example.test/"), POINTS_TO, VF.createIRI("http://test/")));
 
-        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)),
-                Matchers.<Resource> contains(VF.createIRI("http://example.test/")));
+        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)))
+                .containsExactly(VF.createIRI("http://example.test/"));
     }
 
     @Test
@@ -152,7 +152,7 @@ public class RDFTripleTopologicalSorterTest
 
         statements.add(VF.createStatement(VF.createIRI("http://test/"), DC.TITLE, VF.createIRI("http://test/")));
 
-        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements)), Matchers.emptyIterable());
+        assertThat(RDFTripleTopologicalSorter.onlyUsedAsSubjects(asModel(statements))).isEmpty();
 
         List<Statement> list = shuffled(statements);
 
@@ -401,9 +401,8 @@ public class RDFTripleTopologicalSorterTest
     @Test
     public void aLiteralWithNoSpecificDatatypeSortsDifferentlyFromOneWith()
     {
-        Literal a1 = VF.createLiteral("a"),
-                a2 = VF.createLiteral("a", VF.createIRI("http://test/#type"));
+        Literal a1 = VF.createLiteral("a"), a2 = VF.createLiteral("a", VF.createIRI("http://test/#type"));
 
-        assertThat(RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a1, a2), Matchers.not(0));
+        assertThat(RDFTripleTopologicalSorter.LITERAL_ORDER.compare(a1, a2)).isNotEqualTo(0);
     }
 }

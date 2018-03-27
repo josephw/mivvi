@@ -1,20 +1,19 @@
 package org.kafsemo.mivvi.sesame.test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
-import org.kafsemo.mivvi.sesame.JarTurtleParser;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
+import org.junit.Test;
+import org.kafsemo.mivvi.sesame.JarTurtleParser;
 
 public class TestJarTurtleRdfParser
 {
@@ -50,7 +49,7 @@ public class TestJarTurtleRdfParser
 
         String resourceUrl = res.stringValue();
 
-        assertThat(resourceUrl, CoreMatchers.startsWith("jar:" + zipfileUrl + "!"));
+        assertThat(resourceUrl).startsWith("jar:" + zipfileUrl + "!");
 
         URL javaUrl = new URL(resourceUrl);
         assertEquals("jar", javaUrl.getProtocol());
